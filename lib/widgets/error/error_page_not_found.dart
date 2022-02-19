@@ -1,0 +1,59 @@
+import 'package:chanthaburi_app/utils/my_constant.dart';
+import 'package:chanthaburi_app/widgets/show_image.dart';
+import 'package:flutter/material.dart';
+
+class ErrorPageNotFound extends StatelessWidget {
+  const ErrorPageNotFound({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: MyConstant.backgroudApp,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: size.width * 0.6,
+              height: size.height * 0.3,
+              child: ShowImage(pathImage: MyConstant.errorPage),
+            ),
+            const Text(
+              "ขออภัยในความไม่ดวก",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
+            const Text(
+              "ไม่พบหน้านี้ หรือ ท่านไม่มีสิทธิ์เข้าถึงหน้านี้",
+              style: TextStyle(
+                fontSize: 17,
+              ),
+            ),
+            Container(
+              width: size.width * 0.3,
+              height: 50,
+              margin: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "ย้อนกลับ",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: MyConstant.themeApp,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
