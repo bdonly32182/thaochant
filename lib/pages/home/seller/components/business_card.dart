@@ -1,3 +1,4 @@
+import 'package:chanthaburi_app/pages/business/menu/otop/menu_otops.dart';
 import 'package:chanthaburi_app/pages/business/menu/restaurant/menu_restaurant.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/error_page_not_found.dart';
@@ -7,7 +8,7 @@ class BusinessCard extends StatelessWidget {
   final String sellerId;
   final String businessName;
   final String businessId;
-  int typeBusiness;
+  String typeBusiness;
   BusinessCard({
     Key? key,
     required this.businessName,
@@ -23,12 +24,19 @@ class BusinessCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         print('to bussiness $businessId');
-
-        if (typeBusiness == 0) {
+        if (typeBusiness == MyConstant.foodCollection) {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (builder) => Menu(businessId: businessId),
+            ),
+          );
+        }
+        if (typeBusiness == MyConstant.productOtopCollection) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (builder) => MenuOtops(businessId: businessId),
             ),
           );
         }

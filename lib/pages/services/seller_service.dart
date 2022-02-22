@@ -18,12 +18,7 @@ class SellerService extends StatefulWidget {
 class _SellerServiceState extends State<SellerService> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   int tabValue = 0;
-  void onChangeTab(int tab) {
-    print('tab : $tab');
-    setState(() {
-      tabValue = tab;
-    });
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -80,10 +75,9 @@ class _SellerServiceState extends State<SellerService> {
               ],
             ),
           ],
-          bottom: TabBar(
+          bottom:const TabBar(
             labelColor: Colors.white,
-            onTap:(int value)=> onChangeTab(value),
-            tabs: const [
+            tabs: [
               Tab(
                 icon: Icon(Icons.food_bank_outlined),
                 text: "ร้านอาหาร",
@@ -107,15 +101,12 @@ class _SellerServiceState extends State<SellerService> {
           children: [
             MyRestaurant(
               sellerId: widget.sellerId ?? _firebaseAuth.currentUser!.uid,
-              typeBusiness: tabValue,
             ),
             MyOtop(
               sellerId: widget.sellerId ?? _firebaseAuth.currentUser!.uid,
-              typeBusiness: tabValue,
             ),
             MyResort(
               sellerId: widget.sellerId ?? _firebaseAuth.currentUser!.uid,
-              typeBusiness: tabValue,
             ),
           ],
         ),

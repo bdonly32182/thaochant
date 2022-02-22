@@ -9,9 +9,8 @@ import 'package:flutter/material.dart';
 
 class MyResort extends StatefulWidget {
   final String sellerId;
-  int typeBusiness;
 
-  MyResort({Key? key, required this.sellerId,required this.typeBusiness}) : super(key: key);
+  MyResort({Key? key, required this.sellerId}) : super(key: key);
 
   @override
   State<MyResort> createState() => _MyResortState();
@@ -39,7 +38,7 @@ class _MyResortState extends State<MyResort> {
                     sellerId: snapshot.data!.docs[index]['sellerId'],
                     businessName: snapshot.data!.docs[index]['businessName'],
                     businessId: snapshot.data!.docs[index].id,
-                    typeBusiness: widget.typeBusiness,
+                    typeBusiness: MyConstant.roomCollection,
                   );
                 });
           }

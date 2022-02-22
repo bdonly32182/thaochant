@@ -1,5 +1,3 @@
-
-
 import 'package:chanthaburi_app/pages/business/menu/restaurant/menu_list.dart';
 import 'package:chanthaburi_app/pages/business/menu/restaurant/option_list.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -36,8 +34,12 @@ class _MenuState extends State<Menu> {
         ),
         body: TabBarView(
           children: [
-            MenuList(businessId: widget.businessId,),
-            OptionList(),
+            MenuList(
+              businessId: widget.businessId,
+            ),
+            OptionList(
+              businessId: widget.businessId,
+            ),
           ],
         ),
       ),

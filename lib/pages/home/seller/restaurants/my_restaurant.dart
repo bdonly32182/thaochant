@@ -9,9 +9,8 @@ import 'package:flutter/material.dart';
 
 class MyRestaurant extends StatefulWidget {
   String sellerId;
-  int typeBusiness;
 
-  MyRestaurant({Key? key, required this.sellerId, required this.typeBusiness})
+  MyRestaurant({Key? key, required this.sellerId})
       : super(key: key);
 
   @override
@@ -21,7 +20,6 @@ class MyRestaurant extends StatefulWidget {
 class _MyRestaurantState extends State<MyRestaurant> {
   @override
   Widget build(BuildContext context) {
-    print('typeBusiness in myrestaurant: ${widget.typeBusiness}');
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
       body: FutureBuilder(
@@ -41,7 +39,7 @@ class _MyRestaurantState extends State<MyRestaurant> {
                     sellerId: snapshot.data!.docs[index]['sellerId'],
                     businessName: snapshot.data!.docs[index]['businessName'],
                     businessId: snapshot.data!.docs[index].id,
-                    typeBusiness: widget.typeBusiness,
+                    typeBusiness: MyConstant.foodCollection,
                   );
                 });
           }
