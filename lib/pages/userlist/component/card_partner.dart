@@ -8,6 +8,7 @@ class CardPartner extends StatelessWidget {
   final String fullName;
   final String role;
   final String phoneNumber;
+  final String password;
   final Function onApprove;
   final Function onUnApprove;
   const CardPartner({
@@ -20,6 +21,7 @@ class CardPartner extends StatelessWidget {
     required this.docId,
     required this.email,
     required this.profileRef,
+    required this.password,
   }) : super(key: key);
 
   @override
@@ -142,7 +144,7 @@ class CardPartner extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                       onPressed: () => onApprove(docId, fullName, role,
-                          phoneNumber, profileRef, email),
+                          phoneNumber, profileRef, email,password),
                       child: Text(
                         "อนุมัติ",
                         style: TextStyle(color: MyConstant.themeApp),

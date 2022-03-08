@@ -15,35 +15,36 @@ class HeaderProfile extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        FutureBuilder(
-          future: StorageFirebase.showProfileRef(profileRef),
-          builder: (builder, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: Image.network(
-                    snapshot.data.toString(),
-                    fit: BoxFit.fitWidth,
-                    width: width * 0.26,
-                    height: 110.0,
-                    errorBuilder:
-                        (BuildContext buildImageError, object, stackthree) {
-                      return ShowImage(pathImage: MyConstant.iconUser);
-                    },
+        Container(
+          margin: const EdgeInsets.only(top: 20.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: Image.network(
+              profileRef,
+              fit: BoxFit.fitWidth,
+              width: width * 0.26,
+              height: 110.0,
+              errorBuilder: (BuildContext buildImageError, object, stackthree) {
+                return Container(
+                  width: width * 0.26,
+                  height: 110.0,
+                  child: ShowImage(
+                    pathImage: MyConstant.iconUser,
                   ),
-                ),
-              );
-            }
-
-            return SizedBox(
-              width: width * 0.3,
-              height: 120.0,
-              child: const SkeletonImage(),
-            );
-          },
-        ),
+                  decoration:const BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 2,
+                        offset: Offset(0, 02),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        )
       ],
     );
   }

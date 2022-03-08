@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/location/google_map.dart';
-import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/resort_collecttion.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/user_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
 import 'package:chanthaburi_app/utils/map/geolocation.dart';
 import 'package:chanthaburi_app/utils/map/google_map_fluter.dart';
 import 'package:chanthaburi_app/utils/map/show_map.dart';
@@ -18,17 +18,16 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
 
 class CreateStore extends StatefulWidget {
   String title;
-  Color theme;
   String typeBusiness;
+  String? sellerId;
   CreateStore({
     Key? key,
-    required this.theme,
     required this.title,
     required this.typeBusiness,
+    this.sellerId,
   }) : super(key: key);
 
   @override
@@ -37,7 +36,7 @@ class CreateStore extends StatefulWidget {
 
 class _CreateStoreState extends State<CreateStore> {
   final BusinessModel _businessModel =
-      BusinessModel('', '', [], 0, 0, [], [], '', '', true, "0", "", "", '');
+      BusinessModel('', '', 0, 0, [], [], '', '', 1, "0", "", "");
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
   double? latitude, longitude;
@@ -58,7 +57,9 @@ class _CreateStoreState extends State<CreateStore> {
   void initState() {
     super.initState();
     checkPermission();
-    fetchSellers();
+    if (widget.sellerId == null) {
+      fetchSellers();
+    }
   }
 
   void checkPermission() async {
@@ -109,12 +110,12 @@ class _CreateStoreState extends State<CreateStore> {
       "nameId": index,
       "value": '',
     };
-    Map<String, dynamic> jsonPrice = {
+    Map<String, dynamic> jsonDescription = {
       "descriptionPolicyId": index,
       "value": '',
     };
     setState(() {
-      _valuePolicyDescription!.add(jsonPrice);
+      _valuePolicyDescription!.add(jsonDescription);
       _valuePolicyName!.add(jsonName);
     });
   }
@@ -122,7 +123,6 @@ class _CreateStoreState extends State<CreateStore> {
   _updateNamePolicy(String index, String value) {
     for (var name in _valuePolicyName!) {
       if (name['nameId'] == index) {
-        // name['nameId'] = index;
         name['value'] = value;
       }
     }
@@ -145,41 +145,36 @@ class _CreateStoreState extends State<CreateStore> {
 
   void _onSubmit(String typeBusiness) async {
     late BuildContext dialogContext;
-    late String fileName;
-    if (imageSelected != null) {
-      fileName = basename(imageSelected!.path);
-      _businessModel.imageRef = "images/$typeBusiness/$fileName";
+    if (widget.sellerId != null) {
+      _businessModel.sellerId = widget.sellerId!;
     }
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
       showDialog(
         barrierDismissible: false,
-        context: this.context,
+        context: context,
         builder: (BuildContext showContext) {
-          dialogContext = this.context;
+          dialogContext = context;
           return const PouringHourGlass();
         },
       );
       Map<String, dynamic>? response;
       if (typeBusiness == 'restaurant') {
-        response = await RestaurantCollection.createRestaurant(_businessModel);
+        response = await RestaurantCollection.createRestaurant(
+            _businessModel, imageSelected, widget.sellerId == null);
       }
       if (typeBusiness == 'otop') {
-        response = await OtopCollection.createOtop(_businessModel);
+        response = await OtopCollection.createOtop(
+            _businessModel, imageSelected, widget.sellerId == null);
       }
       if (typeBusiness == 'resort') {
-        response = await ResortCollection.createResort(_businessModel);
+        response = await ResortCollection.createResort(
+            _businessModel, imageSelected, widget.sellerId == null);
       }
 
-      if (imageSelected != null && response!["status"] == "200") {
-        fileName = basename(imageSelected!.path);
-        StorageFirebase.PutFileToStorage(
-            "images/$typeBusiness/$fileName", imageSelected!);
-      }
       Navigator.pop(dialogContext);
       showDialog(
-        context: this.context,
+        context: context,
         builder: (BuildContext showContext) =>
             ResponseDialog(response: response!),
       );
@@ -187,6 +182,7 @@ class _CreateStoreState extends State<CreateStore> {
       setState(() {
         _valuePolicyName = [];
         _valuePolicyDescription = [];
+        imageSelected = null;
       });
     }
   }
@@ -219,7 +215,7 @@ class _CreateStoreState extends State<CreateStore> {
       backgroundColor: MyConstant.backgroudApp,
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: widget.theme,
+        backgroundColor: MyConstant.colorStore,
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -233,7 +229,6 @@ class _CreateStoreState extends State<CreateStore> {
                   inputName(width),
                   const SizedBox(height: 20),
                   dropdownSeller(width),
-                  dropdownCategoryRestaurant(width),
                   inputPhone(width),
                   inputLink(width),
                   inputPrompPay(width),
@@ -258,63 +253,10 @@ class _CreateStoreState extends State<CreateStore> {
     );
   }
 
-  Container dropdownCategoryRestaurant(double width) {
-    return Container(
-      margin: const EdgeInsets.only(
-        top: 15,
-      ),
-      width: width * 0.8,
-      child: widget.typeBusiness == 'restaurant'
-          ? DropdownSearch(
-              mode: Mode.MENU,
-              items: _categoryRestaurant,
-              maxHeight: 260,
-              dropdownSearchDecoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: "ประเภทร้านอาหาร",
-                contentPadding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              validator: (String? valid) {
-                if (valid!.isEmpty) {
-                  return "กรุณากรอกเลือกประเภทร้านอาหาร";
-                }
-                return null;
-              },
-              onChanged: (String? category) =>
-                  _businessModel.categoryRestaurant = category!,
-              loadingBuilder: (context, load) =>
-                  const Expanded(child: PouringHourGlass()),
-              errorBuilder: (context, str, dy) =>
-                  const Text("ขออภัย ณ ขณะนี้เกิดเหตุขัดข้อง"),
-              emptyBuilder: (context, searchEntry) =>
-                  const Text("ไม่มีข้อมูลผู้ประกอบการ"),
-            )
-          : null,
-      decoration: const BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-    );
-  }
-
   Container dropdownSeller(double width) {
     return Container(
       width: width * 0.8,
-      child: buildDropdownSearch(),
+      child: widget.sellerId == null ? buildDropdownSearch() : null,
       decoration: const BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -348,7 +290,7 @@ class _CreateStoreState extends State<CreateStore> {
           borderRadius: BorderRadius.circular(10),
         ),
         hintStyle: TextStyle(
-          color: widget.theme,
+          color: MyConstant.colorStore,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -390,7 +332,7 @@ class _CreateStoreState extends State<CreateStore> {
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.account_balance,
-                  color: widget.theme,
+                  color: MyConstant.colorStore,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey.shade200),
@@ -401,7 +343,7 @@ class _CreateStoreState extends State<CreateStore> {
                   borderRadius: BorderRadius.circular(10),
                 )),
             style: TextStyle(
-              color: widget.theme,
+              color: MyConstant.colorStore,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -454,7 +396,7 @@ class _CreateStoreState extends State<CreateStore> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: widget.theme,
+                          color: MyConstant.colorStore,
                         ),
                       ),
                     ],
@@ -477,7 +419,7 @@ class _CreateStoreState extends State<CreateStore> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: widget.theme,
+              color: MyConstant.colorStore,
             ),
           ),
         )
@@ -499,7 +441,7 @@ class _CreateStoreState extends State<CreateStore> {
         ),
         onPressed: () => _onSubmit(widget.typeBusiness),
         style: ElevatedButton.styleFrom(
-          primary: widget.theme,
+          primary: MyConstant.colorStore,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -513,11 +455,11 @@ class _CreateStoreState extends State<CreateStore> {
       margin: const EdgeInsets.only(top: 20),
       width: width * .8,
       height: height * .45,
-      child: _valuePolicyDescription!.isNotEmpty ? ListViewPolicy(width) : null,
+      child: _valuePolicyDescription!.isNotEmpty ? listViewPolicy(width) : null,
     );
   }
 
-  ListView ListViewPolicy(double width) {
+  ListView listViewPolicy(double width) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: _valuePolicyDescription!.length,
@@ -576,13 +518,16 @@ class _CreateStoreState extends State<CreateStore> {
               }
               return null;
             },
-            onSaved: (policyName) => _businessModel.policyName.add(policyName),
+            onSaved: (policyName) => _businessModel.policyName.add({
+              "nameId": keyField,
+              "value": policyName,
+            }),
             decoration: InputDecoration(
               fillColor: Colors.white,
               filled: true,
               labelText: 'หัวข้อนโยบาย :',
               labelStyle: TextStyle(color: Colors.grey[600]),
-              prefix: Icon(Icons.book, color: widget.theme),
+              prefix: Icon(Icons.book, color: MyConstant.colorStore),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey.shade200),
                 borderRadius: BorderRadius.circular(10),
@@ -593,7 +538,7 @@ class _CreateStoreState extends State<CreateStore> {
               ),
             ),
             style: TextStyle(
-              color: widget.theme,
+              color: MyConstant.colorStore,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -610,13 +555,16 @@ class _CreateStoreState extends State<CreateStore> {
               return null;
             },
             onSaved: (policyDescription) =>
-                _businessModel.policyDescription.add(policyDescription),
+                _businessModel.policyDescription.add({
+              "descriptionPolicyId": keyField,
+              "value": policyDescription,
+            }),
             decoration: InputDecoration(
               fillColor: Colors.white,
               filled: true,
               labelText: 'อธิบายนโยบาย :',
               labelStyle: TextStyle(color: Colors.grey[600]),
-              prefix: Icon(Icons.policy_rounded, color: widget.theme),
+              prefix: Icon(Icons.policy_rounded, color: MyConstant.colorStore),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey.shade200),
                 borderRadius: BorderRadius.circular(10),
@@ -627,12 +575,12 @@ class _CreateStoreState extends State<CreateStore> {
               ),
             ),
             style: TextStyle(
-              color: widget.theme,
+              color: MyConstant.colorStore,
               fontWeight: FontWeight.w700,
             ),
           ),
           Divider(
-            color: widget.theme,
+            color: MyConstant.colorStore,
             height: 20,
             thickness: 3.0,
           )
@@ -651,7 +599,7 @@ class _CreateStoreState extends State<CreateStore> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: widget.theme,
+              color: MyConstant.colorStore,
             ),
           ),
           Container(
@@ -664,7 +612,7 @@ class _CreateStoreState extends State<CreateStore> {
                 Icons.add,
               ),
               style: ElevatedButton.styleFrom(
-                primary: widget.theme,
+                primary: MyConstant.colorStore,
               ),
             ),
           )
@@ -675,58 +623,40 @@ class _CreateStoreState extends State<CreateStore> {
 
   Row buildPhoto(double width) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(
-          height: 15,
-          width: width * .2,
-          child: IconButton(
-            onPressed: getImage,
-            icon: Icon(
-              Icons.photo_library_rounded,
-              color: widget.theme,
-              size: 40,
-            ),
-          ),
-        ),
-        Container(
-          width: width * .6,
-          height: 150,
-          child: imageSelected != null
-              ? Image.file(
-                  imageSelected!,
-                  fit: BoxFit.cover,
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.image,
-                      color: widget.theme,
-                      size: 60,
-                    ),
-                  ],
+        InkWell(
+          onTap: () {
+            dialogCamera(context, getImage, takePhoto);
+          },
+          child: Container(
+            width: width * .6,
+            height: 150,
+            child: imageSelected != null
+                ? Image.file(
+                    imageSelected!,
+                    fit: BoxFit.cover,
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.image,
+                        color: MyConstant.colorStore,
+                        size: 60,
+                      ),
+                    ],
+                  ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: imageSelected != null ? Colors.black54 : Colors.white,
+              boxShadow: const [
+                BoxShadow(
+                  blurRadius: 10,
+                  color: Colors.black54,
+                  offset: Offset(0, 5),
                 ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: imageSelected != null ? Colors.black54 : Colors.white,
-            boxShadow: const [
-              BoxShadow(
-                blurRadius: 10,
-                color: Colors.black54,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 15,
-          width: width * .2,
-          child: IconButton(
-            onPressed: takePhoto,
-            icon: Icon(
-              Icons.camera_alt_rounded,
-              color: widget.theme,
-              size: 40,
+              ],
             ),
           ),
         )
@@ -755,7 +685,7 @@ class _CreateStoreState extends State<CreateStore> {
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.location_on,
-                  color: widget.theme,
+                  color: MyConstant.colorStore,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey.shade200),
@@ -766,7 +696,7 @@ class _CreateStoreState extends State<CreateStore> {
                   borderRadius: BorderRadius.circular(10),
                 )),
             style: TextStyle(
-              color: widget.theme,
+              color: MyConstant.colorStore,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -805,7 +735,7 @@ class _CreateStoreState extends State<CreateStore> {
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.phone_in_talk_sharp,
-                  color: widget.theme,
+                  color: MyConstant.colorStore,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey.shade200),
@@ -816,7 +746,7 @@ class _CreateStoreState extends State<CreateStore> {
                   borderRadius: BorderRadius.circular(10),
                 )),
             style: TextStyle(
-              color: widget.theme,
+              color: MyConstant.colorStore,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -851,7 +781,7 @@ class _CreateStoreState extends State<CreateStore> {
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.link,
-                  color: widget.theme,
+                  color: MyConstant.colorStore,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey.shade200),
@@ -862,7 +792,7 @@ class _CreateStoreState extends State<CreateStore> {
                   borderRadius: BorderRadius.circular(10),
                 )),
             style: TextStyle(
-              color: widget.theme,
+              color: MyConstant.colorStore,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -901,7 +831,7 @@ class _CreateStoreState extends State<CreateStore> {
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.store_outlined,
-                  color: widget.theme,
+                  color: MyConstant.colorStore,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey.shade200),
@@ -912,7 +842,7 @@ class _CreateStoreState extends State<CreateStore> {
                   borderRadius: BorderRadius.circular(10),
                 )),
             style: TextStyle(
-              color: widget.theme,
+              color: MyConstant.colorStore,
               fontWeight: FontWeight.w700,
             ),
           ),

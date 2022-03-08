@@ -57,11 +57,6 @@ class _CreateAccountState extends State<CreateAccount> {
 
   void createUser() async {
     late BuildContext dialogContext;
-    late String fileName;
-    if (profileImage != null) {
-      fileName = basename(profileImage!.path);
-      _user.profileRef = "images/register/$fileName";
-    }
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       showDialog(
@@ -75,13 +70,8 @@ class _CreateAccountState extends State<CreateAccount> {
       Map<String, dynamic> response = await AuthMethods.register(
         _user,
         isPartner,
+        profileImage
       );
-
-      if (profileImage != null && response["status"] == "200") {
-        fileName = basename(profileImage!.path);
-        StorageFirebase.PutFileToStorage(
-            "images/register/$fileName", profileImage!);
-      }
       Navigator.pop(dialogContext);
       showDialog(
         context: this.context,

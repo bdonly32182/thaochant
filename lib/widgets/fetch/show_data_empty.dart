@@ -9,26 +9,23 @@ class ShowDataEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: MyConstant.backgroudApp,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: size.width * 0.6,
-              height: size.height * 0.3,
-              child: ShowImage(pathImage: MyConstant.noData),
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: size.width * 0.6,
+            height: size.height * 0.3,
+            child: ShowImage(pathImage: MyConstant.noData),
+          ),
+          const Text(
+            "NO DATA",
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.black54,
             ),
-            const Text(
-              "NO DATA",
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.black54,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

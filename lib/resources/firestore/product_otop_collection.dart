@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:chanthaburi_app/models/otop/product.dart';
+import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path/path.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -8,22 +12,35 @@ final CollectionReference productOtopCollection =
     _firestore.collection(MyConstant.productOtopCollection);
 
 class ProductOtopCollection {
-  static Future<QuerySnapshot> products(
-      String otopId, String categoryId) async {
-    QuerySnapshot _products = await productOtopCollection
+  static Stream<QuerySnapshot<Object?>> products(
+      String otopId, String categoryId) {
+    Stream<QuerySnapshot<Object?>> _products = productOtopCollection
         .where('otopId', isEqualTo: otopId)
         .where('categoryId', isEqualTo: categoryId)
-        .get();
+        .snapshots();
     return _products;
   }
 
+  static Future<int> checkProduct(String categoryId) async {
+    QuerySnapshot _products = await productOtopCollection
+        .where('categoryId', isEqualTo: categoryId)
+        .get();
+    return _products.size;
+  }
+
   static Future<Map<String, dynamic>> createProduct(
-      ProductOtopModel product) async {
+      ProductOtopModel product, File? imageFile) async {
     try {
+      String imageRef = '';
+      if (imageFile != null) {
+        String fileName = basename(imageFile.path);
+        imageRef = await StorageFirebase.uploadImage(
+            "images/productOtop/$fileName", imageFile);
+      }
       await productOtopCollection.add({
         'productName': product.productName,
         'price': product.price,
-        'imageRef': product.imageRef,
+        'imageRef': imageRef,
         'otopId': product.otopId,
         'categoryId': product.categoryId,
         'description': product.description,
@@ -33,6 +50,7 @@ class ProductOtopCollection {
         'height': product.height,
         'long': product.long,
       });
+
       return {"status": "200", "message": "สร้างข้อมูลสินค้าเรียบร้อย"};
     } catch (e) {
       return {"status": "400", "message": "สร้างข้อมูลสินค้าล้มเหลว"};
@@ -40,12 +58,23 @@ class ProductOtopCollection {
   }
 
   static Future<Map<String, dynamic>> editProduct(
-      String productId, ProductOtopModel product) async {
+      String productId, ProductOtopModel product, File? imageFile) async {
     try {
+      String imageRef = product.imageRef;
+      if (imageFile != null) {
+        if (product.imageRef.isNotEmpty) {
+          String referenceImage =
+              StorageFirebase.getReference(product.imageRef);
+          StorageFirebase.deleteFile(referenceImage);
+        }
+        String fileName = basename(imageFile.path);
+        imageRef = await StorageFirebase.uploadImage(
+            "images/productOtop/$fileName", imageFile);
+      }
       await productOtopCollection.doc(productId).update({
         'productName': product.productName,
         'price': product.price,
-        'imageRef': product.imageRef,
+        'imageRef': imageRef,
         'categoryId': product.categoryId,
         'description': product.description,
         'status': product.status,
@@ -60,9 +89,14 @@ class ProductOtopCollection {
     }
   }
 
-  static Future<Map<String, dynamic>> deleteProduct(String productId) async {
+  static Future<Map<String, dynamic>> deleteProduct(String productId,String imageUrl) async {
     try {
       await productOtopCollection.doc(productId).delete();
+      if (imageUrl.isNotEmpty) {
+        String referenceImage =
+              StorageFirebase.getReference(imageUrl);
+          StorageFirebase.deleteFile(referenceImage);
+      }
       return {"status": "200", "message": "ลบข้อมูลสินค้าเรียบร้อย"};
     } catch (e) {
       return {"status": "400", "message": "ลบข้อมูลสินค้าล้มเหลว"};
@@ -73,5 +107,15 @@ class ProductOtopCollection {
     DocumentSnapshot _product =
         await productOtopCollection.doc(productId).get();
     return _product;
+  }
+
+  static changeStatusProduct(productId, int status) async {
+    try {
+      await productOtopCollection.doc(productId).update({
+        'status': status,
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }

@@ -18,64 +18,66 @@ class SellerService extends StatefulWidget {
 class _SellerServiceState extends State<SellerService> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   int tabValue = 0;
- 
 
   @override
   Widget build(BuildContext context) {
-    print('tabValue $tabValue');
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: MyConstant.colorStore,
           title: const Text('รายการธุรกิจของฉัน'),
-          actions: [
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                switch (value) {
-                  case 'profile':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (builder) => const Profile(),
+          actions: widget.sellerId == null
+              ? [
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'profile':
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) => Profile(
+                                theme: MyConstant.colorStore,
+                              ),
+                            ),
+                          );
+                          break;
+                        default:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) => CreateStore(
+                                title: 'สร้างธุระกิจให้ผู้ประกอบการ',
+                                typeBusiness: value,
+                                sellerId: _firebaseAuth.currentUser!.uid,
+                              ),
+                            ),
+                          );
+                      }
+                    },
+                    icon: const Icon(Icons.add),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'restaurant',
+                        child: Text('ร้านอาหาร'),
                       ),
-                    );
-                    break;
-                  default:
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (builder) => CreateStore(
-                          theme: MyConstant.colorStore,
-                          title: 'สร้างธุระกิจให้ผู้ประกอบการ',
-                          typeBusiness: value,
-                        ),
+                      const PopupMenuItem(
+                        value: 'otop',
+                        child: Text('ร้านผลิตภัณฑ์ชุมชน'),
                       ),
-                    );
-                }
-              },
-              icon: const Icon(Icons.more_vert),
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'restaurant',
-                  child: Text('ร้านอาหาร'),
-                ),
-                const PopupMenuItem(
-                  value: 'otop',
-                  child: Text('ร้านผลิตภัณฑ์ชุมชน'),
-                ),
-                const PopupMenuItem(
-                  value: 'resort',
-                  child: Text('บ้านพัก'),
-                ),
-                const PopupMenuItem(
-                  value: 'profile',
-                  child: Text('โปรไฟล์'),
-                ),
-              ],
-            ),
-          ],
-          bottom:const TabBar(
+                      const PopupMenuItem(
+                        value: 'resort',
+                        child: Text('บ้านพัก'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'profile',
+                        child: Text('โปรไฟล์'),
+                      ),
+                    ],
+                  ),
+                ]
+              : [],
+          bottom: const TabBar(
             labelColor: Colors.white,
             tabs: [
               Tab(
@@ -101,12 +103,15 @@ class _SellerServiceState extends State<SellerService> {
           children: [
             MyRestaurant(
               sellerId: widget.sellerId ?? _firebaseAuth.currentUser!.uid,
+              isAdmin: widget.sellerId != null,
             ),
             MyOtop(
               sellerId: widget.sellerId ?? _firebaseAuth.currentUser!.uid,
+              isAdmin: widget.sellerId != null,
             ),
             MyResort(
               sellerId: widget.sellerId ?? _firebaseAuth.currentUser!.uid,
+              isAdmin: widget.sellerId != null,
             ),
           ],
         ),

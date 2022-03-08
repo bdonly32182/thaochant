@@ -5,7 +5,7 @@ class ProductOtopModel {
   String otopId;
   String categoryId;
   String description;
-  bool status;
+  int status;
   double weight;
   double width;
   double height;

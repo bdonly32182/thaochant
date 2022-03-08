@@ -158,7 +158,7 @@ class _ProductSellerListState extends State<ProductSellerList> {
                           Row(
                             children: [
                               const Icon(
-                                Icons.home,
+                                Icons.hotel_outlined,
                                 color: Colors.grey,
                               ),
                               const SizedBox(

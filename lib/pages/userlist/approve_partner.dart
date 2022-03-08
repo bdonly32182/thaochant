@@ -75,6 +75,7 @@ class _ApprovePartnerState extends State<ApprovePartner> {
     String phoneNumber,
     String profileRef,
     String email,
+    String password,
   ) async {
     late BuildContext dialogContext;
     showDialog(
@@ -86,13 +87,7 @@ class _ApprovePartnerState extends State<ApprovePartner> {
       },
     );
     Map<String, dynamic> _response = await UserCollection.onApprove(
-      docId,
-      fullName,
-      role,
-      phoneNumber,
-      profileRef,
-      email,
-    );
+        docId, fullName, role, phoneNumber, profileRef, email, password);
     Navigator.pop(dialogContext);
     showDialog(
       context: context,
@@ -166,6 +161,7 @@ class _ApprovePartnerState extends State<ApprovePartner> {
                         docId: _sellers[index].id,
                         email: _sellers[index]['email'],
                         profileRef: _sellers[index]['profileRef'],
+                        password: _sellers[index]['password'],
                       ),
                     );
                   }
@@ -189,6 +185,7 @@ class _ApprovePartnerState extends State<ApprovePartner> {
                       docId: item.id,
                       onApprove: onApprove,
                       onUnApprove: onUnApprove,
+                      password: item.get('password'),
                     );
                   },
                   firstPageErrorIndicatorBuilder: (_) =>

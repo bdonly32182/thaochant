@@ -44,7 +44,7 @@ class _CreateCategoryState extends State<CreateCategory> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: MyConstant.colorStore,
-        title: const Text('สร้างหมวดหมู่'),
+        title: const Text('จัดการหมวดหมู่'),
       ),
       backgroundColor: MyConstant.backgroudApp,
       body: SingleChildScrollView(
@@ -94,7 +94,7 @@ class _CreateCategoryState extends State<CreateCategory> {
                 child: ElevatedButton(
                     onPressed: () => onCreateCategory(
                         _categoryController.text, widget.businessId),
-                    child:const Text('สร้างหมวดหมู่'),
+                    child: const Text('สร้างหมวดหมู่'),
                     style: ElevatedButton.styleFrom(
                       primary: MyConstant.colorStore,
                     )),

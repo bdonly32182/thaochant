@@ -9,9 +9,8 @@ import 'package:flutter/material.dart';
 
 class MyRestaurant extends StatefulWidget {
   String sellerId;
-
-  MyRestaurant({Key? key, required this.sellerId})
-      : super(key: key);
+  bool isAdmin;
+  MyRestaurant({Key? key, required this.sellerId,required this.isAdmin,}) : super(key: key);
 
   @override
   State<MyRestaurant> createState() => _MyRestaurantState();
@@ -30,7 +29,7 @@ class _MyRestaurantState extends State<MyRestaurant> {
           }
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data!.docs.isEmpty) {
-              return const ShowDataEmpty();
+              return const Center(child: ShowDataEmpty());
             }
             return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
@@ -40,6 +39,7 @@ class _MyRestaurantState extends State<MyRestaurant> {
                     businessName: snapshot.data!.docs[index]['businessName'],
                     businessId: snapshot.data!.docs[index].id,
                     typeBusiness: MyConstant.foodCollection,
+                    isAdmin: widget.isAdmin,
                   );
                 });
           }

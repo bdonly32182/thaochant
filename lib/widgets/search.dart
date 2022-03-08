@@ -20,7 +20,7 @@ class Search extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
-          width: width * 0.65,
+          width: width * 0.6,
           height: 40,
           child: TextFormField(
             controller: searchController,

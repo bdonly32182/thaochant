@@ -19,8 +19,6 @@ class MenuOtops extends StatefulWidget {
 }
 
 class _MenuOtopsState extends State<MenuOtops> {
-  bool isRefresh = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,13 +32,13 @@ class _MenuOtopsState extends State<MenuOtops> {
         child: Column(
           children: [
             buildRowCreateAndEdit(context),
-            FutureBuilder(
-              future: CategoryCollection.categoryList(widget.businessId),
+            StreamBuilder(
+              stream: CategoryCollection.streamCategorys(widget.businessId),
               builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
                   return const InternalError();
                 }
-                if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.connectionState == ConnectionState.active) {
                   if (snapshot.data!.docs.isEmpty) {
                     return const ShowDataEmpty();
                   }
@@ -83,17 +81,15 @@ class _MenuOtopsState extends State<MenuOtops> {
                           width: double.maxFinite,
                           height: 55,
                           child: TextButton(
-                            onPressed: () async {
-                              await Navigator.push(
+                            onPressed: () {
+                              Navigator.pop(builder);
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (builder) =>
                                       CreateMenuOtop(otopId: widget.businessId),
                                 ),
                               );
-                              setState(() {
-                                isRefresh = true;
-                              });
                             },
                             child: Text(
                               'สร้างผลิตภัณฑ์ชุมชน',
@@ -118,9 +114,9 @@ class _MenuOtopsState extends State<MenuOtops> {
                           width: double.maxFinite,
                           height: 60,
                           child: TextButton(
-                            onPressed: () async {
+                            onPressed: () {
                               Navigator.pop(builder);
-                              await Navigator.push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => CreateCategory(
@@ -128,9 +124,6 @@ class _MenuOtopsState extends State<MenuOtops> {
                                   ),
                                 ),
                               );
-                              setState(() {
-                                isRefresh = true;
-                              });
                             },
                             child: Text(
                               'สร้างหมวดหมู่ผลิตภัณฑ์ชุมชน',
@@ -170,13 +163,12 @@ class _MenuOtopsState extends State<MenuOtops> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (builder) =>
-                    CategoryList(businessId: widget.businessId),
+                builder: (builder) => CategoryList(
+                  businessId: widget.businessId,
+                  typeBusiness: MyConstant.productOtopCollection,
+                ),
               ),
             );
-            setState(() {
-              isRefresh = false;
-            });
           },
           child: Row(
             children: [

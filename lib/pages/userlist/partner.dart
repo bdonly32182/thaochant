@@ -50,7 +50,6 @@ class _PartnerState extends State<Partner> {
                   context,
                   MaterialPageRoute(
                     builder: (builder) => CreateStore(
-                      theme: MyConstant.colorStore,
                       title: 'สร้างธุระกิจให้ผู้ประกอบการ',
                       typeBusiness: value,
                     ),

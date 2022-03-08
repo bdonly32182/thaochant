@@ -3,7 +3,8 @@ import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
 
 class FooterLogout extends StatelessWidget {
-  const FooterLogout({Key? key}) : super(key: key);
+  Color theme;
+  FooterLogout({Key? key, required this.theme}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class FooterLogout extends StatelessWidget {
             (route) => false,
           );
         },
-        style: ElevatedButton.styleFrom(primary: MyConstant.themeApp),
+        style: ElevatedButton.styleFrom(primary: theme),
       ),
     );
   }

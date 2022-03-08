@@ -12,11 +12,13 @@ class AdminService extends StatefulWidget {
 
 class _AdminServiceState extends State<AdminService> {
   int _selected = 0;
-  List<Widget> _widget_bottom_list = [
+  final List<Widget> _widget_bottom_list = [
     HomeAdmin(),
     // OrderPackageTour(),
     // Notifications(),
-    Profile()
+    Profile(
+      theme: MyConstant.themeApp,
+    )
   ];
   void _onItemTapped(int index) {
     setState(() {

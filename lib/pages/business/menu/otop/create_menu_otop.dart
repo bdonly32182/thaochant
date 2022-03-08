@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:chanthaburi_app/models/otop/product.dart';
-import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/product_otop_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
@@ -11,11 +11,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
 
 class CreateMenuOtop extends StatefulWidget {
   final String otopId;
-  const CreateMenuOtop({Key? key, required this.otopId}) : super(key: key);
+  const CreateMenuOtop({
+    Key? key,
+    required this.otopId,
+  }) : super(key: key);
 
   @override
   _CreateMenuOtopState createState() => _CreateMenuOtopState();
@@ -29,7 +31,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
     otopId: '',
     categoryId: '',
     description: '',
-    status: true,
+    status: 1,
     weight: 0,
     width: 0,
     height: 0,
@@ -38,7 +40,6 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
   File? imageSelected;
-  String? selectedValue;
   List<QueryDocumentSnapshot> categorys = [];
 
   @override
@@ -79,33 +80,22 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
 
   _onSubmit() async {
     late BuildContext dialogContext;
-    late String fileName;
-    if (imageSelected != null) {
-      fileName = basename(imageSelected!.path);
-      productOtop.imageRef = "images/productOtop/$fileName";
-    }
     if (_formKey.currentState!.validate()) {
       productOtop.otopId = widget.otopId;
       _formKey.currentState!.save();
       showDialog(
         barrierDismissible: false,
-        context: this.context,
+        context: context,
         builder: (BuildContext showContext) {
-          dialogContext = this.context;
+          dialogContext = context;
           return const PouringHourGlass();
         },
       );
       Map<String, dynamic> response =
-          await ProductOtopCollection.createProduct(productOtop);
-
-      if (imageSelected != null && response["status"] == "200") {
-        fileName = basename(imageSelected!.path);
-        StorageFirebase.PutFileToStorage(
-            "images/productOtop/$fileName", imageSelected!);
-      }
+          await ProductOtopCollection.createProduct(productOtop, imageSelected);
       Navigator.pop(dialogContext);
       showDialog(
-        context: this.context,
+        context: context,
         builder: (BuildContext showContext) =>
             ResponseDialog(response: response),
       );
@@ -169,7 +159,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
       height: 50,
       child: ElevatedButton(
         child: const Text(
-          'สร้างสินค้า',
+          'สร้างรายการสินค้า',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -192,66 +182,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
       children: [
         InkWell(
           onTap: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (builder) {
-                return SizedBox(
-                  height: 120,
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.maxFinite,
-                        height: 55,
-                        child: TextButton(
-                          onPressed: () {
-                            getImage();
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            'แกลออรี่',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: MyConstant.colorStore,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black,
-                              offset: Offset(0, 0.4),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: double.maxFinite,
-                        height: 60,
-                        child: TextButton(
-                          onPressed: () {
-                            takePhoto();
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            'ถ่ายรูป',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: MyConstant.colorStore,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
+            dialogCamera(context, getImage, takePhoto);
           },
           child: Container(
             width: width * .6,
@@ -296,6 +227,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
           height: 60,
           child: TextFormField(
             keyboardType: TextInputType.phone,
+            initialValue: productOtop.price.toString(),
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกราคา';
               return null;
@@ -338,6 +270,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
           width: width * .7,
           height: 60,
           child: TextFormField(
+            initialValue: productOtop.weight.toString(),
             keyboardType: TextInputType.phone,
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกน้ำหนัก';
@@ -381,6 +314,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
           width: width * .7,
           height: 60,
           child: TextFormField(
+            initialValue: productOtop.width.toString(),
             keyboardType: TextInputType.phone,
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกความกว้าง';
@@ -424,6 +358,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
           width: width * .7,
           height: 60,
           child: TextFormField(
+            initialValue: productOtop.height.toString(),
             keyboardType: TextInputType.phone,
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกความสูง';
@@ -467,6 +402,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
           width: width * .7,
           height: 60,
           child: TextFormField(
+            initialValue: productOtop.long.toString(),
             keyboardType: TextInputType.phone,
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกความยาว';
@@ -507,7 +443,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
+          height: 80,
           child: DropdownSearch(
             mode: Mode.MENU,
             items: categorys,
@@ -529,7 +465,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
               ),
             ),
             validator: (QueryDocumentSnapshot<Object?>? valid) {
-              if (!valid!.exists) {
+              if (valid == null) {
                 return "กรุณากรอกเลือกประเภทสินค้า";
               }
               return null;
@@ -557,6 +493,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
           width: width * .7,
           height: 60,
           child: TextFormField(
+            initialValue: productOtop.productName,
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกชื่อสินค้า';
               return null;
@@ -597,6 +534,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
           child: TextFormField(
+            initialValue: productOtop.description,
             maxLines: 2,
             onSaved: (String? description) =>
                 productOtop.description = description ?? '',

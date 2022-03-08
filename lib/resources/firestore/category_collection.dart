@@ -14,6 +14,13 @@ class CategoryCollection {
     return _categories;
   }
 
+  static Stream<QuerySnapshot<Object?>> streamCategorys(String businessId)  {
+    Stream<QuerySnapshot<Object?>> _categories =  categoryCollection
+        .where('businessId', isEqualTo: businessId)
+        .snapshots();
+    return _categories;
+  }
+
   static Future<DocumentSnapshot<Object?>> category(String categoryId) async {
     DocumentSnapshot _categories =
         await categoryCollection.doc(categoryId).get();

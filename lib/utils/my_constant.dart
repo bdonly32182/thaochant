@@ -29,7 +29,6 @@ class MyConstant {
   static String otopCollection = "otopCollection";
   static String resortCollection = "resortCollection";
   static String notificationCollection = 'notificationCollection';
-  static String notificationBusinessCollection = 'notificationSellerCollection';
   static String categoryCollection = 'categoryCollection';
   static String optionCollection = 'optionCollection';
   static String foodCollection = 'foodCollection';

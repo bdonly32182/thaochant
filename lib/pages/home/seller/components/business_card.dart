@@ -1,34 +1,41 @@
+import 'package:chanthaburi_app/pages/business/home/home_business.dart';
 import 'package:chanthaburi_app/pages/business/menu/otop/menu_otops.dart';
+import 'package:chanthaburi_app/pages/business/menu/resort/rooms.dart';
 import 'package:chanthaburi_app/pages/business/menu/restaurant/menu_restaurant.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
-import 'package:chanthaburi_app/widgets/error/error_page_not_found.dart';
 import 'package:flutter/material.dart';
 
 class BusinessCard extends StatelessWidget {
   final String sellerId;
   final String businessName;
   final String businessId;
+  bool isAdmin;
   String typeBusiness;
-  BusinessCard({
-    Key? key,
-    required this.businessName,
-    required this.sellerId,
-    required this.businessId,
-    required this.typeBusiness,
-  }) : super(key: key);
+  BusinessCard(
+      {Key? key,
+      required this.businessName,
+      required this.sellerId,
+      required this.businessId,
+      required this.typeBusiness,
+      required this.isAdmin})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    print(typeBusiness);
     return InkWell(
       onTap: () {
-        print('to bussiness $businessId');
         if (typeBusiness == MyConstant.foodCollection) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (builder) => Menu(businessId: businessId),
+              builder: (builder) => isAdmin
+                  ? Menu(businessId: businessId)
+                  : HomeBusiness(
+                      businessId: businessId,
+                      businessWidget: Menu(businessId: businessId),
+                      typeBusiness: typeBusiness,
+                    ),
             ),
           );
         }
@@ -36,7 +43,27 @@ class BusinessCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (builder) => MenuOtops(businessId: businessId),
+              builder: (builder) => isAdmin
+                  ? MenuOtops(businessId: businessId)
+                  : HomeBusiness(
+                      businessId: businessId,
+                      businessWidget: MenuOtops(businessId: businessId),
+                      typeBusiness: typeBusiness,
+                    ),
+            ),
+          );
+        }
+        if (typeBusiness == MyConstant.roomCollection) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (builder) => isAdmin
+                  ? Rooms(businessId: businessId)
+                  : HomeBusiness(
+                      businessId: businessId,
+                      businessWidget: Rooms(businessId: businessId),
+                      typeBusiness: typeBusiness,
+                    ),
             ),
           );
         }

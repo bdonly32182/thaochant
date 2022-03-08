@@ -76,6 +76,7 @@ class MyApp extends StatelessWidget {
       title: MyConstant.appName,
       routes: routesMap,
       theme: ThemeData(primaryColor: MyConstant.themeApp),
+      debugShowCheckedModeBanner: false,
       home: AnimatedSplashScreen(
         splash: MyConstant.appLogo,
         backgroundColor: Colors.white,

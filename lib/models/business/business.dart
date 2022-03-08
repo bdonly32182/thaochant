@@ -1,22 +1,19 @@
 class BusinessModel {
-   String businessName;
+  String businessName;
   String sellerId;
   String address;
   double latitude;
   double longitude;
-  List dateTime;
-  bool statusOpen;
-  List policyName;
-  List policyDescription;
+  int statusOpen;
+  List<dynamic> policyName;
+  List<dynamic> policyDescription;
   String promptPay;
   String phoneNumber;
   String link;
   String imageRef;
-  String categoryRestaurant;
   BusinessModel(
     this.address,
     this.businessName,
-    this.dateTime,
     this.latitude,
     this.longitude,
     this.policyDescription,
@@ -27,6 +24,5 @@ class BusinessModel {
     this.phoneNumber,
     this.link,
     this.imageRef,
-    this.categoryRestaurant,
   );
 }

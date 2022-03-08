@@ -109,10 +109,22 @@ class UserCollection {
     };
   }
 
-  static Future<Map<String, dynamic>> onApprove(String docId, String fullName,
-      String role, String phoneNumber, String profileRef, String email) async {
+  static Future<Map<String, dynamic>> onApprove(
+      String docId,
+      String fullName,
+      String role,
+      String phoneNumber,
+      String profileRef,
+      String email,
+      String password) async {
     try {
-      await _userCollection.add({
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      String uid = userCredential.user!.uid;
+      await _userCollection.doc(uid).set({
         "email": email,
         "fullName": fullName,
         "phoneNumber": phoneNumber,
@@ -122,7 +134,6 @@ class UserCollection {
       await _approvePartner.doc(docId).delete();
       return {"status": "200", "message": "อนุมัติเรียบร้อย"};
     } on FirebaseException catch (e) {
-      print(e.code);
       return {"status": "400", "message": "อนุมัติล้มเหลว"};
     }
   }

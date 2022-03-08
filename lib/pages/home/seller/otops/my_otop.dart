@@ -9,9 +9,12 @@ import 'package:flutter/material.dart';
 
 class MyOtop extends StatefulWidget {
   String sellerId;
-
-  MyOtop({Key? key, required this.sellerId})
-      : super(key: key);
+  bool isAdmin;
+  MyOtop({
+    Key? key,
+    required this.sellerId,
+    required this.isAdmin,
+  }) : super(key: key);
 
   @override
   State<MyOtop> createState() => _MyOtopState();
@@ -30,7 +33,7 @@ class _MyOtopState extends State<MyOtop> {
           }
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data!.docs.isEmpty) {
-              return const ShowDataEmpty();
+              return const Center(child: ShowDataEmpty());
             }
             return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
@@ -40,6 +43,7 @@ class _MyOtopState extends State<MyOtop> {
                     businessName: snapshot.data!.docs[index]['businessName'],
                     businessId: snapshot.data!.docs[index].id,
                     typeBusiness: MyConstant.productOtopCollection,
+                    isAdmin: widget.isAdmin,
                   );
                 });
           }

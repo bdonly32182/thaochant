@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:chanthaburi_app/models/user/user.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
@@ -18,11 +15,8 @@ class Authen extends StatefulWidget {
 
 class _AuthenState extends State<Authen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  // final UserModel _user = UserModel();
-  bool focusEmail = false;
-  bool focusPassword = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool eyesPassword = true;
   bool isLoading = false;
 
@@ -38,10 +32,6 @@ class _AuthenState extends State<Authen> {
       context: context,
       builder: (BuildContext showContext) => ResponseDialog(response: response),
     );
-    setState(() {
-      focusEmail = false;
-      focusPassword = false;
-    });
     _formKey.currentState!.reset();
   }
 
@@ -69,6 +59,13 @@ class _AuthenState extends State<Authen> {
               (route) => false,
             );
             break;
+          case "seller":
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              MyConstant.routeSellerService,
+              (route) => false,
+            );
+            break;
           default:
             _onError({
               "status": "400",
@@ -85,6 +82,7 @@ class _AuthenState extends State<Authen> {
   Widget build(BuildContext context) {
     double size = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: MyConstant.backgroudApp,
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
@@ -170,11 +168,9 @@ class _AuthenState extends State<Authen> {
           ),
           decoration: BoxDecoration(boxShadow: [
             BoxShadow(
-              color: focusPassword && focusEmail
-                  ? Colors.tealAccent.shade100
-                  : Colors.white,
-              blurRadius: 20,
-              offset: const Offset(0, 5),
+              color: MyConstant.themeApp,
+              blurRadius: 10,
+              offset: const Offset(0.2, 0),
             ),
           ]),
         )
@@ -192,13 +188,6 @@ class _AuthenState extends State<Authen> {
           child: TextFormField(
             controller: _passwordController,
             obscureText: eyesPassword,
-            onChanged: (text) => setState(() {
-              if (text.isEmpty) {
-                focusPassword = false;
-              } else {
-                focusPassword = true;
-              }
-            }),
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกรหัสผ่าน';
               return null;
@@ -210,20 +199,16 @@ class _AuthenState extends State<Authen> {
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 suffixIcon: IconButton(
                   icon: eyesPassword
-                      ? Icon(Icons.remove_red_eye,
-                          color:
-                              focusPassword ? MyConstant.themeApp : Colors.grey)
+                      ? Icon(Icons.remove_red_eye, color: MyConstant.themeApp)
                       : Icon(Icons.remove_red_eye_outlined,
-                          color: focusPassword
-                              ? MyConstant.themeApp
-                              : Colors.grey),
+                          color: MyConstant.themeApp),
                   onPressed: () => setState(() {
                     eyesPassword = !eyesPassword;
                   }),
                 ),
                 prefixIcon: Icon(
                   Icons.lock_outlined,
-                  color: focusPassword ? MyConstant.themeApp : Colors.grey,
+                  color: MyConstant.themeApp,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey.shade200),
@@ -235,14 +220,14 @@ class _AuthenState extends State<Authen> {
                 )),
             style: TextStyle(
               color: MyConstant.themeApp,
-              fontWeight: focusPassword ? FontWeight.w900 : FontWeight.normal,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          decoration: BoxDecoration(boxShadow: [
+          decoration: const BoxDecoration(boxShadow: [
             BoxShadow(
-              color: focusPassword ? Colors.black26 : Colors.white,
+              color: Colors.black26,
               blurRadius: 20,
-              offset: const Offset(0, 8),
+              offset: Offset(0, 8),
             ),
           ]),
         )
@@ -259,13 +244,6 @@ class _AuthenState extends State<Authen> {
           width: size * 0.7,
           child: TextFormField(
             controller: _emailController,
-            onChanged: (text) => setState(() {
-              if (text.isEmpty) {
-                focusEmail = false;
-              } else {
-                focusEmail = true;
-              }
-            }),
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกอีเมล';
               return null;
@@ -277,7 +255,7 @@ class _AuthenState extends State<Authen> {
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefixIcon: Icon(
                   Icons.email_outlined,
-                  color: focusEmail ? MyConstant.themeApp : Colors.grey,
+                  color: MyConstant.themeApp,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey.shade200),
@@ -289,14 +267,14 @@ class _AuthenState extends State<Authen> {
                 )),
             style: TextStyle(
               color: MyConstant.themeApp,
-              fontWeight: focusEmail ? FontWeight.w900 : FontWeight.normal,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          decoration: BoxDecoration(boxShadow: [
+          decoration: const BoxDecoration(boxShadow: [
             BoxShadow(
-              color: focusEmail ? Colors.black26 : Colors.white,
-              blurRadius: 25,
-              offset: const Offset(0, 8),
+              color: Colors.black26,
+              blurRadius: 20,
+              offset: Offset(0, 8),
             ),
           ]),
         )
@@ -319,11 +297,11 @@ Row buildText(String title, TextStyle style, double margin) {
 
 Container buildImage(double size) {
   return Container(
-    margin: EdgeInsets.only(top: 90),
+    margin: const EdgeInsets.only(top: 90),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
+        SizedBox(
           width: size * 0.3,
           child: ShowImage(
             pathImage: MyConstant.iconUser,

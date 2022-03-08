@@ -10,7 +10,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+  Color theme;
+  Profile({Key? key, required this.theme}) : super(key: key);
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -22,7 +23,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
         appBar: AppBar(
           toolbarHeight: 80,
-          backgroundColor: MyConstant.themeApp,
+          backgroundColor: widget.theme,
           title: const Center(child: Text('บัญชีของฉัน')),
         ),
         backgroundColor: MyConstant.backgroudApp,
@@ -53,7 +54,7 @@ class _ProfileState extends State<Profile> {
                     ContentProfile(text: data["fullName"]),
                     ContentProfile(text: data["phoneNumber"]),
                     ContentProfile(text: data["email"]),
-                    const FooterLogout(),
+                    FooterLogout(theme: widget.theme),
                   ],
                 ),
               );

@@ -80,12 +80,11 @@ class _PartnerListState extends State<PartnerList> {
                     return const BadRequestError();
                   }
                   if (snapshot.connectionState == ConnectionState.done) {
-                    
                     List _sellers = snapshot.data!.docs
                         .where((element) =>
                             element["role"] == MyConstant.sellerName)
                         .toList();
-                    if(_sellers.isEmpty){
+                    if (_sellers.isEmpty) {
                       return const SearchResultFound();
                     }
                     return ListView.builder(
