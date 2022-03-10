@@ -89,8 +89,8 @@ class _CardMenuOtopState extends State<CardMenuOtop> {
             ],
             labels: const ['หมด', 'ขาย'],
             activeFgColor: Colors.white,
-            inactiveBgColor: Colors.grey,
-            inactiveFgColor: Colors.white,
+            inactiveBgColor: MyConstant.backgroudApp,
+            inactiveFgColor: Colors.grey,
             initialLabelIndex: widget.status,
             radiusStyle: true,
             onToggle: (index) {

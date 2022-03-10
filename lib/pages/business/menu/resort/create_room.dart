@@ -1,17 +1,16 @@
 import 'dart:io';
 
-import 'package:card_swiper/card_swiper.dart';
 import 'package:chanthaburi_app/models/resort/room.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/room_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class CreateRoom extends StatefulWidget {
   String resortId;
@@ -35,7 +34,6 @@ class _CreateRoomState extends State<CreateRoom> {
     totalGuest: 0,
   );
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
   File? selectImageCover;
   List<File> listImageSelected = [];
   List<QueryDocumentSnapshot> categorys = [];
@@ -59,37 +57,37 @@ class _CreateRoomState extends State<CreateRoom> {
   }
 
   getImage() async {
-    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    File? image = await PickerImage.getImage();
     if (image != null) {
       setState(() {
-        listImageSelected.add(File(image.path));
+        listImageSelected.add(image);
       });
     }
   }
 
   getImageCover() async {
-    XFile? imageCover = await _picker.pickImage(source: ImageSource.gallery);
+    File? imageCover = await PickerImage.getImage();
     if (imageCover != null) {
       setState(() {
-        selectImageCover = File(imageCover.path);
+        selectImageCover = imageCover;
       });
     }
   }
 
   takePhotoCover() async {
-    XFile? takePhotoCover = await _picker.pickImage(source: ImageSource.camera);
+    File? takePhotoCover = await PickerImage.takePhoto();
     if (takePhotoCover != null) {
       setState(() {
-        selectImageCover = File(takePhotoCover.path);
+        selectImageCover = takePhotoCover;
       });
     }
   }
 
   takePhoto() async {
-    XFile? takePhoto = await _picker.pickImage(source: ImageSource.camera);
+    File? takePhoto = await PickerImage.takePhoto();
     if (takePhoto != null) {
       setState(() {
-        listImageSelected.add(File(takePhoto.path));
+        listImageSelected.add(takePhoto);
       });
     }
   }
@@ -331,7 +329,7 @@ class _CreateRoomState extends State<CreateRoom> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'ราคา :',
+                labelText: 'ราคา(ต่อคืน) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,

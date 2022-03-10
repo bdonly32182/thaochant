@@ -135,4 +135,10 @@ class RoomCollection {
     DocumentSnapshot _room = await roomCollection.doc(roomId).get();
     return _room;
   }
+
+  static Future<QuerySnapshot> deleteRoomInResort(String resortId) async {
+    QuerySnapshot rooms =
+        await roomCollection.where('resortId', isEqualTo: resortId).get();
+    return rooms;
+  }
 }

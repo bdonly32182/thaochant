@@ -6,7 +6,8 @@ class PickerImage {
   static final ImagePicker _picker = ImagePicker();
   static Future<File?> getImage() async {
     try {
-      XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      XFile? image = await _picker.pickImage(
+          source: ImageSource.gallery, maxWidth: 800, maxHeight: 500);
       return File(image!.path);
     } catch (e) {
       return null;
@@ -15,7 +16,8 @@ class PickerImage {
 
   static Future<File?> takePhoto() async {
     try {
-      XFile? takePhoto = await _picker.pickImage(source: ImageSource.camera);
+      XFile? takePhoto = await _picker.pickImage(
+          source: ImageSource.camera, maxWidth: 800, maxHeight: 500);
       return File(takePhoto!.path);
     } catch (e) {
       return null;

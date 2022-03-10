@@ -138,8 +138,8 @@ class _CreateOptionMenuState extends State<CreateOptionMenu> {
                         ],
                         labels: ['off', 'on'],
                         activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.grey,
-                        inactiveFgColor: Colors.white,
+                        inactiveBgColor: MyConstant.backgroudApp,
+                        inactiveFgColor: Colors.grey,
                         initialLabelIndex: toggleStatus,
                         radiusStyle: true,
                         onToggle: (index) {

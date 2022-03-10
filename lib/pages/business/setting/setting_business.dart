@@ -71,7 +71,7 @@ class _SettingBusinessState extends State<SettingBusiness> {
       backgroundColor: MyConstant.backgroudApp,
       appBar: AppBar(
         backgroundColor: MyConstant.colorStore,
-        toolbarHeight: size.height * 0.14,
+        toolbarHeight: size.height * 0.13,
         automaticallyImplyLeading: false,
         title: buildHeader(size, context),
       ),
@@ -111,8 +111,8 @@ class _SettingBusinessState extends State<SettingBusiness> {
                       ],
                       labels: const ['ปิด', 'เปิด'],
                       activeFgColor: Colors.white,
-                      inactiveBgColor: Colors.grey,
-                      inactiveFgColor: Colors.white,
+                      inactiveBgColor: MyConstant.backgroudApp,
+                      inactiveFgColor: Colors.grey,
                       initialLabelIndex: _businessModel.statusOpen,
                       radiusStyle: true,
                       onToggle: (index) async {
@@ -151,61 +151,101 @@ class _SettingBusinessState extends State<SettingBusiness> {
                 ),
               ),
             ),
-            Card(
-              margin: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (builder) => EditBusiness(
-                          typeBusiness: widget.typeBusiness,
-                          businessModel: _businessModel,
-                          businessId: widget.businessId,
-                        ),
-                      ),
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.all(8),
-                      height: 40,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text('แก้ไขข้อมูล'),
-                          Icon(Icons.arrow_forward_ios)
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Divider(
-                    thickness: 2,
-                  ),
-                  InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (builder) =>
-                            Profile(theme: MyConstant.colorStore),
-                      ),
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.all(8),
-                      height: 40,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text('บัญชีของฉัน'),
-                          Icon(Icons.arrow_forward_ios)
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
+            buildCardSetting(context),
+            buildRowChangeBusiness(size, context),
           ],
         ),
+      ),
+    );
+  }
+
+  Row buildRowChangeBusiness(Size size, BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: size.width * 0.6,
+          margin: const EdgeInsets.all(10.0),
+          child: ElevatedButton(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: const [
+                Text(
+                  'เปลี่ยนธุรกิจ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 20,
+                ),
+              ],
+            ),
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(primary: MyConstant.colorStore),
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Card buildCardSetting(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (builder) => EditBusiness(
+                  typeBusiness: widget.typeBusiness,
+                  businessModel: _businessModel,
+                  businessId: widget.businessId,
+                ),
+              ),
+            ),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              height: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text('แก้ไขข้อมูล'),
+                  Icon(Icons.arrow_forward_ios)
+                ],
+              ),
+            ),
+          ),
+          const Divider(
+            thickness: 2,
+          ),
+          InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (builder) => Profile(theme: MyConstant.colorStore),
+              ),
+            ),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              height: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text('บัญชีของฉัน'),
+                  Icon(Icons.arrow_forward_ios)
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -215,7 +255,7 @@ class _SettingBusinessState extends State<SettingBusiness> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         SizedBox(
-          width: size.width * 0.6,
+          width: size.width * 0.9,
           child: Row(
             children: [
               Container(
@@ -247,24 +287,6 @@ class _SettingBusinessState extends State<SettingBusiness> {
             ],
           ),
         ),
-        Container(
-          width: size.width * 0.3,
-          child: TextButton(
-            child: Text(
-              'เปลี่ยนร้าน  >',
-              style: TextStyle(
-                color: MyConstant.colorStore,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        )
       ],
     );
   }

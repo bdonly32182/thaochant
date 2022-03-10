@@ -4,13 +4,13 @@ import 'package:chanthaburi_app/models/otop/product.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/product_otop_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class CreateMenuOtop extends StatefulWidget {
   final String otopId;
@@ -38,7 +38,6 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
     long: 0,
   );
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
   File? imageSelected;
   List<QueryDocumentSnapshot> categorys = [];
 
@@ -61,19 +60,19 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
   }
 
   getImage() async {
-    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    File? image = await PickerImage.getImage();
     if (image != null) {
       setState(() {
-        imageSelected = File(image.path);
+        imageSelected = image;
       });
     }
   }
 
   takePhoto() async {
-    XFile? takePhoto = await _picker.pickImage(source: ImageSource.camera);
+    File? takePhoto = await PickerImage.takePhoto();
     if (takePhoto != null) {
       setState(() {
-        imageSelected = File(takePhoto.path);
+        imageSelected = takePhoto;
       });
     }
   }
@@ -281,7 +280,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'น้ำหนัก :',
+                labelText: 'น้ำหนัก(กก.) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,
@@ -325,7 +324,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'ความกว้าง :',
+                labelText: 'ความกว้าง(ซ.ม.) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,
@@ -369,7 +368,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'ความสูง :',
+                labelText: 'ความสูง(ซ.ม.) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,
@@ -412,7 +411,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'ความยาว :',
+                labelText: 'ความยาว(ซ.ม.) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,
@@ -453,7 +452,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
             dropdownSearchDecoration: InputDecoration(
               fillColor: Colors.white,
               filled: true,
-              labelText: "เลือกเลือกประเภทสินค้า",
+              labelText: "เลือกเลือกหมวดหมู่สินค้า",
               contentPadding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey.shade200),
@@ -466,7 +465,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
             ),
             validator: (QueryDocumentSnapshot<Object?>? valid) {
               if (valid == null) {
-                return "กรุณากรอกเลือกประเภทสินค้า";
+                return "กรุณาเลือกหมวดหมู่สินค้า";
               }
               return null;
             },

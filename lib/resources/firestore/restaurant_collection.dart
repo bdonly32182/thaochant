@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/notification/notification.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
+import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/notification_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -51,9 +52,9 @@ class RestaurantCollection {
     }
   }
 
-  static Future<QuerySnapshot<Object?>> myRestaurants(String sellerId) async {
-    QuerySnapshot _myRestaurants =
-        await restaurant.where('sellerId', isEqualTo: sellerId).get();
+  static Stream<QuerySnapshot> myRestaurants(String sellerId) {
+    Stream<QuerySnapshot> _myRestaurants =
+        restaurant.where('sellerId', isEqualTo: sellerId).snapshots();
     return _myRestaurants;
   }
 
@@ -112,6 +113,10 @@ class RestaurantCollection {
       String docId, String imageRef) async {
     try {
       await restaurant.doc(docId).delete();
+      QuerySnapshot _foods = await FoodCollection.foodsInRestarurant(docId);
+      for (QueryDocumentSnapshot food in _foods.docs) {
+        await FoodCollection.deleteFood(food.id, food.get('imageRef'));
+      }
       if (imageRef.isNotEmpty) {
         String referenceImage = StorageFirebase.getReference(imageRef);
         StorageFirebase.deleteFile(referenceImage);

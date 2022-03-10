@@ -74,7 +74,7 @@ class _HomeBusinessState extends State<HomeBusiness> {
         ],
         onTap: _onItemTapped,
         currentIndex: _selected,
-        selectedItemColor: MyConstant.themeApp,
+        selectedItemColor: MyConstant.colorStore,
         unselectedItemColor: Colors.grey,
       ),
     );

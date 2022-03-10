@@ -106,4 +106,9 @@ class FoodCollection {
       print(e.toString());
     }
   }
+
+  static Future<QuerySnapshot> foodsInRestarurant(String restaurauntId) async {
+  QuerySnapshot foods = await foodCollection.where('restaurantId', isEqualTo: restaurauntId).get();
+  return foods;
+  }
 }

@@ -1,16 +1,15 @@
 import 'dart:io';
 
 import 'package:chanthaburi_app/models/otop/product.dart';
-import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/product_otop_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class EditMenuOtop extends StatefulWidget {
   final String otopId;
@@ -49,7 +48,6 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
   List<QueryDocumentSnapshot<Object?>> categorys = [];
   String? categoryId;
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
   File? imageSelected;
 
   @override
@@ -82,19 +80,19 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
   }
 
   getImage() async {
-    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    File? image = await PickerImage.getImage();
     if (image != null) {
       setState(() {
-        imageSelected = File(image.path);
+        imageSelected = image;
       });
     }
   }
 
   takePhoto() async {
-    XFile? takePhoto = await _picker.pickImage(source: ImageSource.camera);
+    File? takePhoto = await PickerImage.takePhoto();
     if (takePhoto != null) {
       setState(() {
-        imageSelected = File(takePhoto.path);
+        imageSelected = takePhoto;
       });
     }
   }
@@ -337,7 +335,7 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'น้ำหนัก :',
+                labelText: 'น้ำหนัก(กก.) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,
@@ -381,7 +379,7 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'ความกว้าง :',
+                labelText: 'ความกว้าง(ซ.ม.) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,
@@ -425,7 +423,7 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'ความสูง :',
+                labelText: 'ความสูง(ซ.ม.) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,
@@ -468,7 +466,7 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'ความยาว :',
+                labelText: 'ความยาว(ซ.ม.) :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,

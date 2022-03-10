@@ -4,6 +4,7 @@ import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/notification/notification.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/resources/firestore/notification_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/product_otop_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
@@ -52,9 +53,9 @@ class OtopCollection {
     }
   }
 
-  static Future<QuerySnapshot<Object?>> myOtops(String sellerId) async {
-    QuerySnapshot _myOtops =
-        await otopCollection.where('sellerId', isEqualTo: sellerId).get();
+  static Stream<QuerySnapshot<Object?>> myOtops(String sellerId) {
+    Stream<QuerySnapshot> _myOtops =
+        otopCollection.where('sellerId', isEqualTo: sellerId).snapshots();
     return _myOtops;
   }
 
@@ -102,6 +103,12 @@ class OtopCollection {
       String docId, String imageRef) async {
     try {
       await otopCollection.doc(docId).delete();
+      QuerySnapshot _products =
+          await ProductOtopCollection.productsInOtop(docId);
+      for (QueryDocumentSnapshot product in _products.docs) {
+        await ProductOtopCollection.deleteProduct(
+            product.id, product.get('imageRef'));
+      }
       if (imageRef.isNotEmpty) {
         String referenceImage = StorageFirebase.getReference(imageRef);
         StorageFirebase.deleteFile(referenceImage);

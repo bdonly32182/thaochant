@@ -4,13 +4,12 @@ import 'package:chanthaburi_app/models/restaurant/food.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class EditFood extends StatefulWidget {
   String foodName, foodId;
@@ -50,7 +49,6 @@ class _EditFoodState extends State<EditFood> {
     optionId: [],
   );
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
   File? imageSelected;
   List<QueryDocumentSnapshot> categorys = [];
 
@@ -76,19 +74,19 @@ class _EditFoodState extends State<EditFood> {
   }
 
   getImage() async {
-    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    File? image = await PickerImage.getImage();
     if (image != null) {
       setState(() {
-        imageSelected = File(image.path);
+        imageSelected = image;
       });
     }
   }
 
   takePhoto() async {
-    XFile? takePhoto = await _picker.pickImage(source: ImageSource.camera);
+    File? takePhoto = await PickerImage.takePhoto();
     if (takePhoto != null) {
       setState(() {
-        imageSelected = File(takePhoto.path);
+        imageSelected = takePhoto;
       });
     }
   }

@@ -214,8 +214,8 @@ class _CreateOptionFoodState extends State<CreateOptionFood> {
                 ],
                 labels: ['off', 'on'],
                 activeFgColor: Colors.white,
-                inactiveBgColor: Colors.grey,
-                inactiveFgColor: Colors.white,
+                inactiveBgColor: MyConstant.backgroudApp,
+                inactiveFgColor: Colors.grey,
                 initialLabelIndex: options[index]['status'],
                 radiusStyle: true,
                 onToggle: (status) {

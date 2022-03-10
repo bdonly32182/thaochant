@@ -118,4 +118,9 @@ class ProductOtopCollection {
       print(e.toString());
     }
   }
+
+  static Future<QuerySnapshot> productsInOtop(String otopId) async {
+    QuerySnapshot products = await productOtopCollection.where(otopId).get();
+    return products;
+  }
 }

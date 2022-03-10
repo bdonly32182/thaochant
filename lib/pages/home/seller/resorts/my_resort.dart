@@ -10,7 +10,11 @@ import 'package:flutter/material.dart';
 class MyResort extends StatefulWidget {
   final String sellerId;
   final bool isAdmin;
-  MyResort({Key? key, required this.sellerId, required this.isAdmin,}) : super(key: key);
+  MyResort({
+    Key? key,
+    required this.sellerId,
+    required this.isAdmin,
+  }) : super(key: key);
 
   @override
   State<MyResort> createState() => _MyResortState();
@@ -21,13 +25,13 @@ class _MyResortState extends State<MyResort> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
-      body: FutureBuilder(
-        future: ResortCollection.myResorts(widget.sellerId),
+      body: StreamBuilder(
+        stream: ResortCollection.myResorts(widget.sellerId),
         builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return const InternalError();
           }
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.data!.docs.isEmpty) {
               return const Center(child: ShowDataEmpty());
             }

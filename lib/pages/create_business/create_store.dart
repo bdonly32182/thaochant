@@ -7,6 +7,7 @@ import 'package:chanthaburi_app/resources/firestore/resort_collecttion.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/user_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/map/geolocation.dart';
 import 'package:chanthaburi_app/utils/map/google_map_fluter.dart';
 import 'package:chanthaburi_app/utils/map/show_map.dart';
@@ -17,7 +18,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:image_picker/image_picker.dart';
 
 class CreateStore extends StatefulWidget {
   String title;
@@ -38,7 +38,6 @@ class _CreateStoreState extends State<CreateStore> {
   final BusinessModel _businessModel =
       BusinessModel('', '', 0, 0, [], [], '', '', 1, "0", "", "");
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
   double? latitude, longitude;
   List<QueryDocumentSnapshot> sellerList = [];
   final List<String> _categoryRestaurant = [
@@ -87,20 +86,19 @@ class _CreateStoreState extends State<CreateStore> {
   List<Map<String, dynamic>>? _valuePolicyName = [];
   List<Map<String, dynamic>>? _valuePolicyDescription = [];
   getImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+     File? image = await PickerImage.getImage();
     if (image != null) {
       setState(() {
-        imageSelected = File(image.path);
+        imageSelected = image;
       });
     }
   }
 
   takePhoto() async {
-    final XFile? takePhoto = await _picker.pickImage(
-        source: ImageSource.camera, maxWidth: 800, maxHeight: 500);
+    File? takePhoto = await PickerImage.takePhoto();
     if (takePhoto != null) {
       setState(() {
-        imageSelected = File(takePhoto.path);
+        imageSelected = takePhoto;
       });
     }
   }
@@ -364,7 +362,7 @@ class _CreateStoreState extends State<CreateStore> {
   SizedBox buildShowmap(double width, double height, BuildContext context) {
     return SizedBox(
       width: width * 1,
-      height: height * 0.36,
+      height: height * 0.3,
       child: latitude != null && longitude != null
           ? InkWell(
               onTap: () {
@@ -375,7 +373,7 @@ class _CreateStoreState extends State<CreateStore> {
                 children: [
                   SizedBox(
                     width: width * 1,
-                    height: 200,
+                    height: height * 0.3,
                     child: ShowMap(
                       lat: latitude!,
                       lng: longitude!,

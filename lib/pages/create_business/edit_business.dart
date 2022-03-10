@@ -6,13 +6,13 @@ import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/resort_collecttion.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/map/google_map_fluter.dart';
 import 'package:chanthaburi_app/utils/map/show_map.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class EditBusiness extends StatefulWidget {
   String typeBusiness;
@@ -33,7 +33,6 @@ class EditBusiness extends StatefulWidget {
 class _EditBusinessState extends State<EditBusiness> {
   BusinessModel? _businessModel;
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
   File? imageSelected;
 
   @override
@@ -45,20 +44,19 @@ class _EditBusinessState extends State<EditBusiness> {
   }
 
   getImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    File? image = await PickerImage.getImage();
     if (image != null) {
       setState(() {
-        imageSelected = File(image.path);
+        imageSelected = image;
       });
     }
   }
 
   takePhoto() async {
-    final XFile? takePhoto = await _picker.pickImage(
-        source: ImageSource.camera, maxWidth: 800, maxHeight: 500);
+    File? takePhoto = await PickerImage.takePhoto();
     if (takePhoto != null) {
       setState(() {
-        imageSelected = File(takePhoto.path);
+        imageSelected = takePhoto;
       });
     }
   }
@@ -288,7 +286,7 @@ class _EditBusinessState extends State<EditBusiness> {
   SizedBox buildShowmap(double width, double height, BuildContext context) {
     return SizedBox(
       width: width * 1,
-      height: height * 0.36,
+      height: height * 0.3,
       child: !_businessModel!.latitude.isNaN && !_businessModel!.longitude.isNaN
           ? InkWell(
               onTap: () {
@@ -299,7 +297,7 @@ class _EditBusinessState extends State<EditBusiness> {
                 children: [
                   SizedBox(
                     width: width * 1,
-                    height: 200,
+                    height: height * 0.3,
                     child: ShowMap(
                       lat: _businessModel!.latitude,
                       lng: _businessModel!.longitude,

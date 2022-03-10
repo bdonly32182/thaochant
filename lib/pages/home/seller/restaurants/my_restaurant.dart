@@ -10,7 +10,11 @@ import 'package:flutter/material.dart';
 class MyRestaurant extends StatefulWidget {
   String sellerId;
   bool isAdmin;
-  MyRestaurant({Key? key, required this.sellerId,required this.isAdmin,}) : super(key: key);
+  MyRestaurant({
+    Key? key,
+    required this.sellerId,
+    required this.isAdmin,
+  }) : super(key: key);
 
   @override
   State<MyRestaurant> createState() => _MyRestaurantState();
@@ -21,13 +25,13 @@ class _MyRestaurantState extends State<MyRestaurant> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
-      body: FutureBuilder(
-        future: RestaurantCollection.myRestaurants(widget.sellerId),
+      body: StreamBuilder(
+        stream: RestaurantCollection.myRestaurants(widget.sellerId),
         builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return const InternalError();
           }
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.data!.docs.isEmpty) {
               return const Center(child: ShowDataEmpty());
             }

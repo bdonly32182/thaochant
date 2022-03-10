@@ -25,13 +25,13 @@ class _MyOtopState extends State<MyOtop> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
-      body: FutureBuilder(
-        future: OtopCollection.myOtops(widget.sellerId),
+      body: StreamBuilder(
+        stream: OtopCollection.myOtops(widget.sellerId),
         builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return const InternalError();
           }
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.data!.docs.isEmpty) {
               return const Center(child: ShowDataEmpty());
             }

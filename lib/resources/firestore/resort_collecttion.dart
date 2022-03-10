@@ -4,10 +4,10 @@ import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/notification/notification.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/resources/firestore/notification_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/room_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
-
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -15,7 +15,8 @@ final CollectionReference _resort =
     _firestore.collection(MyConstant.resortCollection);
 
 class ResortCollection {
-  static Future<Map<String, dynamic>> createResort(BusinessModel resort,File? imageRef,bool isAdmin) async {
+  static Future<Map<String, dynamic>> createResort(
+      BusinessModel resort, File? imageRef, bool isAdmin) async {
     try {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
@@ -51,8 +52,9 @@ class ResortCollection {
     }
   }
 
-  static Future<QuerySnapshot<Object?>> myResorts(String sellerId) async{
-    QuerySnapshot _myResorts = await _resort.where('sellerId',isEqualTo: sellerId).get();
+  static Stream<QuerySnapshot<Object?>> myResorts(String sellerId) {
+    Stream<QuerySnapshot> _myResorts =
+        _resort.where('sellerId', isEqualTo: sellerId).snapshots();
     return _myResorts;
   }
 
@@ -101,6 +103,11 @@ class ResortCollection {
       String docId, String imageRef) async {
     try {
       await _resort.doc(docId).delete();
+      QuerySnapshot _rooms = await RoomCollection.deleteRoomInResort(docId);
+      for (QueryDocumentSnapshot room in _rooms.docs) {
+        await RoomCollection.deleteRoom(
+            room.id, room.get('imageCover'), room.get('listImageDetail'));
+      }
       if (imageRef.isNotEmpty) {
         String referenceImage = StorageFirebase.getReference(imageRef);
         StorageFirebase.deleteFile(referenceImage);
