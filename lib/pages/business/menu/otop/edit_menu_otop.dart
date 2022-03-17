@@ -228,7 +228,7 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImage, takePhoto);
+            dialogCamera(context, getImage, takePhoto, MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,

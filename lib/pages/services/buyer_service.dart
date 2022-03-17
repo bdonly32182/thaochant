@@ -1,8 +1,9 @@
+import 'package:chanthaburi_app/pages/home/buyer/home_buyer.dart';
+import 'package:chanthaburi_app/pages/notification.dart';
+import 'package:chanthaburi_app/pages/profile/profile.dart';
+import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
-// import 'package:tour_app/pages/buyer/home_buyer.dart';
-// import 'package:tour_app/pages/notification.dart';
-// import 'package:tour_app/pages/profile.dart';
 
 class BuyerService extends StatefulWidget {
   BuyerService({Key? key}) : super(key: key);
@@ -13,10 +14,13 @@ class BuyerService extends StatefulWidget {
 
 class _BuyerServiceState extends State<BuyerService> {
   int _selected = 0;
-  List<Widget> _widget_bottom_list = [
-    // HomeBuyer(),
-    // Notifications(),
-    // Profile(),
+  List<Widget> widgetBottomList = [
+    HomeBuyer(),
+    NotificationRecipient(
+        recipientId: AuthMethods.currentUser(), theme: MyConstant.themeApp),
+    Profile(
+      theme: MyConstant.themeApp,
+    ),
   ];
   void _onItemTapped(int index) {
     setState(() {
@@ -28,7 +32,7 @@ class _BuyerServiceState extends State<BuyerService> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: _widget_bottom_list[_selected],
+        child: widgetBottomList[_selected],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

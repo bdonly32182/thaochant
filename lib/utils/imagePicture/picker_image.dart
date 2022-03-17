@@ -27,7 +27,14 @@ class PickerImage {
   static Future<File?> getVideo() async {
     try {
       XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-      return File(video!.path);
+      File videoFile = File(video!.path);
+      int fileSizeLimit = 500000000; // 500 ล้าน bytes = 500MB
+      int fileSize = await videoFile.length();
+      bool validFileSize = fileSize > fileSizeLimit;
+      if (validFileSize) {
+        return null;
+      }
+      return videoFile;
     } catch (e) {
       return null;
     }

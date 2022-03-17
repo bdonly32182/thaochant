@@ -506,6 +506,8 @@ PODS:
   - SwiftyGif (5.4.1)
   - url_launcher_ios (0.0.1):
     - Flutter
+  - video_player (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
@@ -519,6 +521,7 @@ DEPENDENCIES:
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - video_player (from `.symlinks/plugins/video_player/ios`)
 
 SPEC REPOS:
   trunk:
@@ -567,6 +570,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+  video_player:
+    :path: ".symlinks/plugins/video_player/ios"
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
@@ -601,6 +606,7 @@ SPEC CHECKSUMS:
   shared_preferences_ios: aef470a42dc4675a1cdd50e3158b42e3d1232b32
   SwiftyGif: 6895c887f5551618a3c5dd3ecb512419105bacca
   url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
+  video_player: 7e9dad9437c238a97648819f6dd443c8854cf0c7
 
 PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
 

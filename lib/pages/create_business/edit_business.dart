@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:chanthaburi_app/models/business/business.dart';
-import 'package:chanthaburi_app/models/location/google_map.dart';
+import 'package:chanthaburi_app/models/googlemap/google_map.dart';
 import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/resort_collecttion.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
@@ -543,7 +543,7 @@ class _EditBusinessState extends State<EditBusiness> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImage, takePhoto);
+            dialogCamera(context, getImage, takePhoto,MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,

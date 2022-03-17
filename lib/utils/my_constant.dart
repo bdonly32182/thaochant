@@ -35,6 +35,8 @@ class MyConstant {
   static String roomCollection = 'roomCollection';
   static String productOtopCollection = 'productOtopCollection';
   static String optionMenuCollection = 'optionMenuCollection';
+  static String locationCollection = 'locationCollection';
+  static String reviewCollection = 'reviewCollection';
 
   // image
   static String appLogo = 'images/logo.png';
@@ -63,6 +65,7 @@ class MyConstant {
   static Color colorGuide = const Color.fromRGBO(49, 143, 181, 1);
   static Color themeApp = const Color.fromRGBO(
       41, 187, 137, 1); // this color is themeApp and resort
+  static Color colorLocation = const Color.fromRGBO(159, 156, 213, 1);
 
   // map status
   Map<String, Map<String, dynamic>> statusColor = {

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:chanthaburi_app/models/location/google_map.dart';
+import 'package:chanthaburi_app/models/googlemap/google_map.dart';
 import 'package:chanthaburi_app/utils/map/geolocation.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';

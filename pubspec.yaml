@@ -57,6 +57,7 @@ dependencies:
   google_maps_flutter: ^2.1.1
   adaptive_dialog: ^1.2.0
   dropdown_search: ^2.0.1
+  video_player: ^2.2.3
 
 dev_dependencies:
   flutter_test:

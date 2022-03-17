@@ -62,7 +62,7 @@ dialogConfirm(
   );
 }
 
-dialogCamera(BuildContext context, Function getImage, Function takePhoto) {
+dialogCamera(BuildContext context, Function getImage, Function takePhoto,Color myColor) {
   showModalBottomSheet(
     context: context,
     builder: (builder) {
@@ -82,7 +82,7 @@ dialogCamera(BuildContext context, Function getImage, Function takePhoto) {
                   'แกลออรี่',
                   style: TextStyle(
                     fontSize: 18,
-                    color: MyConstant.colorStore,
+                    color: myColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -109,7 +109,7 @@ dialogCamera(BuildContext context, Function getImage, Function takePhoto) {
                   'ถ่ายรูป',
                   style: TextStyle(
                     fontSize: 18,
-                    color: MyConstant.colorStore,
+                    color: myColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -135,7 +135,7 @@ dialogCamera(BuildContext context, Function getImage, Function takePhoto) {
                   'ยกเลิก',
                   style: TextStyle(
                     fontSize: 18,
-                    color: MyConstant.colorStore,
+                    color: myColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

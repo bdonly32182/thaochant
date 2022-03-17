@@ -66,6 +66,13 @@ class _AuthenState extends State<Authen> {
               (route) => false,
             );
             break;
+          case "buyer":
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              MyConstant.routeBuyerService,
+              (route) => false,
+            );
+            break;
           default:
             _onError({
               "status": "400",

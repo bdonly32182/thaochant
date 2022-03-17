@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/pages/home/admin/component/menu_card.dart';
+import 'package:chanthaburi_app/pages/location/locations.dart';
 import 'package:chanthaburi_app/pages/userlist/buyer_list.dart';
 import 'package:chanthaburi_app/pages/userlist/partner.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -20,13 +21,12 @@ class _HomeAdminState extends State<HomeAdmin> {
           child: ListView(
             children: [
               MenuCard(
-                gotoWidget: BuyerList(),
+                gotoWidget: const BuyerList(),
                 imageUrl: MyConstant.memberPicture,
                 title: 'สมาชิกในระบบ',
                 titleColor: Colors.green.shade300,
               ),
               MenuCard(
-                // gotoWidget: PartnerList(),
                 gotoWidget: Partner(),
                 imageUrl: MyConstant.partnerImage,
                 title: 'พาร์ทเนอร์',
@@ -39,7 +39,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                 titleColor: Colors.blue.shade300,
               ),
               MenuCard(
-                // gotoWidget: TourismLocation(isAdmin: true),
+                gotoWidget: Locations(isAdmin: true,),
                 imageUrl: MyConstant.locationImage,
                 title: 'แหล่งท่องเที่ยว',
                 titleColor: Colors.purple.shade200,

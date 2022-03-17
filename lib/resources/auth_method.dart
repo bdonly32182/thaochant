@@ -80,4 +80,8 @@ class AuthMethods {
     await _firebaseAuth.signOut();
     ShareRefferrence.setReferrence("", "");
   }
+  
+  static String currentUser() {
+   return _firebaseAuth.currentUser!.uid;
+  }
 }

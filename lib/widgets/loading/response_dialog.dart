@@ -15,6 +15,10 @@ class ResponseDialog extends StatelessWidget {
       "200": {
         "icon": Icons.check,
         "color": MyConstant.themeApp,
+      },
+      "199": {
+        "icon": Icons.warning_amber_rounded,
+        "color": Colors.amber[800],
       }
     };
     return AlertDialog(

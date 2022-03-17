@@ -178,7 +178,7 @@ class _CreateRoomState extends State<CreateRoom> {
 
   InkWell buildListImage(BuildContext context, double width) {
     return InkWell(
-      onTap: () => dialogCamera(context, getImage, takePhoto),
+      onTap: () => dialogCamera(context, getImage, takePhoto,MyConstant.colorStore),
       child: Container(
         margin: const EdgeInsets.all(8.0),
         width: double.maxFinite,
@@ -276,7 +276,7 @@ class _CreateRoomState extends State<CreateRoom> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImageCover, takePhotoCover);
+            dialogCamera(context, getImageCover, takePhotoCover,MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,

@@ -217,7 +217,7 @@ class _EditFoodState extends State<EditFood> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImage, takePhoto);
+            dialogCamera(context, getImage, takePhoto,MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,
