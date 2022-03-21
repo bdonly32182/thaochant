@@ -5,6 +5,8 @@ class BusinessModel {
   double latitude;
   double longitude;
   int statusOpen;
+  num ratingCount;
+  num point;
   List<dynamic> policyName;
   List<dynamic> policyDescription;
   String promptPay;
@@ -24,5 +26,7 @@ class BusinessModel {
     this.phoneNumber,
     this.link,
     this.imageRef,
+    this.point,
+    this.ratingCount,
   );
 }

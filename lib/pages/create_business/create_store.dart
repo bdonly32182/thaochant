@@ -36,7 +36,7 @@ class CreateStore extends StatefulWidget {
 
 class _CreateStoreState extends State<CreateStore> {
   final BusinessModel _businessModel =
-      BusinessModel('', '', 0, 0, [], [], '', '', 1, "0", "", "");
+      BusinessModel('', '', 0, 0, [], [], '', '', 1, "0", "", "", 0, 0);
   final _formKey = GlobalKey<FormState>();
   double? latitude, longitude;
   List<QueryDocumentSnapshot> sellerList = [];
@@ -86,7 +86,7 @@ class _CreateStoreState extends State<CreateStore> {
   List<Map<String, dynamic>>? _valuePolicyName = [];
   List<Map<String, dynamic>>? _valuePolicyDescription = [];
   getImage() async {
-     File? image = await PickerImage.getImage();
+    File? image = await PickerImage.getImage();
     if (image != null) {
       setState(() {
         imageSelected = image;
@@ -402,7 +402,7 @@ class _CreateStoreState extends State<CreateStore> {
                 ],
               ),
             )
-          :const PouringHourGlass(),
+          : const PouringHourGlass(),
     );
   }
 
@@ -625,7 +625,7 @@ class _CreateStoreState extends State<CreateStore> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImage, takePhoto,MyConstant.colorStore);
+            dialogCamera(context, getImage, takePhoto, MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,

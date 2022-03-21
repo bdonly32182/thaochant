@@ -1,12 +1,9 @@
 import 'dart:io';
 
 import 'package:chanthaburi_app/models/review/review.dart';
-import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/resources/firestore/location_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart';
-
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -34,18 +31,26 @@ class ReviewCollection {
         "businessId": reviewModel.businessId,
         "dateTime": reviewModel.dateTime,
         "imageRef": reviewModel.imageRef,
-        "title": reviewModel.title,
         "message": reviewModel.message,
         "userId": reviewModel.userId,
         "point": reviewModel.point,
       });
       if (type == "location") {
-        await LocationCollection.setPointLocation(reviewModel.businessId, reviewModel.point);
+        await LocationCollection.setPointLocation(
+            reviewModel.businessId, reviewModel.point);
       }
-      
+
       return {"status": "200", "message": "เขียนรีวิวเรียบร้อย"};
     } catch (e) {
       return {"status": "400", "message": "เขียนรีวิวล้มเหลว"};
+    }
+  }
+
+  static Future<void> deleteReview(String businessId) async {
+    QuerySnapshot reviews =
+        await reviewCollection.where('businessId', isEqualTo: businessId).get();
+    for (QueryDocumentSnapshot review in reviews.docs) {
+      await reviewCollection.doc(review.id).delete();
     }
   }
 }

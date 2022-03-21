@@ -15,6 +15,30 @@ final CollectionReference restaurant =
     _firestore.collection(MyConstant.restaurantCollection);
 
 class RestaurantCollection {
+  static Future<QuerySnapshot> restaurants(
+      DocumentSnapshot? lastDocument) async {
+    if (lastDocument != null) {
+      QuerySnapshot _loadMoreRestaurant = await restaurant
+          .orderBy("statusOpen", descending: true)
+          .startAfterDocument(lastDocument)
+          .limit(3)
+          .get();
+      return _loadMoreRestaurant;
+    }
+    QuerySnapshot _restuarants = await restaurant
+        .orderBy("statusOpen", descending: true)
+        .limit(3)
+        .get();
+    return _restuarants;
+  }
+
+  static Future<QuerySnapshot> searchRestaurant(String search) async {
+    QuerySnapshot _resultUser = await restaurant
+        .orderBy("businessName")
+        .startAt([search]).endAt([search + '\uf8ff']).get();
+    return _resultUser;
+  }
+
   static Future<Map<String, dynamic>> createRestaurant(
       BusinessModel restaurantModel, File? imageRef, bool isAdmin) async {
     try {
@@ -36,6 +60,8 @@ class RestaurantCollection {
         "phoneNumber": restaurantModel.phoneNumber,
         "link": restaurantModel.link,
         "imageRef": restaurantModel.imageRef,
+        "point": restaurantModel.point,
+        "ratingCount": restaurantModel.ratingCount,
       });
       if (isAdmin) {
         NotificationModel _notiModel = NotificationModel(

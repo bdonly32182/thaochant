@@ -41,9 +41,11 @@ class _EditLocationState extends State<EditLocation> {
     checkPermission();
     onSetData();
   }
+
   void checkPermission() async {
     await determinePosition();
   }
+
   onSetData() async {
     try {
       setState(() {
@@ -112,6 +114,17 @@ class _EditLocationState extends State<EditLocation> {
     }
   }
 
+  onDelete(BuildContext contextConfirm) async {
+    Map<String, dynamic> response = await LocationCollection.deleteLocation(
+        widget.locationId, _locationModel!.imageList, _locationModel!.videoRef);
+    Navigator.pop(context);
+    Navigator.pop(context);
+    showDialog(
+      context: context,
+      builder: (BuildContext showContext) => ResponseDialog(response: response),
+    );
+  }
+
   _navigationGoogleMap(BuildContext context) async {
     try {
       final GoogleMapModel _result = await Navigator.of(context).push(
@@ -141,6 +154,20 @@ class _EditLocationState extends State<EditLocation> {
       appBar: AppBar(
         backgroundColor: MyConstant.colorLocation,
         title: const Text('สร้างข้อมูลแหล่งท่องเที่ยว'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              dialogConfirm(
+                  context,
+                  "ลบแหล่งท่องเที่ยว",
+                  "ยืนยันที่จะลบแหล่งท่องเที่ยวใช้หรือไม่(อาจจะใช้เวลานานนิดหน่อย)",
+                  onDelete);
+            },
+            icon: const Icon(
+              Icons.delete,
+            ),
+          ),
+        ],
       ),
       body: Form(
         key: _formKey,
@@ -233,16 +260,18 @@ class _EditLocationState extends State<EditLocation> {
         height: height * 0.24,
         child: fileVideo != null
             ? PlayVideo(fileVideo: fileVideo!)
-            : _locationModel!.videoRef.isNotEmpty ? PlayVideoNetwork(pathVideo: _locationModel!.videoRef) : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.video_collection,
-                    color: Color.fromRGBO(159, 156, 213, 0.7),
-                    size: 60,
+            : _locationModel!.videoRef.isNotEmpty
+                ? PlayVideoNetwork(pathVideo: _locationModel!.videoRef)
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.video_collection,
+                        color: Color.fromRGBO(159, 156, 213, 0.7),
+                        size: 60,
+                      ),
+                    ],
                   ),
-                ],
-              ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,

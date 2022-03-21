@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/pages/location/locations.dart';
+import 'package:chanthaburi_app/pages/restaurant/home_restaurant.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
 
@@ -18,14 +19,14 @@ class _HomeBuyerState extends State<HomeBuyer> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // menuCard(
-            //   context,
-            //   width,
-            //   HomeRestaurant(),
-            //   MyConstant.shopImage,
-            //   'ร้านอาหาร',
-            //   Colors.orange.shade300,
-            // ),
+            menuCard(
+              context,
+              width,
+              HomeRestaurant(),
+              MyConstant.shopImage,
+              'ร้านอาหาร',
+              Colors.orange.shade300,
+            ),
             // menuCard(
             //   context,
             //   width,

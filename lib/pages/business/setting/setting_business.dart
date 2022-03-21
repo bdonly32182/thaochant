@@ -23,7 +23,7 @@ class SettingBusiness extends StatefulWidget {
 
 class _SettingBusinessState extends State<SettingBusiness> {
   final BusinessModel _businessModel =
-      BusinessModel("", "", 0, 0, [], [], '', '', 1, '', '', '');
+      BusinessModel("", "", 0, 0, [], [], '', '', 1, '', '', '',0,0);
 
   @override
   void initState() {

@@ -1,4 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:chanthaburi_app/provider/product_provider.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/pages/authen.dart';
 import 'package:chanthaburi_app/pages/create_account.dart';
@@ -11,6 +12,7 @@ import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 final Map<String, WidgetBuilder> routesMap = {
   '/authen': (BuildContext context) => Authen(),
@@ -32,7 +34,6 @@ final Map<String, Widget> splashWidget = {
 String? initialRoute;
 
 Future<Null> main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -72,24 +73,31 @@ class MyApp extends StatelessWidget {
   final Future<FirebaseApp> _initialFirebase = Firebase.initializeApp();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: MyConstant.appName,
-      routes: routesMap,
-      theme: ThemeData(primaryColor: MyConstant.themeApp),
-      debugShowCheckedModeBanner: false,
-      home: AnimatedSplashScreen(
-        splash: MyConstant.appLogo,
-        backgroundColor: Colors.white,
-        splashTransition: SplashTransition.scaleTransition,
-        splashIconSize: 600,
-        nextScreen: FutureBuilder(
-          future: _initialFirebase,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const InternalError();
-            }
-            return splashWidget[initialRoute] ?? Authen();
-          },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (BuildContext context) => ProductProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        title: MyConstant.appName,
+        routes: routesMap,
+        theme: ThemeData(primaryColor: MyConstant.themeApp),
+        debugShowCheckedModeBanner: false,
+        home: AnimatedSplashScreen(
+          splash: MyConstant.appLogo,
+          backgroundColor: Colors.white,
+          splashTransition: SplashTransition.scaleTransition,
+          splashIconSize: 600,
+          nextScreen: FutureBuilder(
+            future: _initialFirebase,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const InternalError();
+              }
+              return splashWidget[initialRoute] ?? Authen();
+            },
+          ),
         ),
       ),
     );

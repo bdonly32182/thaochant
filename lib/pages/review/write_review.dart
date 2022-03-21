@@ -33,7 +33,6 @@ class _WriteReviewState extends State<WriteReview> {
   ReviewModel reviewModel = ReviewModel(
       userId: '',
       businessId: '',
-      title: '',
       message: '',
       imageRef: '',
       dateTime: DateTime.now(),
@@ -113,7 +112,7 @@ class _WriteReviewState extends State<WriteReview> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildFormFieldTitle(width),
+                      // buildFormFieldTitle(width),
                       buildFormFieldMessage(width),
                       buildRating(width),
                       // buildGetImage(width),
@@ -208,43 +207,43 @@ class _WriteReviewState extends State<WriteReview> {
     );
   }
 
-  Container buildFormFieldTitle(double width) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      width: width * 1,
-      child: TextFormField(
-        maxLines: 2,
-        onSaved: (title) => reviewModel.title = title!,
-        decoration: InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            labelText: 'หัวข้อ :',
-            labelStyle: TextStyle(color: Colors.grey[600]),
-            prefixIcon: Icon(
-              Icons.description,
-              color: widget.theme,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade200),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade400),
-              borderRadius: BorderRadius.circular(10),
-            )),
-        style: TextStyle(color: widget.theme, fontWeight: FontWeight.w700),
-      ),
-      decoration: const BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-    );
-  }
+  // Container buildFormFieldTitle(double width) {
+  //   return Container(
+  //     margin: const EdgeInsets.all(8.0),
+  //     width: width * 1,
+  //     child: TextFormField(
+  //       maxLines: 2,
+  //       onSaved: (title) => reviewModel.title = title!,
+  //       decoration: InputDecoration(
+  //           fillColor: Colors.white,
+  //           filled: true,
+  //           labelText: 'หัวข้อ :',
+  //           labelStyle: TextStyle(color: Colors.grey[600]),
+  //           prefixIcon: Icon(
+  //             Icons.description,
+  //             color: widget.theme,
+  //           ),
+  //           enabledBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(color: Colors.grey.shade200),
+  //             borderRadius: BorderRadius.circular(10),
+  //           ),
+  //           focusedBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(color: Colors.grey.shade400),
+  //             borderRadius: BorderRadius.circular(10),
+  //           )),
+  //       style: TextStyle(color: widget.theme, fontWeight: FontWeight.w700),
+  //     ),
+  //     decoration: const BoxDecoration(
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black26,
+  //           blurRadius: 10,
+  //           offset: Offset(0, 5),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Container buildFormFieldMessage(double width) {
     return Container(

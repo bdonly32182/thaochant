@@ -36,6 +36,8 @@ class OtopCollection {
         "phoneNumber": otop.phoneNumber,
         "link": otop.link,
         "imageRef": otop.imageRef,
+        "point":otop.point,
+        "ratingCount":otop.ratingCount,
       });
       if (isAdmin) {
         NotificationModel _notiModel = NotificationModel(

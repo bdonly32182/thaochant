@@ -24,6 +24,7 @@ class _ShowMapState extends State<ShowMap> {
       mapType: MapType.terrain,
       scrollGesturesEnabled: false,
       zoomControlsEnabled: false,
+      zoomGesturesEnabled: false,
       onMapCreated: (GoogleMapController controller) async {
         _controller.complete(controller);
       },

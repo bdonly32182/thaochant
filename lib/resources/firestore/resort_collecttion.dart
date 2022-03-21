@@ -36,6 +36,8 @@ class ResortCollection {
         "phoneNumber": resort.phoneNumber,
         "link": resort.link,
         "imageRef": resort.imageRef,
+        "point":resort.point,
+        "ratingCount":resort.ratingCount,
       });
       if (isAdmin) {
         NotificationModel _notiModel = NotificationModel(

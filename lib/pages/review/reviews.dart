@@ -1,6 +1,5 @@
 import 'package:chanthaburi_app/resources/firestore/user_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
-import 'package:chanthaburi_app/widgets/show_image.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,7 @@ class _ReviewsState extends State<Reviews> {
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
       appBar: AppBar(
-        title: const Center(child: Text('รีวิว')),
+        title: const Text('ความคิดเห็น'),
         backgroundColor: widget.appBarColor,
       ),
       body: ListView(
@@ -40,22 +39,26 @@ class _ReviewsState extends State<Reviews> {
                         child: Column(
                           children: [
                             buildRowImageAndRating(
-                                width,
-                                snapshot.data!.get("fullName"),
-                                widget.listReviews[index]["dateTime"],
-                                widget.listReviews[index]["point"]),
-                            buildTextTitle(
                               width,
-                              widget.listReviews[index]['title'],
+                              snapshot.data!.get("fullName"),
+                              widget.listReviews[index]["point"],
                             ),
-                            buildMessage(
-                              width,
-                              widget.listReviews[index]['message'],
-                            ),
+
                             // buildShowImage(
                             //   width,
                             //   widget.listReviews[index]['imageRef'],
                             // ),
+                            SizedBox(
+                              width: width * 1,
+                              child: Column(
+                                children: [
+                                  buildMessage(width,
+                                      widget.listReviews[index]['message']),
+                                  buildDateReview(width,
+                                      widget.listReviews[index]["dateTime"]),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       );
@@ -66,6 +69,18 @@ class _ReviewsState extends State<Reviews> {
           ),
         ],
       ),
+    );
+  }
+
+  Container buildDateReview(
+    double width,
+    Timestamp timestamp,
+  ) {
+    DateTime dateTime = timestamp.toDate();
+    return Container(
+      margin: const EdgeInsets.only(top: 10.0, left: 8.0, bottom: 6.0),
+      width: width * 0.7,
+      child: Text('${dateTime.year}-${dateTime.month}-${dateTime.day} '),
     );
   }
 
@@ -93,13 +108,16 @@ class _ReviewsState extends State<Reviews> {
 
   Container buildMessage(double width, String message) {
     return Container(
-      margin: const EdgeInsets.only(left: 10.0),
-      width: width * 1,
+      margin: const EdgeInsets.only(left: 10.0, top: 12.0),
+      width: width * 0.7,
       child: Text(
         message,
         maxLines: 10,
         softWrap: true,
         overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 16,
+        ),
       ),
     );
   }
@@ -121,16 +139,21 @@ class _ReviewsState extends State<Reviews> {
     );
   }
 
-  Row buildRowImageAndRating(
-      double width, String nameUser, Timestamp timestamp, double point) {
-    DateTime dateTime = timestamp.toDate();
+  Row buildRowImageAndRating(double width, String nameUser, double point) {
     return Row(
       children: [
         Container(
           margin: const EdgeInsets.all(8.0),
-          width: width * 0.1,
-          height: 40,
-          child: ShowImage(pathImage: MyConstant.iconUser),
+          width: width * 0.09,
+          height: 35,
+          child: Icon(
+            Icons.person,
+            color: widget.appBarColor,
+          ),
+          decoration: BoxDecoration(
+            color: MyConstant.backgroudApp,
+            shape: BoxShape.circle,
+          ),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,46 +161,49 @@ class _ReviewsState extends State<Reviews> {
             Row(
               children: [
                 Container(
-                  margin: const EdgeInsets.only(top: 10.0),
-                  width: width * 0.5,
-                  child: Text(nameUser),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 10.0),
-                  width: width * 0.3,
+                  margin: const EdgeInsets.only(top: 15.0, left: 6.0),
+                  width: width * 0.7,
                   child: Text(
-                      '${dateTime.year}-${dateTime.month}-${dateTime.day} '),
+                    nameUser,
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ],
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 6.0),
-              width: width * 0.8,
-              height: 20,
-              child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: point.toInt(),
-                itemBuilder: (BuildContext starContext, int index) {
-                  return Container(
-                    margin: const EdgeInsets.all(2.0),
-                    width: 16,
-                    child: const Icon(
-                      Icons.star,
-                      color: Colors.white,
-                      size: 15,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.yellow[700],
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  );
-                },
-              ),
-            ),
+            buildListShowStar(width, point),
           ],
         ),
       ],
+    );
+  }
+
+  Container buildListShowStar(double width, double point) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8.0, left: 6.0),
+      width: width * 0.8,
+      height: 20,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: point.toInt(),
+        itemBuilder: (BuildContext starContext, int index) {
+          return Container(
+            margin: const EdgeInsets.all(2.0),
+            width: 16,
+            child: const Icon(
+              Icons.star,
+              color: Colors.white,
+              size: 15,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.yellow[700],
+              borderRadius: BorderRadius.circular(5),
+            ),
+          );
+        },
+      ),
     );
   }
 }

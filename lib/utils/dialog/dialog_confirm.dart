@@ -8,9 +8,13 @@ dialogConfirm(
     builder: (context) => SimpleDialog(
       title: Text(title),
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text(message)],
+        Container(
+          margin: const EdgeInsets.all(6.0),
+          child: Text(
+            message,
+            maxLines: 3,
+            softWrap: true,
+          ),
         ),
         Container(
           margin: const EdgeInsets.only(top: 10.0),
@@ -19,7 +23,7 @@ dialogConfirm(
             children: <Widget>[
               ElevatedButton(
                 onPressed: () {
-                  onOk();
+                  onOk(context);
                   Navigator.pop(context);
                 },
                 child: Text(
@@ -62,7 +66,8 @@ dialogConfirm(
   );
 }
 
-dialogCamera(BuildContext context, Function getImage, Function takePhoto,Color myColor) {
+dialogCamera(BuildContext context, Function getImage, Function takePhoto,
+    Color myColor) {
   showModalBottomSheet(
     context: context,
     builder: (builder) {

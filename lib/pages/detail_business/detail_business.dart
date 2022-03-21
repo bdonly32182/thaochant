@@ -1,15 +1,34 @@
+import 'package:chanthaburi_app/pages/review/reviews.dart';
+import 'package:chanthaburi_app/resources/firestore/review_collection.dart';
+import 'package:chanthaburi_app/utils/map/show_map.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
+import 'package:chanthaburi_app/widgets/error/internal_error.dart';
+import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/show_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class DetailStore extends StatefulWidget {
-  DetailStore({Key? key}) : super(key: key);
+class DetailBusiness extends StatefulWidget {
+  String businessId, businessName, address, phoneNumber;
+  num point, ratingCount;
+  double lat, lng;
+  DetailBusiness({
+    Key? key,
+    required this.address,
+    required this.businessId,
+    required this.businessName,
+    required this.lat,
+    required this.lng,
+    required this.phoneNumber,
+    required this.point,
+    required this.ratingCount,
+  }) : super(key: key);
 
   @override
-  _DetailStoreState createState() => _DetailStoreState();
+  _DetailBusinessState createState() => _DetailBusinessState();
 }
 
-class _DetailStoreState extends State<DetailStore> {
+class _DetailBusinessState extends State<DetailBusiness> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -29,10 +48,8 @@ class _DetailStoreState extends State<DetailStore> {
                   buildShowMap(width, height),
                   buildName(width),
                   buildRowRating(),
-                  buildSection(width, 'ข้อมูลทีอยู่ร้าน',
-                      '19/19 แขวง แสมดำ เขต บางขุนเทียน จังหวัด กรุงเทพมหานคร 10150'),
-                  buildSection(width, 'เบอร์ติดต่อ', '0814206492'),
-                  buildSection(width, 'เวลาทำการ', 'ทุกวัน 10:00 - 20:30'),
+                  buildSection(width, 'ข้อมูลทีอยู่ร้าน', widget.address),
+                  buildSection(width, 'เบอร์ติดต่อ', widget.phoneNumber),
                   const SizedBox(
                     height: 15.0,
                   )
@@ -55,7 +72,7 @@ class _DetailStoreState extends State<DetailStore> {
               Padding(
                 padding: EdgeInsets.only(top: 25, left: 10.0),
                 child: Text(
-                  'รูปภาพและรีวิว',
+                  'ความคิดเห็น',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -64,45 +81,38 @@ class _DetailStoreState extends State<DetailStore> {
               ),
             ],
           ),
-          buildShowImageReview(width, height),
-          buildComment(width),
+          StreamBuilder<Object>(
+              stream: ReviewCollection.reviews(widget.businessId),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.hasError) {
+                  return const InternalError();
+                }
+                if (snapshot.connectionState == ConnectionState.active) {
+                  List<QueryDocumentSnapshot> reviews = snapshot.data!.docs;
+                  return buildComment(width, reviews);
+                }
+                return const PouringHourGlass();
+              }),
         ],
       ),
     );
   }
 
-  Container buildShowImageReview(double width, double height) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      width: width * 1,
-      height: height * 0.1,
-      child: ListView.builder(
-        itemCount: 5,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            margin: EdgeInsets.all(3.0),
-            width: width * 0.17,
-            height: 50,
-            child: ShowImage(pathImage: MyConstant.delivery),
-          );
-        },
-      ),
-    );
-  }
-
-  InkWell buildComment(double width) {
+  InkWell buildComment(double width, List<QueryDocumentSnapshot> reviews) {
     return InkWell(
       onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (builder) => ReviewList(),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (builder) => Reviews(
+              listReviews: reviews,
+              appBarColor: MyConstant.themeApp,
+            ),
+          ),
+        );
       },
       child: Container(
-        margin: EdgeInsets.all(10.0),
+        margin: const EdgeInsets.all(10.0),
         width: width * 1,
         height: 45,
         child: Row(
@@ -110,16 +120,16 @@ class _DetailStoreState extends State<DetailStore> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 10.0),
-              child: Text('อ่านรีวิว (35)'),
+              child: Text('อ่านรีวิว (${reviews.length})'),
             ),
-            Icon(
+            const Icon(
               Icons.arrow_forward_ios_outlined,
               size: 15,
             )
           ],
         ),
         decoration: BoxDecoration(
-          boxShadow: const[
+          boxShadow: const [
             BoxShadow(
               color: Colors.black54,
               blurRadius: 5,
@@ -148,7 +158,7 @@ class _DetailStoreState extends State<DetailStore> {
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
                   typeName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.black87,
                   ),
@@ -163,7 +173,7 @@ class _DetailStoreState extends State<DetailStore> {
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Text(
                     text,
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                    style: const TextStyle(fontSize: 16, color: Colors.black54),
                     softWrap: true,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -177,22 +187,24 @@ class _DetailStoreState extends State<DetailStore> {
     );
   }
 
-  Container buildShowMap(double width, double height) {
-    return Container(
-      margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+  SizedBox buildShowMap(double width, double height) {
+    return SizedBox(
       width: width * 1,
       height: height * 0.24,
-      child: ShowImage(pathImage: MyConstant.currentLocation),
+      child: ShowMap(
+        lat: widget.lat,
+        lng: widget.lng,
+      ),
     );
   }
 
   Container buildName(double width) {
     return Container(
-      margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 15),
+      margin: const EdgeInsets.only(left: 10.0, right: 10.0, top: 15),
       width: width * 1,
       child: Text(
-        'บ้านขนมโฮมเมด',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        widget.businessName,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         softWrap: true,
@@ -211,8 +223,8 @@ class _DetailStoreState extends State<DetailStore> {
           ),
         ),
         Text(
-          '4.2 (32 รีวิว)',
-          style: TextStyle(fontSize: 16),
+          '${widget.point != 0.0 && widget.ratingCount != 0.0 ? (widget.point / widget.ratingCount).floor() : 0}(${widget.ratingCount} รีวิว)',
+          style: const TextStyle(fontSize: 16),
         ),
       ],
     );

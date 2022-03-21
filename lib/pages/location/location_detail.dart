@@ -130,7 +130,7 @@ class _DetailLocationState extends State<DetailLocation> {
                           Padding(
                             padding: EdgeInsets.only(top: 25, left: 10.0),
                             child: Text(
-                              'อ่านรีวิว',
+                              'ความคิดเห็นทั้งหมด',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:chanthaburi_app/models/location/location.dart';
+import 'package:chanthaburi_app/resources/firestore/review_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
 import '../firebase_storage.dart';
@@ -130,6 +132,8 @@ class LocationCollection {
         StorageFirebase.deleteFile(videoURL);
       }
       await locationCollection.doc(docId).delete();
+      await ReviewCollection.deleteReview(docId);
+      
       return {"status": "200", "message": "ลบแหล่งท่องเที่ยวเรียบร้อย"};
     } catch (e) {
       return {"status": "400", "message": "ลบแหล่งท่องเที่ยวเรียบร้อย"};
