@@ -85,7 +85,7 @@ class _NotificationRecipientState extends State<NotificationRecipient> {
                             child: Text(
                               snapshot.data!.docs[index]['message'],
                               softWrap: true,
-                              maxLines: 2,
+                              maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 14,

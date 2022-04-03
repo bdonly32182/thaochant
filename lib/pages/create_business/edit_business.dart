@@ -6,6 +6,7 @@ import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/resort_collecttion.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/map/google_map_fluter.dart';
 import 'package:chanthaburi_app/utils/map/show_map.dart';
@@ -13,6 +14,7 @@ import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class EditBusiness extends StatefulWidget {
   String typeBusiness;
@@ -49,6 +51,15 @@ class _EditBusinessState extends State<EditBusiness> {
       setState(() {
         imageSelected = image;
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -58,6 +69,15 @@ class _EditBusinessState extends State<EditBusiness> {
       setState(() {
         imageSelected = takePhoto;
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 
@@ -212,6 +232,7 @@ class _EditBusinessState extends State<EditBusiness> {
                   inputLink(width),
                   inputPrompPay(width),
                   inputAddress(width),
+                  inputStartPrice(width),
                   const SizedBox(height: 25),
                   buildShowmap(width, height, context),
                   buildTextSelectImage(),
@@ -229,6 +250,60 @@ class _EditBusinessState extends State<EditBusiness> {
           ),
         ),
       ),
+    );
+  }
+
+  Row inputStartPrice(double width) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 20),
+          width: width * .8,
+          child: widget.typeBusiness == MyConstant.roomCollection
+              ? TextFormField(
+                  initialValue: _businessModel!.startPrice.toString(),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value!.isEmpty) return 'กรุณากรอกราคาห้องพักเริ่มต้น';
+                    return null;
+                  },
+                  onSaved: (startPrice) =>
+                      _businessModel!.startPrice = double.parse(startPrice!),
+                  decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      labelText: 'ราคาห้องพักเริ่มต้น :',
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                      prefix: Icon(
+                        Icons.account_balance,
+                        color: MyConstant.colorStore,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(10),
+                      )),
+                  style: TextStyle(
+                    color: MyConstant.colorStore,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              : null,
+          decoration: const BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -543,7 +618,7 @@ class _EditBusinessState extends State<EditBusiness> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImage, takePhoto,MyConstant.colorStore);
+            dialogCamera(context, getImage, takePhoto, MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,

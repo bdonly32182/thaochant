@@ -55,6 +55,10 @@ class _AddToCartState extends State<AddToCart> {
       userId: userId,
       addtionMessage: addition.text,
       imageURL: widget.foodImage,
+      weight: 0,
+      width: 0,
+      height: 0,
+      long: 0,
     );
     SQLiteRestaurant().addFood(food);
     var productProvider = Provider.of<ProductProvider>(context, listen: false);
@@ -84,6 +88,10 @@ class _AddToCartState extends State<AddToCart> {
       userId: userId,
       addtionMessage: addition.text,
       imageURL: widget.foodImage,
+      weight: 0,
+      width: 0,
+      height: 0,
+      long: 0,
     );
     SQLiteRestaurant().editFood(
         widget.foodId, food.userId, amountProduct, totalPrice, addition.text);
@@ -106,7 +114,6 @@ class _AddToCartState extends State<AddToCart> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    print(widget.foods);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: MyConstant.backgroudApp,

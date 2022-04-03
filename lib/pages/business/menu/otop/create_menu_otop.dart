@@ -4,6 +4,7 @@ import 'package:chanthaburi_app/models/otop/product.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/product_otop_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
@@ -11,6 +12,7 @@ import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CreateMenuOtop extends StatefulWidget {
   final String otopId;
@@ -65,6 +67,15 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
       setState(() {
         imageSelected = image;
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -74,6 +85,15 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
       setState(() {
         imageSelected = takePhoto;
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 
@@ -181,7 +201,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImage, takePhoto,MyConstant.colorStore);
+            dialogCamera(context, getImage, takePhoto, MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,

@@ -1,0 +1,302 @@
+import 'package:chanthaburi_app/models/googlemap/google_map.dart';
+import 'package:chanthaburi_app/models/shipping/shipping.dart';
+import 'package:chanthaburi_app/provider/address_provider.dart';
+import 'package:chanthaburi_app/resources/auth_method.dart';
+import 'package:chanthaburi_app/resources/firestore/shipping_address_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
+import 'package:chanthaburi_app/utils/map/geolocation.dart';
+import 'package:chanthaburi_app/utils/map/google_map_fluter.dart';
+import 'package:chanthaburi_app/utils/map/show_map.dart';
+import 'package:chanthaburi_app/utils/my_constant.dart';
+import 'package:chanthaburi_app/utils/sqlite/sql_address.dart';
+import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
+import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+
+class CreateShippingAddress extends StatefulWidget {
+  bool isNewAddress;
+  CreateShippingAddress({Key? key, required this.isNewAddress})
+      : super(key: key);
+
+  @override
+  _CreateShippingAddressState createState() => _CreateShippingAddressState();
+}
+
+class _CreateShippingAddressState extends State<CreateShippingAddress> {
+  String userId = AuthMethods.currentUser();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  double? latitude, longitude;
+  @override
+  void initState() {
+    super.initState();
+    checkPermission();
+  }
+
+  void checkPermission() async {
+    try {
+      Position positionAddress = await determinePosition();
+      setState(() {
+        latitude = positionAddress.latitude;
+        longitude = positionAddress.longitude;
+      });
+    } catch (e) {
+      PermissionStatus locationStatus = await Permission.location.status;
+      if (locationStatus.isPermanentlyDenied || locationStatus.isDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Location',
+          'โปรดแชร์ Location',
+        );
+      }
+    }
+  }
+
+  _navigationGoogleMap(BuildContext context) async {
+    try {
+      final GoogleMapModel _result = await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (builder) => SelectLocation(
+            initLat: latitude!,
+            initLng: longitude!,
+          ),
+        ),
+      );
+
+      setState(() {
+        latitude = _result.latitude;
+        longitude = _result.longitude;
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  onCreateAddress() async {
+    late BuildContext dialogContext;
+
+    if (_formKey.currentState!.validate() &&
+        latitude != null &&
+        longitude != null) {
+      _formKey.currentState!.save();
+      ShippingModel address = ShippingModel(
+        userId: userId,
+        fullName: _nameController.text,
+        address: _addressController.text,
+        phoneNumber: _phoneController.text,
+        lat: latitude!,
+        lng: longitude!,
+      );
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext showContext) {
+          dialogContext = context;
+          return const PouringHourGlass();
+        },
+      );
+      Map<String, dynamic>? response =
+          await ShippingAddressCollection.createAddress(address);
+      if (widget.isNewAddress) {
+        await SQLAdress().createAddress(address);
+        var addressProvider = Provider.of<AddressProvider>(context,listen:false);
+        addressProvider.createAddress(address);
+      }
+
+      Navigator.pop(dialogContext);
+      showDialog(
+        context: context,
+        builder: (BuildContext showContext) =>
+            ResponseDialog(response: response),
+      );
+      _formKey.currentState!.reset();
+      setState(() {
+        _nameController.clear();
+        _phoneController.clear();
+        _addressController.clear();
+      });
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext showContext) => const ResponseDialog(
+            response: {"status": "199", "message": "กรุณากรอกข้อมูลให้ครบ"}),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Scaffold(
+      backgroundColor: MyConstant.backgroudApp,
+      appBar: AppBar(
+        title: const Text('สร้างที่อยู่ใหม่'),
+        backgroundColor: MyConstant.themeApp,
+      ),
+      body: Form(
+        key: _formKey,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: const [
+                    Text('ช่องทางติดต่อ'),
+                  ],
+                ),
+              ),
+              buildFormField(
+                _nameController,
+                'ชื่อ นามสกุล',
+                Icons.person,
+              ),
+              buildFormField(
+                _phoneController,
+                'เบอร์โทรศัพท์',
+                Icons.phone_callback,
+              ),
+              Container(
+                margin: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: const [
+                    Text('ที่อยู่'),
+                  ],
+                ),
+              ),
+              buildFormAddress(),
+              buildShowmap(width, height, context),
+              Container(
+                margin: const EdgeInsets.all(10.0),
+                width: double.maxFinite,
+                child: ElevatedButton(
+                  child: const Text(
+                    'ส่ง',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  onPressed: onCreateAddress,
+                  style: ElevatedButton.styleFrom(primary: MyConstant.themeApp),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  SizedBox buildShowmap(double width, double height, BuildContext context) {
+    return SizedBox(
+      width: width * 1,
+      height: height * 0.3,
+      child: latitude != null && longitude != null
+          ? InkWell(
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                _navigationGoogleMap(context);
+              },
+              child: Stack(
+                children: [
+                  SizedBox(
+                    width: width * 1,
+                    height: height * 0.3,
+                    child: ShowMap(
+                      lat: latitude!,
+                      lng: longitude!,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: width * 0.4,
+                        height: 40,
+                        child: const Text(
+                          "เลือกตำแหน่งที่อยู่",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: MyConstant.colorStore,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          : const PouringHourGlass(),
+    );
+  }
+
+  Container buildFormAddress() {
+    return Container(
+      margin: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        controller: _addressController,
+        maxLines: 3,
+        validator: (text){
+          if (text!.isEmpty) {
+            return "กรุณากรอกรายละเอียดที่อยู่";
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          labelText: 'รายละเอียดที่อยู่',
+          labelStyle: TextStyle(color: Colors.grey[600]),
+          prefix: Icon(Icons.location_pin, color: MyConstant.themeApp),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade200),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade400),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container buildFormField(TextEditingController textController,
+      String labelText, IconData iconField) {
+    return Container(
+      margin: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        controller: textController,
+        validator: (text){
+          if (text!.isEmpty) {
+            return "กรุณากรอก$labelText";
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          labelText: labelText,
+          labelStyle: TextStyle(color: Colors.grey[600]),
+          prefix: Icon(iconField, color: MyConstant.themeApp),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade200),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade400),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+}

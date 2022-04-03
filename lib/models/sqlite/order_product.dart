@@ -14,6 +14,10 @@ class ProductCartModel {
   String userId;
   String imageURL;
   String addtionMessage;
+  num weight;
+  num width;
+  num height;
+  num long;
   ProductCartModel({
     this.id,
     this.sumTotalPrice,
@@ -27,6 +31,10 @@ class ProductCartModel {
     required this.userId,
     required this.imageURL,
     required this.addtionMessage,
+    required this.weight,
+    required this.width,
+    required this.height,
+    required this.long,
   });
   
 
@@ -43,6 +51,10 @@ class ProductCartModel {
     String? userId,
     String? imageURL,
     String? addtionMessage,
+    num? weight,
+    num? width,
+    num? height,
+    num? long,
   }) {
     return ProductCartModel(
       id: id ?? this.id,
@@ -57,12 +69,16 @@ class ProductCartModel {
       userId: userId ?? this.userId,
       imageURL: imageURL ?? this.imageURL,
       addtionMessage: addtionMessage ?? this.addtionMessage,
+      weight: weight ?? this.weight,
+      width: width ?? this.width,
+      height: height ?? this.height,
+      long: long ?? this.long,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      // 'id': id,
       'productId': productId,
       'productName': productName,
       'businessId': businessId,
@@ -73,13 +89,17 @@ class ProductCartModel {
       'userId': userId,
       'imageURL': imageURL,
       'addtionMessage': addtionMessage,
+      'weight': weight,
+      'width': width,
+      'height': height,
+      'long': long,
     };
   }
 
   factory ProductCartModel.fromMap(Map<String, dynamic> map) {
     return ProductCartModel(
       id: map['id']?.toInt(),
-      sumTotalPrice: map['sumTotalPrice']?? 0,
+      sumTotalPrice: map['sumTotalPrice'],
       productId: map['productId'] ?? '',
       productName: map['productName'] ?? '',
       businessId: map['businessId'] ?? '',
@@ -90,6 +110,10 @@ class ProductCartModel {
       userId: map['userId'] ?? '',
       imageURL: map['imageURL'] ?? '',
       addtionMessage: map['addtionMessage'] ?? '',
+      weight: map['weight'] ?? 0,
+      width: map['width'] ?? 0,
+      height: map['height'] ?? 0,
+      long: map['long'] ?? 0,
     );
   }
 
@@ -99,7 +123,7 @@ class ProductCartModel {
 
   @override
   String toString() {
-    return 'ProductCartModel(id: $id, sumTotalPrice: $sumTotalPrice, productId: $productId, productName: $productName, businessId: $businessId, amount: $amount, totalPrice: $totalPrice, price: $price, businessName: $businessName, userId: $userId, imageURL: $imageURL, addtionMessage: $addtionMessage)';
+    return 'ProductCartModel(id: $id, sumTotalPrice: $sumTotalPrice, productId: $productId, productName: $productName, businessId: $businessId, amount: $amount, totalPrice: $totalPrice, price: $price, businessName: $businessName, userId: $userId, imageURL: $imageURL, addtionMessage: $addtionMessage, weight: $weight, width: $width, height: $height, long: $long)';
   }
 
   @override
@@ -118,7 +142,11 @@ class ProductCartModel {
       other.businessName == businessName &&
       other.userId == userId &&
       other.imageURL == imageURL &&
-      other.addtionMessage == addtionMessage;
+      other.addtionMessage == addtionMessage &&
+      other.weight == weight &&
+      other.width == width &&
+      other.height == height &&
+      other.long == long;
   }
 
   @override
@@ -134,6 +162,10 @@ class ProductCartModel {
       businessName.hashCode ^
       userId.hashCode ^
       imageURL.hashCode ^
-      addtionMessage.hashCode;
+      addtionMessage.hashCode ^
+      weight.hashCode ^
+      width.hashCode ^
+      height.hashCode ^
+      long.hashCode;
   }
 }

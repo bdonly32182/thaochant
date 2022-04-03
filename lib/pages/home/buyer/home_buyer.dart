@@ -1,4 +1,7 @@
 import 'package:chanthaburi_app/pages/location/locations.dart';
+import 'package:chanthaburi_app/pages/otop/home_otop.dart';
+import 'package:chanthaburi_app/pages/package_toure/buyer_home_tour.dart';
+import 'package:chanthaburi_app/pages/resort/home_resort.dart';
 import 'package:chanthaburi_app/pages/restaurant/home_restaurant.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
@@ -27,22 +30,22 @@ class _HomeBuyerState extends State<HomeBuyer> {
               'ร้านอาหาร',
               Colors.orange.shade300,
             ),
-            // menuCard(
-            //   context,
-            //   width,
-            //   HomeOtop(),
-            //   MyConstant.shopImage,
-            //   'ผลิตภัณฑ์ชุมชน',
-            //   Colors.orange.shade300,
-            // ),
-            // menuCard(
-            //   context,
-            //   width,
-            //   HomeResort(),
-            //   MyConstant.homestayImage,
-            //   'บ้านพัก',
-            //   Colors.green.shade300,
-            // ),
+            menuCard(
+              context,
+              width,
+              HomeOtop(),
+              MyConstant.otopImage,
+              'ผลิตภัณฑ์ชุมชน',
+              Colors.orange.shade300,
+            ),
+            menuCard(
+              context,
+              width,
+              HomeResort(),
+              MyConstant.homestayImage,
+              'บ้านพัก',
+              Colors.green.shade300,
+            ),
             menuCard(
               context,
               width,
@@ -51,14 +54,14 @@ class _HomeBuyerState extends State<HomeBuyer> {
               'แหล่งท่องเที่ยว',
               Colors.purple.shade200,
             ),
-            // menuCard(
-            //   context,
-            //   width,
-            //   HomeTour(),
-            //   MyConstant.packageTourImage,
-            //   'แพ็คเกจท่องเที่ยว',
-            //   Colors.blue.shade300,
-            // ),
+            menuCard(
+              context,
+              width,
+              BuyerHomeTour(),
+              MyConstant.packageTourImage,
+              'แพ็คเกจท่องเที่ยว',
+              Colors.blue.shade300,
+            ),
           ],
         ),
       ),

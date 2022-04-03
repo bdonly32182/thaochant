@@ -44,6 +44,7 @@ class _MyRestaurantState extends State<MyRestaurant> {
                     businessId: snapshot.data!.docs[index].id,
                     typeBusiness: MyConstant.foodCollection,
                     isAdmin: widget.isAdmin,
+                    imageRef: snapshot.data!.docs[index]['imageRef'],
                   );
                 });
           }

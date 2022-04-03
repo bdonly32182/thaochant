@@ -11,13 +11,25 @@ final CollectionReference roomCollection =
     _firestore.collection(MyConstant.roomCollection);
 
 class RoomCollection {
-  static Stream<QuerySnapshot<Object?>> rooms(
+  static Stream<QuerySnapshot<RoomModel>> rooms(
       String resortId, String categoryId) {
-    Stream<QuerySnapshot<Object?>> _products = roomCollection
+    Stream<QuerySnapshot<RoomModel>> _resorts = roomCollection
         .where('resortId', isEqualTo: resortId)
         .where('categoryId', isEqualTo: categoryId)
+        .withConverter<RoomModel>(fromFirestore: (snapshot,_) => RoomModel.fromMap(snapshot.data()!), toFirestore: (model,_) => model.toMap())
         .snapshots();
-    return _products;
+    return _resorts;
+  }
+
+  static Future<QuerySnapshot<RoomModel>> roomsByUser(String resortId) async {
+    QuerySnapshot<RoomModel> _resorts = await roomCollection
+        .where('resortId', isEqualTo: resortId)
+        .withConverter<RoomModel>(
+          fromFirestore: (data, _) => RoomModel.fromMap(data.data()!),
+          toFirestore: (room, _) => room.toMap(),
+        )
+        .get();
+    return _resorts;
   }
 
   static Future<int> checkRoom(String categoryId) async {

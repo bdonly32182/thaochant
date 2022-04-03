@@ -1,3 +1,4 @@
+import 'package:chanthaburi_app/models/shipping/shipping.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
 
@@ -147,6 +148,75 @@ dialogCamera(BuildContext context, Function getImage, Function takePhoto,
               ),
               decoration: const BoxDecoration(
                 color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+dialogAddress(BuildContext context, Function changeAddress,
+    Function editAddress, ShippingModel address, String docId,bool isCurrent, Color myColor) {
+  showModalBottomSheet(
+    context: context,
+    builder: (builder) {
+      return SizedBox(
+        height: 130,
+        child: Column(
+          children: [
+            Container(
+              width: double.maxFinite,
+              height: 55,
+              child: TextButton(
+                onPressed: () {
+                  changeAddress(address);
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'เปลี่ยนที่อยู่',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: myColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(0, 0.4),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: double.maxFinite,
+              height: 55,
+              child: TextButton(
+                onPressed: () {
+                  editAddress(context, address, docId,isCurrent);
+                },
+                child: Text(
+                  'แก้ไขข้อมูล',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: myColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(0, 0.4),
+                  ),
+                ],
               ),
             ),
           ],

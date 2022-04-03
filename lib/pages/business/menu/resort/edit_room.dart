@@ -4,12 +4,14 @@ import 'package:chanthaburi_app/models/resort/room.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/room_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class EditRoom extends StatefulWidget {
   String imageCover, resortId, roomId, categoryId, descriptionRoom, roomName;
@@ -78,6 +80,15 @@ class _EditRoomState extends State<EditRoom> {
       setState(() {
         listImageSelected.add(image);
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -87,6 +98,15 @@ class _EditRoomState extends State<EditRoom> {
       setState(() {
         selectImageCover = imageCover;
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -96,6 +116,15 @@ class _EditRoomState extends State<EditRoom> {
       setState(() {
         selectImageCover = takePhotoCover;
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 
@@ -105,6 +134,15 @@ class _EditRoomState extends State<EditRoom> {
       setState(() {
         listImageSelected.add(takePhoto);
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 

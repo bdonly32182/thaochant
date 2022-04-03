@@ -42,7 +42,8 @@ class _BuyerListState extends State<BuyerList> {
 
   Future<void> loadMoreBuyers(int pageKey) async {
     try {
-      QuerySnapshot _resultBuyer = await UserCollection.buyerList(lastDocument);
+      QuerySnapshot _resultBuyer =
+          await UserCollection.userRoleList(lastDocument, MyConstant.buyerName);
       final isLastPage = _resultBuyer.docs.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(_resultBuyer.docs);
@@ -87,16 +88,14 @@ class _BuyerListState extends State<BuyerList> {
       ),
       body: isShowBuyer
           ? FutureBuilder<QuerySnapshot>(
-              future: UserCollection.searchUser(searchController.text),
+              future: UserCollection.searchUser(
+                  searchController.text, MyConstant.buyerName),
               builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
                   return const BadRequestError();
                 }
                 if (snapshot.connectionState == ConnectionState.done) {
-                  List buyers = snapshot.data!.docs
-                      .where(
-                          (element) => element["role"] == MyConstant.buyerName)
-                      .toList();
+                  List buyers = snapshot.data!.docs;
                   if (buyers.isEmpty) {
                     return const SearchResultFound();
                   }

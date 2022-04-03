@@ -4,9 +4,6 @@ class MyConstant {
   // general
   static String appName = 'GoToChan';
 
-  //mediaquery
-  // double width = MediaQuery.of(BuildContext context).size.width;
-
   // Route
   static String routeAuthen = '/authen';
   static String routeCreateAccount = '/createAccount';
@@ -37,6 +34,12 @@ class MyConstant {
   static String optionMenuCollection = 'optionMenuCollection';
   static String locationCollection = 'locationCollection';
   static String reviewCollection = 'reviewCollection';
+  static String orderFoodCollection = 'orderFoodCollection';
+  static String orderProductCollection = 'orderProductCollection';
+  static String shippingAddressCollection = 'shippingAddressCollection';
+  static String bookingCollection = "bookingCollection";
+  static String packageTourCollection = "packageTourCollection";
+  static String orderTourCollection = "orderTourCollection";
 
   // image
   static String appLogo = 'images/logo.png';
@@ -50,12 +53,15 @@ class MyConstant {
   static String locationImage = 'images/location.jpg';
   static String packageTourImage = 'images/packageTour.jpg';
   static String shopImage = 'images/shop.png';
+  static String otopImage = 'images/otop.png';
   static String waiting = 'images/waiting.png';
   static String delivery = 'images/delivery.png';
   static String guideImage = 'images/guide.jpg';
   static String partnerImage = 'images/partner.png';
   static String homestayImage = 'images/homestay.jpg';
   static String currentLocation = 'images/current_location.png';
+  static String promptPayImage = 'images/promptpay.jpeg';
+  static String notifyImage = 'images/notify.png';
 
   // color
   static Color backgroudApp =
@@ -66,23 +72,34 @@ class MyConstant {
   static Color themeApp = const Color.fromRGBO(
       41, 187, 137, 1); // this color is themeApp and resort
   static Color colorLocation = const Color.fromRGBO(159, 156, 213, 1);
+  static Color colorTour = const Color.fromRGBO(160,191,225, 1);
+
+  //status restaurant and resort
+  static String prepaidStatus = "Prepaid"; // ชำระเงินล่วงหน้าแล้ว
+  static String acceptOrder = "Accepted"; // รับออร์เดอร์แล้ว
+  static String payed = "Payed"; // จ่ายอีกครึ่งที่เหลือเรียบร้อย
+  static String rejected = "Rejected"; // กรณีเช็คเงินแล้วไม่ผ่าน
+// more otop
+  static String shipping = "Shipping"; // จัดส่งสินค้าแล้ว
+  // more tour
+  static String joined = "Joined"; // เข้าร่วมทริป
 
   // map status
-  Map<String, Map<String, dynamic>> statusColor = {
-    'Pending': {
-      'text': 'สั่งซื้อรอชำระเงิน',
+  static Map<String, Map<String, dynamic>> statusColor = {
+    'Payed': {
+      'text': 'ชำระเงินเรียบร้อย',
       'color': const Color.fromRGBO(255, 202, 3, 1)
     },
-    'WaitAccepted': {
-      'text': 'รอตรวจสอบใบเสร็จ',
+    'Prepaid': {
+      'text': 'ชำระเงินล่วงหน้า',
       'color': const Color.fromRGBO(49, 143, 181, 1)
     },
     'Accepted': {
-      'text': 'ยืนยันการชำระเงิน',
+      'text': 'ยืนยันออร์เดอร์',
       'color': const Color.fromRGBO(110, 203, 99, 1)
     },
     'Rejected': {
-      'text': 'ปฏิเสธกาสั่งซื้อ',
+      'text': 'ปฏิเสธออร์เดอร์',
       'color': const Color.fromRGBO(218, 0, 55, 1)
     },
     'Shipping': {
@@ -94,7 +111,7 @@ class MyConstant {
       'color': const Color.fromRGBO(85, 172, 238, 1)
     }
   };
-  List<String> monthThailand = [
+  static List<String> monthThailand = [
     'มกราคม',
     'กุมภาพันธ์',
     'มีนาคม',

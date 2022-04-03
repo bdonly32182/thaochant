@@ -1,4 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:chanthaburi_app/provider/address_provider.dart';
+import 'package:chanthaburi_app/provider/participant_provider.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/pages/authen.dart';
@@ -77,6 +79,12 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (BuildContext context) => ProductProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AddressProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ParticipantProvider(),
         ),
       ],
       child: MaterialApp(

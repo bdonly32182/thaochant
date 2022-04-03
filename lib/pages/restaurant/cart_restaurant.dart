@@ -1,5 +1,5 @@
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
-import 'package:chanthaburi_app/pages/payment/confirm_order.dart';
+import 'package:chanthaburi_app/pages/restaurant/confirm_order.dart';
 import 'package:chanthaburi_app/pages/restaurant/restaurant_detail.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -54,58 +54,61 @@ class _CartRestaurantState extends State<CartRestaurant> {
         child: ListView(
           children: [
             FutureBuilder(
-                future:
-                    SQLiteRestaurant().foodByUserId(userId),
-                builder:
-                    (context, AsyncSnapshot<List<ProductCartModel>> snapshot) {
-                  if (snapshot.hasError) {
-                    return const Text('เกิดเหตุขัดข้อง');
-                  }
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-                  return ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: snapshot.data!.length,
-                    shrinkWrap: true,
-                    itemBuilder:
-                        (BuildContext restaurantContext, int indexRes) {
-                      return FutureBuilder(
-                          future: SQLiteRestaurant().foodsByRestaurant(
-                              snapshot.data![indexRes].businessId, userId),
-                          builder: (context,
-                              AsyncSnapshot<List<ProductCartModel>>
-                                  foodSnapshot) {
-                            if (foodSnapshot.hasError) {
-                              return const Text('เกิดเหตุขัดข้อง');
-                            }
-                            if (foodSnapshot.connectionState == ConnectionState.waiting) {
-                              return const PouringHourGlass();
-                            }
-                            return Card(
-                              child: Column(
-                                children: [
-                                  buildHeaderCard(
+              future: SQLiteRestaurant().foodByUserId(userId),
+              builder:
+                  (context, AsyncSnapshot<List<ProductCartModel>> snapshot) {
+                if (snapshot.hasError) {
+                  return const Text('เกิดเหตุขัดข้อง');
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+                return ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext restaurantContext, int indexRes) {
+                    return FutureBuilder(
+                        future: SQLiteRestaurant().foodsByRestaurant(
+                            snapshot.data![indexRes].businessId, userId),
+                        builder: (context,
+                            AsyncSnapshot<List<ProductCartModel>>
+                                foodSnapshot) {
+                          if (foodSnapshot.hasError) {
+                            return const Text('เกิดเหตุขัดข้อง');
+                          }
+                          if (foodSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const PouringHourGlass();
+                          }
+                          return Card(
+                            child: Column(
+                              children: [
+                                buildHeaderCard(
+                                  snapshot.data![indexRes].businessName,
+                                  snapshot.data![indexRes].businessId,
+                                ),
+                                listviewFood(width, height, foodSnapshot.data!),
+                                buildButtonToConfirm(
+                                    foodSnapshot.data!,
                                     snapshot.data![indexRes].businessName,
-                                    snapshot.data![indexRes].businessId,
-                                  ),
-                                  listviewFood(
-                                      width, height, foodSnapshot.data!),
-                                  buildButtonToConfirm(foodSnapshot.data!)
-                                ],
-                              ),
-                            );
-                          });
-                    },
-                  );
-                },),
+                                    snapshot.data![indexRes].businessId)
+                              ],
+                            ),
+                          );
+                        });
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Padding buildButtonToConfirm(List<ProductCartModel> foods) {
+  Padding buildButtonToConfirm(List<ProductCartModel> foods,
+      String restaurantName, String restaurantId) {
     num sumTotalPrice = 0;
     for (ProductCartModel food in foods) {
       sumTotalPrice += food.totalPrice;
@@ -129,7 +132,11 @@ class _CartRestaurantState extends State<CartRestaurant> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (builder) => ConfirmOrder(),
+                  builder: (builder) => ConfirmOrder(
+                    products: foods,
+                    businessName: restaurantName,
+                    businessId: restaurantId,
+                  ),
                 ),
               );
             },

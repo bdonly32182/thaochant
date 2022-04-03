@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:chanthaburi_app/models/googlemap/google_map.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/map/geolocation.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SelectLocation extends StatefulWidget {
   final double initLat, initLng;
@@ -31,11 +33,22 @@ class _SelectLocationState extends State<SelectLocation> {
   }
 
   void checkPermission() async {
-    Position _position = await determinePosition();
-    setState(() {
-      lat = _position.latitude;
-      lng = _position.longitude;
-    });
+    try {
+      Position _position = await determinePosition();
+      setState(() {
+        lat = _position.latitude;
+        lng = _position.longitude;
+      });
+    } catch (e) {
+      PermissionStatus locationStatus = await Permission.location.status;
+      if (locationStatus.isPermanentlyDenied || locationStatus.isDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Location',
+          'โปรดแชร์ Location',
+        );
+      }
+    }
   }
 
   final MarkerId _currentMarker = const MarkerId('current_marker');

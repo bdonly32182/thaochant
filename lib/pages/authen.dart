@@ -73,6 +73,13 @@ class _AuthenState extends State<Authen> {
               (route) => false,
             );
             break;
+          case "guide":
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              MyConstant.routeGuideService,
+              (route) => false,
+            );
+            break;
           default:
             _onError({
               "status": "400",
@@ -139,7 +146,7 @@ class _AuthenState extends State<Authen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("ยังไม่มีบัญชีผู้ใช้งาน ? "),
+          const Text("ยังไม่มีบัญชีผู้ใช้งาน ? "),
           InkWell(
             onTap: () {
               Navigator.pushNamedAndRemoveUntil(

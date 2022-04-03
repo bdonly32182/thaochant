@@ -37,8 +37,8 @@ class _PartnerListState extends State<PartnerList> {
 
   Future<void> loadMoreBuyers(int pageKey) async {
     try {
-      QuerySnapshot _resultSeller =
-          await UserCollection.sellerList(lastDocument);
+      QuerySnapshot _resultSeller = await UserCollection.userRoleList(
+          lastDocument, MyConstant.sellerName);
       final isLastPage = _resultSeller.docs.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(_resultSeller.docs);
@@ -74,16 +74,14 @@ class _PartnerListState extends State<PartnerList> {
           ? RefreshIndicator(
               onRefresh: () => Future.sync(() => onRefresh()),
               child: FutureBuilder<QuerySnapshot>(
-                future: UserCollection.searchUser(widget.textSearch),
+                future: UserCollection.searchUser(
+                    widget.textSearch, MyConstant.sellerName),
                 builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return const BadRequestError();
                   }
                   if (snapshot.connectionState == ConnectionState.done) {
-                    List _sellers = snapshot.data!.docs
-                        .where((element) =>
-                            element["role"] == MyConstant.sellerName)
-                        .toList();
+                    List _sellers = snapshot.data!.docs;
                     if (_sellers.isEmpty) {
                       return const SearchResultFound();
                     }

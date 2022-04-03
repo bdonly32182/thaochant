@@ -18,7 +18,7 @@
       </intent>
     </queries>
    <application
-        android:label="chanthaburi_app"
+        android:label="THAO CHAN"
         android:icon="@mipmap/ic_launcher">
         <meta-data
           android:name="com.google.android.geo.API_KEY"

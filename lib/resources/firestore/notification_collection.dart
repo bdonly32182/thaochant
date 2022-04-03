@@ -25,6 +25,7 @@ class NotificationCollection {
   static Stream<QuerySnapshot<Object?>> notifications(String recipientId) {
     Stream<QuerySnapshot<Object?>> _notifications = notificationCollection
         .where('recipientId', isEqualTo: recipientId)
+        .orderBy("timeStamp",descending: true)
         .snapshots();
     return _notifications;
   }

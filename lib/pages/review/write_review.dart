@@ -4,6 +4,7 @@ import 'package:chanthaburi_app/models/review/review.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/resources/firestore/review_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
@@ -11,10 +12,12 @@ import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class WriteReview extends StatefulWidget {
   String businessId, businessName, businessImage, type;
   Color theme;
+  String? orderDocId;
   WriteReview({
     Key? key,
     required this.businessId,
@@ -22,6 +25,7 @@ class WriteReview extends StatefulWidget {
     required this.businessImage,
     required this.theme,
     required this.type,
+    this.orderDocId,
   }) : super(key: key);
 
   @override
@@ -44,6 +48,15 @@ class _WriteReviewState extends State<WriteReview> {
       setState(() {
         selectedImage = image;
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Location',
+          'โปรดแชร์ Location',
+        );
+      }
     }
   }
 
@@ -53,6 +66,15 @@ class _WriteReviewState extends State<WriteReview> {
       setState(() {
         selectedImage = photo;
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -71,8 +93,9 @@ class _WriteReviewState extends State<WriteReview> {
         },
       );
       Map<String, dynamic> response = await ReviewCollection.writeReview(
-          reviewModel, selectedImage, widget.type);
+          reviewModel, selectedImage, widget.type, widget.orderDocId);
       Navigator.pop(dialogContext);
+      Navigator.pop(context);
       showDialog(
         context: context,
         builder: (BuildContext showContext) =>
@@ -112,10 +135,8 @@ class _WriteReviewState extends State<WriteReview> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // buildFormFieldTitle(width),
                       buildFormFieldMessage(width),
                       buildRating(width),
-                      // buildGetImage(width),
                       buildButtonSendReview(),
                     ],
                   ),

@@ -1,5 +1,5 @@
-import 'package:chanthaburi_app/models/user/user.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
+import 'package:chanthaburi_app/utils/sharePreferrence/share_referrence.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -19,13 +19,19 @@ final CollectionReference _resort =
 class UserCollection {
   static DocumentSnapshot? lastBuyerDocument;
   static Future<DocumentSnapshot<Object?>> profile() async {
-    String uid = _firebaseAuth.currentUser!.uid;
+    String uid = await ShareRefferrence.getUserId();
     DocumentSnapshot _user = await _userCollection.doc(uid).get();
     return _user;
   }
 
-  static Future<QuerySnapshot> searchUser(String search) async {
+  static Future<DocumentSnapshot<Object?>> userById(String userId) async {
+    DocumentSnapshot _user = await _userCollection.doc(userId).get();
+    return _user;
+  }
+
+  static Future<QuerySnapshot> searchUser(String search, String role) async {
     QuerySnapshot _resultUser = await _userCollection
+        .where("role", isEqualTo: role)
         .orderBy("fullName")
         .startAt([search]).endAt([search + '\uf8ff']).get();
     return _resultUser;
@@ -38,20 +44,18 @@ class UserCollection {
     return _resultApprovePartner;
   }
 
-  static Future<QuerySnapshot<Object?>> buyerList(
-      DocumentSnapshot? lastDocument) async {
+  static Future<QuerySnapshot<Object?>> userRoleList(
+      DocumentSnapshot? lastDocument, String status) async {
     if (lastDocument != null) {
       QuerySnapshot _nextDocumentPagination = await _userCollection
-          .where("role", isEqualTo: MyConstant.buyerName)
+          .where("role", isEqualTo: status)
           .startAfterDocument(lastDocument)
           .limit(10)
           .get();
       return _nextDocumentPagination;
     }
-    QuerySnapshot _resultBuyer = await _userCollection
-        .where("role", isEqualTo: MyConstant.buyerName)
-        .limit(10)
-        .get();
+    QuerySnapshot _resultBuyer =
+        await _userCollection.where("role", isEqualTo: status).limit(10).get();
     return _resultBuyer;
   }
 
@@ -68,23 +72,6 @@ class UserCollection {
     QuerySnapshot _resultApprove =
         await _approvePartner.orderBy("fullName").limit(10).get();
     return _resultApprove;
-  }
-
-  static Future<QuerySnapshot> sellerList(
-      DocumentSnapshot? lastDocument) async {
-    if (lastDocument != null) {
-      QuerySnapshot _nextDocumentPagination = await _userCollection
-          .where("role", isEqualTo: MyConstant.sellerName)
-          .startAfterDocument(lastDocument)
-          .limit(10)
-          .get();
-      return _nextDocumentPagination;
-    }
-    QuerySnapshot _resultBuyer = await _userCollection
-        .where("role", isEqualTo: MyConstant.sellerName)
-        .limit(10)
-        .get();
-    return _resultBuyer;
   }
 
   static Future<QuerySnapshot> dropdownSeller() async {

@@ -1,8 +1,9 @@
+import 'package:chanthaburi_app/pages/home/guide/guide_tours.dart';
+import 'package:chanthaburi_app/pages/home/guide/home_guide.dart';
+import 'package:chanthaburi_app/pages/profile/profile.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
-// import 'package:tour_app/pages/guide/list_join_package_tour.dart';
-// import '../notification.dart';
-// import '../profile.dart';
+
 class GuideService extends StatefulWidget {
   GuideService({Key? key}) : super(key: key);
 
@@ -12,32 +13,29 @@ class GuideService extends StatefulWidget {
 
 class _GuideServiceState extends State<GuideService> {
   int _selected = 0;
-  List<Widget> _widget_bottom_list = [
-    // ListJoinPackageTour(),
-    // Notifications(),
-    // Profile()
+  List<Widget> widgetBottomList = [
+    GuideTours(),
+    Profile(
+      theme: MyConstant.colorGuide,
+    )
   ];
   void _onItemTapped(int index) {
     setState(() {
       _selected = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: _widget_bottom_list[_selected],
+        child: widgetBottomList[_selected],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
+            label: 'My Tour',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

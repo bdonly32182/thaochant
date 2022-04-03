@@ -7,6 +7,7 @@ import 'package:chanthaburi_app/resources/firestore/resort_collecttion.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/user_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/map/geolocation.dart';
 import 'package:chanthaburi_app/utils/map/google_map_fluter.dart';
@@ -18,6 +19,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CreateStore extends StatefulWidget {
   String title;
@@ -35,8 +37,23 @@ class CreateStore extends StatefulWidget {
 }
 
 class _CreateStoreState extends State<CreateStore> {
-  final BusinessModel _businessModel =
-      BusinessModel('', '', 0, 0, [], [], '', '', 1, "0", "", "", 0, 0);
+  final BusinessModel _businessModel = BusinessModel(
+    address: '',
+    businessName: '',
+    imageRef: '',
+    latitude: 0,
+    link: '',
+    longitude: 0,
+    phoneNumber: '',
+    point: 0,
+    policyDescription: [],
+    policyName: [],
+    promptPay: '',
+    ratingCount: 0,
+    sellerId: '',
+    statusOpen: 1,
+    startPrice: 0.0,
+  );
   final _formKey = GlobalKey<FormState>();
   double? latitude, longitude;
   List<QueryDocumentSnapshot> sellerList = [];
@@ -62,13 +79,24 @@ class _CreateStoreState extends State<CreateStore> {
   }
 
   void checkPermission() async {
-    Position positionBuyer = await determinePosition();
-    _businessModel.latitude = positionBuyer.latitude;
-    _businessModel.longitude = positionBuyer.longitude;
-    setState(() {
-      latitude = positionBuyer.latitude;
-      longitude = positionBuyer.longitude;
-    });
+    try {
+      Position positionBuyer = await determinePosition();
+      _businessModel.latitude = positionBuyer.latitude;
+      _businessModel.longitude = positionBuyer.longitude;
+      setState(() {
+        latitude = positionBuyer.latitude;
+        longitude = positionBuyer.longitude;
+      });
+    } catch (e) {
+      PermissionStatus locationStatus = await Permission.location.status;
+      if (locationStatus.isPermanentlyDenied || locationStatus.isDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Location',
+          'โปรดแชร์ Location',
+        );
+      }
+    }
   }
 
   void fetchSellers() async {
@@ -91,6 +119,15 @@ class _CreateStoreState extends State<CreateStore> {
       setState(() {
         imageSelected = image;
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -100,6 +137,15 @@ class _CreateStoreState extends State<CreateStore> {
       setState(() {
         imageSelected = takePhoto;
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 
@@ -231,6 +277,7 @@ class _CreateStoreState extends State<CreateStore> {
                   inputLink(width),
                   inputPrompPay(width),
                   inputAddress(width),
+                  inputStartPrice(width),
                   const SizedBox(height: 25),
                   buildShowmap(width, height, context),
                   buildTextSelectImage(),
@@ -306,6 +353,59 @@ class _CreateStoreState extends State<CreateStore> {
           const Text("ขออภัย ณ ขณะนี้เกิดเหตุขัดข้อง"),
       emptyBuilder: (context, searchEntry) =>
           const Text("ไม่มีข้อมูลผู้ประกอบการ"),
+    );
+  }
+
+  Row inputStartPrice(double width) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 20),
+          width: width * .8,
+          child: widget.typeBusiness == "resort"
+              ? TextFormField(
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value!.isEmpty) return 'กรุณากรอกราคาห้องพักเริ่มต้น';
+                    return null;
+                  },
+                  onSaved: (startPrice) =>
+                      _businessModel.startPrice = double.parse(startPrice!),
+                  decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      labelText: 'ราคาห้องพักเริ่มต้น :',
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                      prefix: Icon(
+                        Icons.account_balance,
+                        color: MyConstant.colorStore,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(10),
+                      )),
+                  style: TextStyle(
+                    color: MyConstant.colorStore,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              : null,
+          decoration: const BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

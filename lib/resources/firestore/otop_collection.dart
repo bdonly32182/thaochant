@@ -15,13 +15,36 @@ final CollectionReference otopCollection =
     _firestore.collection(MyConstant.otopCollection);
 
 class OtopCollection {
+  static Future<QuerySnapshot> otops(
+      DocumentSnapshot? lastDocument) async {
+    if (lastDocument != null) {
+      QuerySnapshot _loadMoreOtop = await otopCollection
+          .orderBy("statusOpen", descending: true)
+          .startAfterDocument(lastDocument)
+          .limit(3)
+          .get();
+      return _loadMoreOtop;
+    }
+    QuerySnapshot _otops = await otopCollection
+        .orderBy("statusOpen", descending: true)
+        .limit(3)
+        .get();
+    return _otops;
+  }
+
+  static Future<QuerySnapshot> searchOtop(String search) async {
+    QuerySnapshot _resultOtop = await otopCollection
+        .orderBy("businessName")
+        .startAt([search]).endAt([search + '\uf8ff']).get();
+    return _resultOtop;
+  }
   static Future<Map<String, dynamic>> createOtop(
       BusinessModel otop, File? imageRef, bool isAdmin) async {
     try {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
         otop.imageRef = await StorageFirebase.uploadImage(
-            "images/restaurant/$fileName", imageRef);
+            "images/otop/$fileName", imageRef);
       }
       DocumentReference _newOtop = await otopCollection.add({
         "businessName": otop.businessName,
@@ -120,6 +143,15 @@ class OtopCollection {
       return {"status": "400", "message": "ลบข้อมูลสินค้าล้มเหลว"};
     }
   }
+
+  static Future<void> setPointOtop(String docId, num point) async {
+    try {
+      otopCollection.doc(docId).update({
+        "point": FieldValue.increment(point),
+        "ratingCount": FieldValue.increment(1),
+      });
+    } catch (e) {}
+  } 
 
   static Future<void> changeStatus(String docId, int status) async {
     try {

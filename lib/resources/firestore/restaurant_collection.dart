@@ -89,6 +89,15 @@ class RestaurantCollection {
     return _restaurant;
   }
 
+  static Future<void> setPointRestaurant(String docId, num point) async {
+    try {
+      restaurant.doc(docId).update({
+        "point": FieldValue.increment(point),
+        "ratingCount": FieldValue.increment(1),
+      });
+    } catch (e) {}
+  } 
+
   static Future<Map<String, dynamic>> editRestaurant(
     String restaurantId,
     BusinessModel restaurantModel,

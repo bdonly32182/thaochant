@@ -44,6 +44,7 @@ class _MyResortState extends State<MyResort> {
                     businessId: snapshot.data!.docs[index].id,
                     typeBusiness: MyConstant.roomCollection,
                     isAdmin: widget.isAdmin,
+                    imageRef: snapshot.data!.docs[index]['imageRef'],
                   );
                 });
           }

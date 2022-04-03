@@ -42,6 +42,11 @@ class SQLiteRestaurant {
     await db.delete(tableFood, where: 'productId = ? and userId =?', whereArgs: [foodId, userId]);
   }
 
+  Future<void> deleteFoodInRestaurant(String restaurantId) async {
+    Database db = await SQLiteHelper().connectDB();
+    await db.delete(tableFood, where: 'businessId = ?', whereArgs: [restaurantId]);
+  }
+
   Future<void> editFood(
       String productId,userId, int amount, num totalPrice, String addtionMessage) async {
     Database db = await SQLiteHelper().connectDB();

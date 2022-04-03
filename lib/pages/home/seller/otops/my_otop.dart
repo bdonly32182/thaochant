@@ -44,6 +44,7 @@ class _MyOtopState extends State<MyOtop> {
                     businessId: snapshot.data!.docs[index].id,
                     typeBusiness: MyConstant.productOtopCollection,
                     isAdmin: widget.isAdmin,
+                    imageRef: snapshot.data!.docs[index]['imageRef'],
                   );
                 });
           }

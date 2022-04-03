@@ -10,9 +10,9 @@ class ShareRefferrence {
     return role;
   }
 
-  static Future<String?> getUserId() async {
+  static Future<String> getUserId() async {
     final SharedPreferences _referrence = await referrences;
-    String? userId = _referrence.getString('userId');
+    String userId = _referrence.getString('userId') ?? "";
     return userId;
   }
 

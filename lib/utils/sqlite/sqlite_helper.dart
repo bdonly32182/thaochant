@@ -5,6 +5,7 @@ class SQLiteHelper {
   final String dbName = 'chan.db';
   final String tableFood = 'orderFood';
   final String tableProduct = 'orderProduct';
+  final String tableAddress = 'shippingAddress';
   int version = 1;
 
   String id = "id";
@@ -18,6 +19,17 @@ class SQLiteHelper {
   String price = "price";
   String imageURL = "imageURL";
   String addtionMessage = "addtionMessage";
+  String weight = "weight";
+  String width = "width";
+  String height= "height";
+  String long= "long";
+
+  // address
+  String fullName = "fullName";
+  String address = "address";
+  String phoneNumber = "phoneNumber";
+  String lat = "lat";
+  String lng = "lng";
 
   SQLiteHelper() {
     initDatabase();
@@ -49,7 +61,11 @@ class SQLiteHelper {
       $businessName $textType,
       $userId $textType,
       $imageURL $textType,
-      $addtionMessage $textType
+      $addtionMessage $textType,
+      $width $numType,
+      $weight $numType,
+      $height $numType,
+      $long $numType
     )
     ''');
     await db.execute('''
@@ -64,7 +80,22 @@ class SQLiteHelper {
       $businessName $textType,
       $userId $textType,
       $imageURL $textType,
-      $addtionMessage $textType
+      $addtionMessage $textType,
+      $width $numType,
+      $weight $numType,
+      $height $numType,
+      $long $numType
+    )
+    ''');
+    await db.execute('''
+    CREATE TABLE $tableAddress(
+      $id $idType,
+      $fullName $textType,
+      $phoneNumber $textType,
+      $userId $textType,
+      $address $textType,
+      $lat $numType,
+      $lng $numType
     )
     ''');
   }

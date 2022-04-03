@@ -4,12 +4,14 @@ import 'package:chanthaburi_app/models/restaurant/food.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class EditFood extends StatefulWidget {
   String foodName, foodId;
@@ -79,6 +81,15 @@ class _EditFoodState extends State<EditFood> {
       setState(() {
         imageSelected = image;
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -88,6 +99,15 @@ class _EditFoodState extends State<EditFood> {
       setState(() {
         imageSelected = takePhoto;
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 
@@ -217,7 +237,7 @@ class _EditFoodState extends State<EditFood> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImage, takePhoto,MyConstant.colorStore);
+            dialogCamera(context, getImage, takePhoto, MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,
@@ -313,7 +333,7 @@ class _EditFoodState extends State<EditFood> {
           height: 60,
           child: categorys.isNotEmpty
               ? DropdownButton(
-                  hint: const Text('เลือกเลือกประเภทอาหาร'),
+                  hint: const Text('เลือกประเภทอาหาร'),
                   items: categorys.map((DocumentSnapshot category) {
                     return DropdownMenuItem(
                       child: Text(

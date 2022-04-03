@@ -1,7 +1,15 @@
 import 'dart:io';
 
 import 'package:chanthaburi_app/models/review/review.dart';
+import 'package:chanthaburi_app/resources/firestore/booking_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/location_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/order_food_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/order_product_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/order_tour_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/resort_collecttion.dart';
+import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/tour_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -17,8 +25,8 @@ class ReviewCollection {
     return _reviews;
   }
 
-  static Future<Map<String, dynamic>> writeReview(
-      ReviewModel reviewModel, File? imageReview, String type) async {
+  static Future<Map<String, dynamic>> writeReview(ReviewModel reviewModel,
+      File? imageReview, String type, String? docOrderId) async {
     try {
       /* new feature
       if (imageReview != null) {
@@ -38,6 +46,38 @@ class ReviewCollection {
       if (type == "location") {
         await LocationCollection.setPointLocation(
             reviewModel.businessId, reviewModel.point);
+      }
+      if (type == "tour") {
+        await TourCollection.setPointLocation(
+            reviewModel.businessId, reviewModel.point);
+      }
+
+      if (type == "tour_user") {
+        await TourCollection.setPointLocation(
+            reviewModel.businessId, reviewModel.point);
+        await OrderTourCollection.updateReview(docOrderId!);
+      }
+
+      if (type == "restaurant") {
+        await RestaurantCollection.setPointRestaurant(
+          reviewModel.businessId,
+          reviewModel.point,
+        );
+        await OrderFoodCollection.updateReview(docOrderId!);
+      }
+      if (type == "otop") {
+        await OtopCollection.setPointOtop(
+          reviewModel.businessId,
+          reviewModel.point,
+        );
+        await OrderProductCollection.updateReview(docOrderId!);
+      }
+      if (type == "resort") {
+        await ResortCollection.setPointResort(
+          reviewModel.businessId,
+          reviewModel.point,
+        );
+        await BookingCollection.updateReview(docOrderId!);
       }
 
       return {"status": "200", "message": "เขียนรีวิวเรียบร้อย"};

@@ -4,7 +4,6 @@ import 'package:chanthaburi_app/models/location/location.dart';
 import 'package:chanthaburi_app/resources/firestore/review_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
 import '../firebase_storage.dart';
@@ -19,6 +18,30 @@ class LocationCollection {
     Stream<QuerySnapshot> _locations =
         locationCollection.orderBy('point').snapshots();
     return _locations;
+  }
+
+  static Future<QuerySnapshot<LocationModel>> allLocations(
+      DocumentSnapshot? lastDocument) async {
+    if (lastDocument != null) {
+      QuerySnapshot<LocationModel> _lastResorts = await locationCollection
+          .withConverter<LocationModel>(
+            fromFirestore: (snapshot, _) =>
+                LocationModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap(),
+          )
+          .limit(10)
+          .get();
+      return _lastResorts;
+    }
+    QuerySnapshot<LocationModel> _allResorts = await locationCollection
+        .withConverter<LocationModel>(
+          fromFirestore: (snapshot, _) =>
+              LocationModel.fromMap(snapshot.data()!),
+          toFirestore: (model, _) => model.toMap(),
+        )
+        .limit(10)
+        .get();
+    return _allResorts;
   }
 
   static Future<DocumentSnapshot> location(String docId) async {
@@ -133,7 +156,7 @@ class LocationCollection {
       }
       await locationCollection.doc(docId).delete();
       await ReviewCollection.deleteReview(docId);
-      
+
       return {"status": "200", "message": "ลบแหล่งท่องเที่ยวเรียบร้อย"};
     } catch (e) {
       return {"status": "400", "message": "ลบแหล่งท่องเที่ยวเรียบร้อย"};

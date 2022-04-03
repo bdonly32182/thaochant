@@ -1,5 +1,5 @@
 import 'package:chanthaburi_app/pages/restaurant/shopping_restaurant.dart';
-import 'package:chanthaburi_app/pages/restaurant/tracking_restaurant.dart';
+import 'package:chanthaburi_app/pages/restaurant/tracking_order_food.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +14,7 @@ class _HomeRestaurantState extends State<HomeRestaurant> {
   int _selected = 0;
   final List<Widget> widgetBottomList = [
     ShoppingRestaurant(),
-    TrackingRestaurant(),
+    TrackingOrderFood(),
   ];
   void _onItemTapped(int index) {
     setState(() {
@@ -36,7 +36,7 @@ class _HomeRestaurantState extends State<HomeRestaurant> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.delivery_dining),
-            label: 'ติดตามการสั่งซื้อ',
+            label: 'ติดตามการจอง',
           ),
         ],
         onTap: _onItemTapped,

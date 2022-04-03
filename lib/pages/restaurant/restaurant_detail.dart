@@ -1,5 +1,6 @@
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/detail_business/detail_business.dart';
+import 'package:chanthaburi_app/pages/restaurant/confirm_order.dart';
 import 'package:chanthaburi_app/pages/restaurant/component/category_restaurant.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
@@ -16,20 +17,9 @@ import 'package:provider/provider.dart';
 
 class RestaurantDetail extends StatefulWidget {
   String restaurantId;
-  // imageRef, address, phoneNumber,restaurantName, ;
-  // num point, ratingCount;
-  // double lat, lng;
   RestaurantDetail({
     Key? key,
-    // required this.restaurantName,
-    // required this.imageRef,
     required this.restaurantId,
-    // required this.address,
-    // required this.point,
-    // required this.ratingCount,
-    // required this.lat,
-    // required this.lng,
-    // required this.phoneNumber,
   }) : super(key: key);
 
   @override
@@ -58,19 +48,19 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
       child: Scaffold(
         backgroundColor: MyConstant.backgroudApp,
         body: Consumer<ProductProvider>(
-          builder: (context,ProductProvider provider, snapshot) {
-            return Column(
-              children: [
-                FutureBuilder(
-                  future: RestaurantCollection.restaurantById(widget.restaurantId),
-                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return const InternalError();
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const PouringHourGlass();
-                    }
-                    return Expanded(
+            builder: (context, ProductProvider provider, snapshot) {
+          return FutureBuilder(
+              future: RestaurantCollection.restaurantById(widget.restaurantId),
+              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return const InternalError();
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const PouringHourGlass();
+                }
+                return Column(
+                  children: [
+                    Expanded(
                       child: ListView(
                         children: [
                           buildImageRestaurant(
@@ -85,6 +75,8 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                             snapshot.data!.get('longitude'),
                             snapshot.data!.get('point'),
                             snapshot.data!.get('ratingCount'),
+                            snapshot.data!.get('policyDescription'),
+                            snapshot.data!.get('policyName'),
                           ),
                           CategoryRestaurant(
                             businessId: widget.restaurantId,
@@ -93,20 +85,19 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                           )
                         ],
                       ),
-                    );
-                  },
-                ),
-                buildButtonCheckout(height, width, provider.products),
-              ],
-            );
-          }
-        ),
+                    ),
+                    buildButtonCheckout(height, width, provider.products,
+                        snapshot.data!.get('businessName')),
+                  ],
+                );
+              });
+        }),
       ),
     );
   }
 
-  Container buildButtonCheckout(
-      double height, double width, List<ProductCartModel> foods) {
+  Container buildButtonCheckout(double height, double width,
+      List<ProductCartModel> foods, String restaurantName) {
     num totalAmountAll = 0;
     num totalPriceAll = 0;
     for (ProductCartModel food in foods) {
@@ -141,12 +132,16 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                 ],
               ),
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (builder) => Checkout(),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (builder) => ConfirmOrder(
+                      products: foods,
+                      businessName: restaurantName,
+                      businessId: widget.restaurantId,
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(primary: MyConstant.themeApp),
             ),
@@ -157,24 +152,26 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
     );
   }
 
-  Card buildDetail(double width, double height, String businessName, address,
-      phoneNumber, double lat, lng, num point, ratingCount) {
+  Card buildDetail(
+      double width,
+      double height,
+      String businessName,
+      address,
+      phoneNumber,
+      double lat,
+      lng,
+      num point,
+      ratingCount,
+      List<dynamic> policyDescription,
+      List<dynamic> policyName) {
     return Card(
       child: SizedBox(
         width: width * 1,
         height: height * 0.14,
         child: Column(
           children: [
-            buildNameRestaurant(
-              width,
-              businessName,
-              address,
-              phoneNumber,
-              lat,
-              lng,
-              point,
-              ratingCount,
-            ),
+            buildNameRestaurant(width, businessName, address, phoneNumber, lat,
+                lng, point, ratingCount, policyDescription, policyName),
             buildDescription(width, address, point, ratingCount),
           ],
         ),
@@ -273,8 +270,17 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
     );
   }
 
-  Row buildNameRestaurant(double width, String businessName, address,
-      phoneNumber, double lat, lng, num point, ratingCount) {
+  Row buildNameRestaurant(
+      double width,
+      String businessName,
+      address,
+      phoneNumber,
+      double lat,
+      lng,
+      num point,
+      ratingCount,
+      List<dynamic> policyDescription,
+      List<dynamic> policyName) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -313,6 +319,8 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                     phoneNumber: phoneNumber,
                     point: point,
                     ratingCount: ratingCount,
+                    policyDescription: policyDescription,
+                    policyName: policyName,
                   ),
                 ),
               );

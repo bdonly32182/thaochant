@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/pages/home/admin/home_admin.dart';
+import 'package:chanthaburi_app/pages/package_toure/order/admin_order_tours.dart';
 import 'package:chanthaburi_app/pages/profile/profile.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class _AdminServiceState extends State<AdminService> {
   int _selected = 0;
   final List<Widget> _widget_bottom_list = [
     HomeAdmin(),
-    // OrderPackageTour(),
+    OrderPackageTours(),
     // Notifications(),
     Profile(
       theme: MyConstant.themeApp,
@@ -39,14 +40,10 @@ class _AdminServiceState extends State<AdminService> {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.list_alt),
-          //   label: 'Order',
-          // ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.notifications),
-          //   label: 'Notification',
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt),
+            label: 'Order',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',

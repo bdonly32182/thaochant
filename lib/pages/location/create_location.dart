@@ -4,6 +4,7 @@ import 'package:chanthaburi_app/models/googlemap/google_map.dart';
 import 'package:chanthaburi_app/models/location/location.dart';
 import 'package:chanthaburi_app/resources/firestore/location_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/map/geolocation.dart';
 import 'package:chanthaburi_app/utils/map/google_map_fluter.dart';
@@ -14,7 +15,7 @@ import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:video_player/video_player.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CreateLocations extends StatefulWidget {
   CreateLocations({Key? key}) : super(key: key);
@@ -49,12 +50,23 @@ class _CreateLocationsState extends State<CreateLocations> {
   }
 
   void checkPermission() async {
-    Position positionBuyer = await determinePosition();
+    try {
+      Position positionBuyer = await determinePosition();
 
-    setState(() {
-      _locationModel.lat = positionBuyer.latitude;
-      _locationModel.lng = positionBuyer.longitude;
-    });
+      setState(() {
+        _locationModel.lat = positionBuyer.latitude;
+        _locationModel.lng = positionBuyer.longitude;
+      });
+    } catch (e) {
+      PermissionStatus locationStatus = await Permission.location.status;
+      if (locationStatus.isPermanentlyDenied || locationStatus.isDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Location',
+          'โปรดแชร์ Location',
+        );
+      }
+    }
   }
 
   getImage() async {
@@ -63,6 +75,15 @@ class _CreateLocationsState extends State<CreateLocations> {
       setState(() {
         listImageSelected.add(image);
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -72,6 +93,15 @@ class _CreateLocationsState extends State<CreateLocations> {
       setState(() {
         listImageSelected.add(takePhoto);
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 

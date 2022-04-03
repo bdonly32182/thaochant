@@ -1,5 +1,7 @@
+import 'package:chanthaburi_app/pages/guide/guide_list.dart';
 import 'package:chanthaburi_app/pages/home/admin/component/menu_card.dart';
 import 'package:chanthaburi_app/pages/location/locations.dart';
+import 'package:chanthaburi_app/pages/package_toure/package_tours.dart';
 import 'package:chanthaburi_app/pages/userlist/buyer_list.dart';
 import 'package:chanthaburi_app/pages/userlist/partner.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -33,19 +35,24 @@ class _HomeAdminState extends State<HomeAdmin> {
                 titleColor: Colors.orange,
               ),
               MenuCard(
-                // gotoWidget: PackageTour(isAdmin: true),
+                gotoWidget: PackageTours(
+                  isAdmin: true,
+                  isBuyer: false,
+                ),
                 imageUrl: MyConstant.packageTourImage,
                 title: 'แพ็คเกจทัวร์',
                 titleColor: Colors.blue.shade300,
               ),
               MenuCard(
-                gotoWidget: Locations(isAdmin: true,),
+                gotoWidget: Locations(
+                  isAdmin: true,
+                ),
                 imageUrl: MyConstant.locationImage,
                 title: 'แหล่งท่องเที่ยว',
                 titleColor: Colors.purple.shade200,
               ),
               MenuCard(
-                // gotoWidget: GuideList(),
+                gotoWidget: GuideList(),
                 imageUrl: MyConstant.guideImage,
                 title: 'ไกด์นำเที่ยว',
                 titleColor: Colors.pink.shade200,

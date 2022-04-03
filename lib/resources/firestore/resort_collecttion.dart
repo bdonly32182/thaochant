@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/notification/notification.dart';
+import 'package:chanthaburi_app/models/resort/room.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
+import 'package:chanthaburi_app/resources/firestore/booking_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/notification_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/room_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -21,7 +23,7 @@ class ResortCollection {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
         resort.imageRef = await StorageFirebase.uploadImage(
-            "images/restaurant/$fileName", imageRef);
+            "images/resort/$fileName", imageRef);
       }
       DocumentReference _newResort = await _resort.add({
         "businessName": resort.businessName,
@@ -36,8 +38,9 @@ class ResortCollection {
         "phoneNumber": resort.phoneNumber,
         "link": resort.link,
         "imageRef": resort.imageRef,
-        "point":resort.point,
-        "ratingCount":resort.ratingCount,
+        "point": resort.point,
+        "ratingCount": resort.ratingCount,
+        "startPrice": resort.startPrice,
       });
       if (isAdmin) {
         NotificationModel _notiModel = NotificationModel(
@@ -60,9 +63,68 @@ class ResortCollection {
     return _myResorts;
   }
 
-  static Future<DocumentSnapshot> resortById(String resortId) async {
-    DocumentSnapshot _resortDoc = await _resort.doc(resortId).get();
+  static Future<QuerySnapshot<BusinessModel>> allResort(DocumentSnapshot? lastDocument) async {
+    if (lastDocument != null) {
+      QuerySnapshot<BusinessModel> _lastResorts = await _resort
+        .withConverter<BusinessModel>(
+          fromFirestore: (snapshot, _) =>
+              BusinessModel.fromMap(snapshot.data()!),
+          toFirestore: (model, _) => model.toMap(),
+        ).limit(10)
+        .get();
+      return _lastResorts;
+    }
+    QuerySnapshot<BusinessModel> _allResorts = await _resort
+        .withConverter<BusinessModel>(
+          fromFirestore: (snapshot, _) =>
+              BusinessModel.fromMap(snapshot.data()!),
+          toFirestore: (model, _) => model.toMap(),
+        ).limit(10)
+        .get();
+    return _allResorts;
+  }
+
+  static Future<List<QueryDocumentSnapshot<BusinessModel>>> resortReadyCheckIn(
+      int totalRoom, totalGues, checkIn, checkOut) async {
+    List<QueryDocumentSnapshot<BusinessModel>> resorts = [];
+    QuerySnapshot<BusinessModel> _resortSnapshot = await _resort
+        .withConverter<BusinessModel>(
+          fromFirestore: (snapshot, _) =>
+              BusinessModel.fromMap(snapshot.data()!),
+          toFirestore: (model, _) => model.toMap(),
+        )
+        .get();
+    for (QueryDocumentSnapshot<BusinessModel> resort in _resortSnapshot.docs) {
+      QuerySnapshot<RoomModel> room =
+          await RoomCollection.roomsByUser(resort.id);
+      QuerySnapshot bookings = await BookingCollection.bookingOfRoom(
+          room.docs[0].id, checkIn, checkOut);
+      if (bookings.docs.length < room.docs[0].data().totalRoom) {
+        resorts.add(resort);
+      }
+    }
+    return resorts;
+  }
+
+  static Future<DocumentSnapshot<BusinessModel>> resortById(
+      String resortId) async {
+    DocumentSnapshot<BusinessModel> _resortDoc = await _resort
+        .doc(resortId)
+        .withConverter<BusinessModel>(
+            fromFirestore: (snapshot, _) =>
+                BusinessModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
     return _resortDoc;
+  }
+
+  static Future<void> setPointResort(String docId, num point) async {
+    try {
+      _resort.doc(docId).update({
+        "point": FieldValue.increment(point),
+        "ratingCount": FieldValue.increment(1),
+      });
+    } catch (e) {}
   }
 
   static Future<Map<String, dynamic>> editResort(
@@ -93,6 +155,7 @@ class ResortCollection {
         "phoneNumber": resort.phoneNumber,
         "link": resort.link,
         "imageRef": resort.imageRef,
+        "startPrice": resort.startPrice,
       });
 
       return {"status": "200", "message": "แก้ไขข้อมูลห้องพักเรียบร้อย"};

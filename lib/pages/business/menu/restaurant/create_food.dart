@@ -4,6 +4,7 @@ import 'package:chanthaburi_app/models/restaurant/food.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
@@ -11,6 +12,7 @@ import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CreateFood extends StatefulWidget {
   String restaurantId;
@@ -60,6 +62,15 @@ class _CreateFoodState extends State<CreateFood> {
       setState(() {
         imageSelected = image;
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -69,6 +80,15 @@ class _CreateFoodState extends State<CreateFood> {
       setState(() {
         imageSelected = takePhoto;
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 
@@ -171,7 +191,7 @@ class _CreateFoodState extends State<CreateFood> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImage, takePhoto,MyConstant.colorStore);
+            dialogCamera(context, getImage, takePhoto, MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,
@@ -265,7 +285,7 @@ class _CreateFoodState extends State<CreateFood> {
             dropdownSearchDecoration: InputDecoration(
               fillColor: Colors.white,
               filled: true,
-              labelText: "เลือกเลือกประเภทอาหาร",
+              labelText: "เลือกประเภทอาหาร",
               contentPadding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey.shade200),

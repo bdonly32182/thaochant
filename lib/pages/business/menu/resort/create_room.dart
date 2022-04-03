@@ -4,6 +4,7 @@ import 'package:chanthaburi_app/models/resort/room.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/room_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
@@ -11,6 +12,7 @@ import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CreateRoom extends StatefulWidget {
   String resortId;
@@ -62,6 +64,15 @@ class _CreateRoomState extends State<CreateRoom> {
       setState(() {
         listImageSelected.add(image);
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -71,6 +82,15 @@ class _CreateRoomState extends State<CreateRoom> {
       setState(() {
         selectImageCover = imageCover;
       });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
     }
   }
 
@@ -80,6 +100,15 @@ class _CreateRoomState extends State<CreateRoom> {
       setState(() {
         selectImageCover = takePhotoCover;
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 
@@ -89,6 +118,15 @@ class _CreateRoomState extends State<CreateRoom> {
       setState(() {
         listImageSelected.add(takePhoto);
       });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
     }
   }
 
@@ -143,6 +181,7 @@ class _CreateRoomState extends State<CreateRoom> {
                 fieldDescription(width),
                 buildDropdown(width),
                 fieldRoomSize(width),
+                fieldTotalRoom(width),
                 fieldAmountGuest(width),
                 const SizedBox(height: 35),
                 Center(
@@ -178,7 +217,8 @@ class _CreateRoomState extends State<CreateRoom> {
 
   InkWell buildListImage(BuildContext context, double width) {
     return InkWell(
-      onTap: () => dialogCamera(context, getImage, takePhoto,MyConstant.colorStore),
+      onTap: () =>
+          dialogCamera(context, getImage, takePhoto, MyConstant.colorStore),
       child: Container(
         margin: const EdgeInsets.all(8.0),
         width: double.maxFinite,
@@ -276,7 +316,8 @@ class _CreateRoomState extends State<CreateRoom> {
       children: [
         InkWell(
           onTap: () {
-            dialogCamera(context, getImageCover, takePhotoCover,MyConstant.colorStore);
+            dialogCamera(
+                context, getImageCover, takePhotoCover, MyConstant.colorStore);
           },
           child: Container(
             width: width * .6,
@@ -373,6 +414,49 @@ class _CreateRoomState extends State<CreateRoom> {
                 fillColor: Colors.white,
                 filled: true,
                 labelText: 'ขนาดห้อง ตรม. :',
+                labelStyle: TextStyle(color: Colors.grey[600]),
+                prefix: Icon(
+                  Icons.attach_money,
+                  color: MyConstant.colorStore,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade400),
+                  borderRadius: BorderRadius.circular(10),
+                )),
+            style: TextStyle(
+              color: MyConstant.colorStore,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row fieldTotalRoom(double width) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 20),
+          width: width * .7,
+          height: 60,
+          child: TextFormField(
+            keyboardType: TextInputType.phone,
+            validator: (value) {
+              if (value!.isEmpty) return 'กรุณากรอกจำนวนห้องทั้งหมด';
+              return null;
+            },
+            onSaved: (String? totalGuest) =>
+                _roomModel.totalGuest = int.parse(totalGuest!),
+            decoration: InputDecoration(
+                fillColor: Colors.white,
+                filled: true,
+                labelText: 'จำนวนห้องทั้งหมด :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.attach_money,

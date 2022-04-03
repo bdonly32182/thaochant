@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 class HomeBusiness extends StatefulWidget {
   Widget businessWidget;
+  Widget orderWidget;
+  Widget dashboard;
   String businessId;
   String typeBusiness;
   HomeBusiness({
@@ -12,6 +14,8 @@ class HomeBusiness extends StatefulWidget {
     required this.businessId,
     required this.businessWidget,
     required this.typeBusiness,
+    required this.orderWidget,
+    required this.dashboard,
   }) : super(key: key);
 
   @override
@@ -28,15 +32,17 @@ class _HomeBusinessState extends State<HomeBusiness> {
     super.initState();
     setState(() {
       _widget_bottom_list.insert(0, widget.businessWidget);
+      _widget_bottom_list.insert(1, widget.orderWidget);
+      _widget_bottom_list.insert(2, widget.dashboard);
       _widget_bottom_list.insert(
-        1,
+        3,
         NotificationRecipient(
           recipientId: widget.businessId,
           theme: MyConstant.colorStore,
         ),
       );
       _widget_bottom_list.insert(
-        2,
+        4,
         SettingBusiness(
           businessId: widget.businessId,
           typeBusiness: widget.typeBusiness,
@@ -61,15 +67,23 @@ class _HomeBusinessState extends State<HomeBusiness> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'หน้าแรก',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.reorder),
+            label: 'ออร์เดอร์',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_graph),
+            label: 'สถิติ',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
-            label: 'Notification',
+            label: 'แจ้งเตือน',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Setting',
+            label: 'ตั้งค่า',
           ),
         ],
         onTap: _onItemTapped,

@@ -4,7 +4,6 @@ import 'package:chanthaburi_app/utils/map/show_map.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
-import 'package:chanthaburi_app/widgets/show_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -12,17 +11,21 @@ class DetailBusiness extends StatefulWidget {
   String businessId, businessName, address, phoneNumber;
   num point, ratingCount;
   double lat, lng;
-  DetailBusiness({
-    Key? key,
-    required this.address,
-    required this.businessId,
-    required this.businessName,
-    required this.lat,
-    required this.lng,
-    required this.phoneNumber,
-    required this.point,
-    required this.ratingCount,
-  }) : super(key: key);
+  List<dynamic> policyName;
+  List<dynamic> policyDescription;
+  DetailBusiness(
+      {Key? key,
+      required this.address,
+      required this.businessId,
+      required this.businessName,
+      required this.lat,
+      required this.lng,
+      required this.phoneNumber,
+      required this.point,
+      required this.ratingCount,
+      required this.policyDescription,
+      required this.policyName})
+      : super(key: key);
 
   @override
   _DetailBusinessState createState() => _DetailBusinessState();
@@ -33,6 +36,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    print(widget.policyName);
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
       appBar: AppBar(
@@ -50,6 +54,29 @@ class _DetailBusinessState extends State<DetailBusiness> {
                   buildRowRating(),
                   buildSection(width, 'ข้อมูลทีอยู่ร้าน', widget.address),
                   buildSection(width, 'เบอร์ติดต่อ', widget.phoneNumber),
+                  Container(
+                    margin: const EdgeInsets.only(left: 12),
+                    width: double.maxFinite,
+                    child: const Text("นโยบาย"),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 30),
+                    width: double.maxFinite,
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const ScrollPhysics(),
+                        itemCount: widget.policyName.length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(widget.policyName[index]["value"]),
+                              Text(widget.policyDescription[index]["value"]),
+                              const Divider()
+                            ],
+                          );
+                        }),
+                  ),
                   const SizedBox(
                     height: 15.0,
                   )
