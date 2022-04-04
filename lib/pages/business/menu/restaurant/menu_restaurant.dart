@@ -15,7 +15,7 @@ class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 1,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -26,9 +26,9 @@ class _MenuState extends State<Menu> {
               Tab(
                 text: "เมนูหลัก",
               ),
-              Tab(
-                text: "ตัวเลือกเสริม",
-              ),
+              // Tab(
+              //   text: "ตัวเลือกเสริม",
+              // ),
             ],
           ),
         ),

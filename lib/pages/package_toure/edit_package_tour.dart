@@ -134,43 +134,44 @@ class _EditPackageTourState extends State<EditPackageTour> {
     late BuildContext dialogContext;
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      if (_packageTourModel!.guides.isNotEmpty &&
-          _packageTourModel!.locations.isNotEmpty &&
-          _packageTourModel!.resorts.isNotEmpty) {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext showContext) {
-            dialogContext = context;
-            return const PouringHourGlass();
-          },
-        );
-        Map<String, dynamic> response = await TourCollection.editTour(
-          widget.tourId,
-          _packageTourModel!,
-          imageSelected,
-          pdfSelected,
-        );
-        Navigator.pop(dialogContext);
-        showDialog(
-          context: context,
-          builder: (BuildContext showContext) =>
-              ResponseDialog(response: response),
-        );
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext showContext) {
+          dialogContext = context;
+          return const PouringHourGlass();
+        },
+      );
+      Map<String, dynamic> response = await TourCollection.editTour(
+        widget.tourId,
+        _packageTourModel!,
+        imageSelected,
+        pdfSelected,
+      );
+      Navigator.pop(dialogContext);
+      showDialog(
+        context: context,
+        builder: (BuildContext showContext) =>
+            ResponseDialog(response: response),
+      );
 
-        formKey.currentState!.reset();
-        setState(() {
-          imageSelected = null;
-          pdfName = null;
-          pdfSelected = null;
-        });
-      } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext showContext) => const ResponseDialog(
-              response: {"status": "199", "message": "กรุณาเลือกให้ครบ"}),
-        );
-      }
+      formKey.currentState!.reset();
+      setState(() {
+        imageSelected = null;
+        pdfName = null;
+        pdfSelected = null;
+      });
+      // if (_packageTourModel!.guides.isNotEmpty &&
+      //     _packageTourModel!.locations.isNotEmpty &&
+      //     _packageTourModel!.resorts.isNotEmpty) {
+
+      // } else {
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext showContext) => const ResponseDialog(
+      //         response: {"status": "199", "message": "กรุณาเลือกให้ครบ"}),
+      //   );
+      // }
     }
   }
 
@@ -180,7 +181,7 @@ class _EditPackageTourState extends State<EditPackageTour> {
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
       appBar: AppBar(
-        title: const Text('สร้างแพ็คเกจทัวร์'),
+        title: const Text('แก้ไขแพ็คเกจทัวร์'),
         backgroundColor: MyConstant.colorGuide,
       ),
       body: GestureDetector(
@@ -194,13 +195,14 @@ class _EditPackageTourState extends State<EditPackageTour> {
                 children: [
                   fieldPackageName(width),
                   fieldPriceAdult(width),
-                  fieldPriceSenior(width),
-                  fieldPriceYouth(width),
+                  // fieldPriceSenior(width),
+                  // fieldPriceYouth(width),
                   fieldOwnerPromptPay(width),
                   fieldPromptPay(width),
-                  fieldSearchGuide(width),
-                  fieldSearchLocation(width),
-                  fieldSearchResort(width),
+                  fieldDrescription(width),
+                  // fieldSearchGuide(width),
+                  // fieldSearchLocation(width),
+                  // fieldSearchResort(width),
                   Container(
                     margin: const EdgeInsets.only(top: 20, bottom: 10.0),
                     child: Center(
@@ -619,7 +621,7 @@ class _EditPackageTourState extends State<EditPackageTour> {
           width: width * .8,
           child: TextFormField(
             initialValue: _packageTourModel!.description,
-            maxLines: 5,
+            maxLines: 20,
             onSaved: (description) =>
                 _packageTourModel!.description = description!,
             validator: (value) {
@@ -672,6 +674,10 @@ class _EditPackageTourState extends State<EditPackageTour> {
             initialValue: _packageTourModel!.priceAdult.toString(),
             onSaved: (adult) =>
                 _packageTourModel!.priceAdult = double.parse(adult!),
+            validator: (value) {
+              if (value!.isEmpty) return 'กรุณากรอกราคาแพ็คเกจทัวร์';
+              return null;
+            },
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
@@ -715,9 +721,9 @@ class _EditPackageTourState extends State<EditPackageTour> {
           width: width * .8,
           height: 60,
           child: TextFormField(
-            initialValue: _packageTourModel!.priceOlder.toString(),
-            onSaved: (senior) =>
-                _packageTourModel!.priceOlder = double.parse(senior!),
+            // initialValue: _packageTourModel!.priceOlder.toString(),
+            // onSaved: (senior) =>
+            //     _packageTourModel!.priceOlder = double.parse(senior!),
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
@@ -761,13 +767,13 @@ class _EditPackageTourState extends State<EditPackageTour> {
           width: width * .8,
           height: 60,
           child: TextFormField(
-            initialValue: _packageTourModel!.priceYouth.toString(),
-            onSaved: (youth) =>
-                _packageTourModel!.priceYouth = double.parse(youth!),
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกราคาแพ็คเกจทัวร์';
-              return null;
-            },
+            // initialValue: _packageTourModel!.priceYouth.toString(),
+            // onSaved: (youth) =>
+            //     _packageTourModel!.priceYouth = double.parse(youth!),
+            // validator: (value) {
+            //   if (value!.isEmpty) return 'กรุณากรอกราคาแพ็คเกจทัวร์';
+            //   return null;
+            // },
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,

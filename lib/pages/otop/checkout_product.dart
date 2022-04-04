@@ -184,18 +184,18 @@ class _CheckoutProductState extends State<CheckoutProduct> {
                                           snapshotUser.data!.get("fullName"),
                                         );
                                       }),
-                                  buildPromptpay(
-                                      width, snapshot.data!.get("promptPay")),
+                                  buildPromptpay(width,
+                                      snapshot.data!.get("paymentNumber")),
                                   buildText(
                                     width,
                                     'ราคาที่ต้องชำระ:',
                                     widget.totalPrice.toString(),
                                   ),
-                                  buildText(
-                                    width,
-                                    'จ่ายล่วงหน้า:',
-                                    widget.prepaidPrice.toString(),
-                                  ),
+                                  // buildText(
+                                  //   width,
+                                  //   'จ่ายล่วงหน้า:',
+                                  //   widget.prepaidPrice.toString(),
+                                  // ),
                                   buildText(
                                     width,
                                     'วันที่ชำระ:',
@@ -209,10 +209,12 @@ class _CheckoutProductState extends State<CheckoutProduct> {
                             ),
                           ),
                           buildQrcode(
-                              width,
-                              height,
-                              snapshot.data!.get("promptPay"),
-                              widget.prepaidPrice),
+                            width,
+                            height,
+                            snapshot.data!.get("paymentNumber"),
+                            widget.totalPrice,
+                            snapshot.data!.get("qrcodeRef"),
+                          ),
                           buildTextSlip(),
                           buildImage(width)
                         ],
@@ -235,7 +237,7 @@ class _CheckoutProductState extends State<CheckoutProduct> {
           margin: const EdgeInsets.only(top: 8.0, left: 8.0),
           width: width * 0.26,
           child: Text(
-            'พร้อมเพย์: ',
+            'เลขบัญชี: ',
             style: TextStyle(color: Colors.yellow[800]),
           ),
         ),
@@ -321,50 +323,81 @@ class _CheckoutProductState extends State<CheckoutProduct> {
     );
   }
 
-  Column buildQrcode(
-      double width, double height, String promptPay, num prepaidPrice) {
+  Column buildQrcode(double width, double height, String promptPay,
+      num totalPrice, String qrcodeRef) {
     return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.all(10),
-              width: width * 0.76,
-              height: height * 0.1,
-              child: ShowImage(
-                pathImage: MyConstant.promptPayImage,
+      children: qrcodeRef.isNotEmpty
+          ? [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'คิวอาร์โค้ดของทางร้าน',
+                      style: TextStyle(
+                        color: MyConstant.themeApp,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
+                ],
               ),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'By QR Mango',
-              style: TextStyle(
-                color: MyConstant.themeApp,
-                fontSize: 14,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: width * 0.7,
+                    height: height * 0.3,
+                    child: ShowImageNetwork(
+                      colorImageBlank: MyConstant.themeApp,
+                      pathImage: qrcodeRef,
+                    ),
+                  ),
+                ],
               ),
-            )
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: width * 0.6,
-              height: height * 0.3,
-              child: ShowImageNetwork(
-                colorImageBlank: MyConstant.themeApp,
-                pathImage:
-                    'https://qrmango.com/promptpay/qr?pp_no=$promptPay&amount=$prepaidPrice',
+            ]
+          : [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    width: width * 0.76,
+                    height: height * 0.1,
+                    child: ShowImage(
+                      pathImage: MyConstant.promptPayImage,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'By QR Mango',
+                    style: TextStyle(
+                      color: MyConstant.themeApp,
+                      fontSize: 14,
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: width * 0.7,
+                    height: height * 0.3,
+                    child: ShowImageNetwork(
+                      colorImageBlank: MyConstant.themeApp,
+                      pathImage:
+                          'https://qrmango.com/promptpay/qr?pp_no=$promptPay&amount=$totalPrice',
+                    ),
+                  ),
+                ],
+              ),
+            ],
     );
   }
 

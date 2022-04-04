@@ -48,7 +48,8 @@ class _CreateStoreState extends State<CreateStore> {
     point: 0,
     policyDescription: [],
     policyName: [],
-    promptPay: '',
+    paymentNumber: '',
+    qrcodeRef: '',
     ratingCount: 0,
     sellerId: '',
     statusOpen: 1,
@@ -111,6 +112,7 @@ class _CreateStoreState extends State<CreateStore> {
   }
 
   File? imageSelected;
+  File? qrcodeImage;
   List<Map<String, dynamic>>? _valuePolicyName = [];
   List<Map<String, dynamic>>? _valuePolicyDescription = [];
   getImage() async {
@@ -136,6 +138,42 @@ class _CreateStoreState extends State<CreateStore> {
     if (takePhoto != null) {
       setState(() {
         imageSelected = takePhoto;
+      });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
+    }
+  }
+
+  getImageQRcode() async {
+    File? image = await PickerImage.getImage();
+    if (image != null) {
+      setState(() {
+        qrcodeImage = image;
+      });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
+    }
+  }
+
+  takePhotoQRcode() async {
+    File? takePhoto = await PickerImage.takePhoto();
+    if (takePhoto != null) {
+      setState(() {
+        qrcodeImage = takePhoto;
       });
     } else {
       PermissionStatus cameraStatus = await Permission.camera.status;
@@ -204,16 +242,16 @@ class _CreateStoreState extends State<CreateStore> {
       );
       Map<String, dynamic>? response;
       if (typeBusiness == 'restaurant') {
-        response = await RestaurantCollection.createRestaurant(
-            _businessModel, imageSelected, widget.sellerId == null);
+        response = await RestaurantCollection.createRestaurant(_businessModel,
+            imageSelected, qrcodeImage, widget.sellerId == null);
       }
       if (typeBusiness == 'otop') {
-        response = await OtopCollection.createOtop(
-            _businessModel, imageSelected, widget.sellerId == null);
+        response = await OtopCollection.createOtop(_businessModel,
+            imageSelected, qrcodeImage, widget.sellerId == null);
       }
       if (typeBusiness == 'resort') {
-        response = await ResortCollection.createResort(
-            _businessModel, imageSelected, widget.sellerId == null);
+        response = await ResortCollection.createResort(_businessModel,
+            imageSelected, qrcodeImage, widget.sellerId == null);
       }
 
       Navigator.pop(dialogContext);
@@ -280,8 +318,10 @@ class _CreateStoreState extends State<CreateStore> {
                   inputStartPrice(width),
                   const SizedBox(height: 25),
                   buildShowmap(width, height, context),
-                  buildTextSelectImage(),
+                  buildTextSelectImage('เลือกรูปภาพสำหรับธุรกิจ'),
                   buildPhoto(width),
+                  buildTextSelectImage('เลือกรูปภาพ QRcode'),
+                  buildQRcode(width),
                   const SizedBox(height: 20),
                   buildCreateOption(
                     'เพิ่มนโยบายของธุรกิจ',
@@ -356,6 +396,50 @@ class _CreateStoreState extends State<CreateStore> {
     );
   }
 
+  Row buildQRcode(double width) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InkWell(
+          onTap: () {
+            dialogCamera(context, getImageQRcode, takePhotoQRcode,
+                MyConstant.colorStore);
+          },
+          child: Container(
+            width: width * .6,
+            height: 150,
+            child: qrcodeImage != null
+                ? Image.file(
+                    qrcodeImage!,
+                    fit: BoxFit.cover,
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.image,
+                        color: MyConstant.colorStore,
+                        size: 60,
+                      ),
+                    ],
+                  ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: qrcodeImage != null ? Colors.black54 : Colors.white,
+              boxShadow: const [
+                BoxShadow(
+                  blurRadius: 10,
+                  color: Colors.black54,
+                  offset: Offset(0, 5),
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   Row inputStartPrice(double width) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -419,14 +503,17 @@ class _CreateStoreState extends State<CreateStore> {
           child: TextFormField(
             keyboardType: TextInputType.phone,
             validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกพร้อมเพย์';
+              if (value!.isEmpty) {
+                return 'กรุณากรอกเลขบัญชี / พร้อมเพย์ ของท่าน';
+              }
               return null;
             },
-            onSaved: (promptpay) => _businessModel.promptPay = promptpay ?? '',
+            onSaved: (promptpay) =>
+                _businessModel.paymentNumber = promptpay ?? '',
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'พร้อมเพย์ :',
+                labelText: 'เลขบัญชี / พร้อมเพย์ :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.account_balance,
@@ -506,14 +593,14 @@ class _CreateStoreState extends State<CreateStore> {
     );
   }
 
-  Row buildTextSelectImage() {
+  Row buildTextSelectImage(String text) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            'เลือกรูปภาพสำหรับธุรกิจ',
+            text,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,

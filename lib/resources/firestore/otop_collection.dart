@@ -21,13 +21,13 @@ class OtopCollection {
       QuerySnapshot _loadMoreOtop = await otopCollection
           .orderBy("statusOpen", descending: true)
           .startAfterDocument(lastDocument)
-          .limit(3)
+          .limit(20)
           .get();
       return _loadMoreOtop;
     }
     QuerySnapshot _otops = await otopCollection
         .orderBy("statusOpen", descending: true)
-        .limit(3)
+        .limit(20)
         .get();
     return _otops;
   }
@@ -39,29 +39,19 @@ class OtopCollection {
     return _resultOtop;
   }
   static Future<Map<String, dynamic>> createOtop(
-      BusinessModel otop, File? imageRef, bool isAdmin) async {
+      BusinessModel otop, File? imageRef,File? imageQRcode, bool isAdmin) async {
     try {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
         otop.imageRef = await StorageFirebase.uploadImage(
             "images/otop/$fileName", imageRef);
       }
-      DocumentReference _newOtop = await otopCollection.add({
-        "businessName": otop.businessName,
-        "sellerId": otop.sellerId,
-        "address": otop.address,
-        "latitude": otop.latitude,
-        "longitude": otop.longitude,
-        "statusOpen": otop.statusOpen,
-        "policyName": otop.policyName,
-        "policyDescription": otop.policyDescription,
-        "promptPay": otop.promptPay,
-        "phoneNumber": otop.phoneNumber,
-        "link": otop.link,
-        "imageRef": otop.imageRef,
-        "point":otop.point,
-        "ratingCount":otop.ratingCount,
-      });
+      if (imageQRcode != null) {
+        String fileName = basename(imageQRcode.path);
+        otop.qrcodeRef = await StorageFirebase.uploadImage(
+            "images/qrcode/$fileName", imageQRcode);
+      }
+      DocumentReference _newOtop = await otopCollection.add(otop.toMap());
       if (isAdmin) {
         NotificationModel _notiModel = NotificationModel(
           message: 'แอดมินสร้างร้านผลิตภัณฑ์ให้เรียบร้อยแล้ว',
@@ -93,6 +83,7 @@ class OtopCollection {
     String otopId,
     BusinessModel otop,
     File? imageUpdate,
+    File? qrcodeUpdate,
   ) async {
     try {
       if (imageUpdate != null) {
@@ -104,20 +95,17 @@ class OtopCollection {
         otop.imageRef = await StorageFirebase.uploadImage(
             "images/otop/$fileName", imageUpdate);
       }
+      if (qrcodeUpdate != null) {
+        if (otop.qrcodeRef.isNotEmpty) {
+          String imageURL = StorageFirebase.getReference(otop.qrcodeRef);
+          StorageFirebase.deleteFile(imageURL);
+        }
+        String fileName = basename(qrcodeUpdate.path);
+        otop.qrcodeRef = await StorageFirebase.uploadImage(
+            "images/qrcode/$fileName", qrcodeUpdate);
+      }
 
-      await otopCollection.doc(otopId).update({
-        "businessName": otop.businessName,
-        "address": otop.address,
-        "latitude": otop.latitude,
-        "longitude": otop.longitude,
-        "statusOpen": otop.statusOpen,
-        "policyName": otop.policyName,
-        "policyDescription": otop.policyDescription,
-        "promptPay": otop.promptPay,
-        "phoneNumber": otop.phoneNumber,
-        "link": otop.link,
-        "imageRef": otop.imageRef,
-      });
+      await otopCollection.doc(otopId).update(otop.toMap());
       return {"status": "200", "message": "แก้ไขข้อมูลร้านผลิตภัณฑ์เรียบร้อย"};
     } catch (e) {
       return {"status": "400", "message": "แก้ไขข้อมูลร้านผลิตภัณฑ์ล้มเหลว"};

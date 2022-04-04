@@ -2,7 +2,6 @@ import 'package:chanthaburi_app/models/order/order.dart';
 import 'package:chanthaburi_app/pages/otop/otop_detail.dart';
 import 'package:chanthaburi_app/pages/review/write_review.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
-import 'package:chanthaburi_app/resources/firestore/order_food_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/order_product_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -100,9 +99,7 @@ class _TrackingOrderProductState extends State<TrackingOrderProduct> {
                                             otop.data!.get("businessName"),
                                           ),
                                           Text(
-                                              'ราคาที่ชำระ ${orders[index]["prepaidPrice"]} (${orders[index]["product"].length}รายการ)'),
-                                          Text(
-                                              'ราคาทั้งหมด ${orders[index]["totalPrice"]}'),
+                                              'ราคาที่ชำระ ${orders[index]["totalPrice"]} ฿ (${orders[index]["product"].length}รายการ)'),
                                           Text(
                                             MyConstant.statusColor[orders[index]
                                                 ["status"]]!["text"],

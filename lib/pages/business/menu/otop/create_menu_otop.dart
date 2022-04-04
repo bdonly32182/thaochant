@@ -146,10 +146,10 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
                 fieldPrice(width),
                 fieldDescription(width),
                 buildDropdown(width),
-                fieldWeight(width),
-                fieldWidth(width),
-                fieldHeight(width),
-                fieldLong(width),
+                // fieldWeight(width),
+                // fieldWidth(width),
+                // fieldHeight(width),
+                // fieldLong(width),
                 const SizedBox(height: 35),
                 Center(
                   child: Text(
@@ -174,7 +174,7 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
   Container buildCreateShopButton(BuildContext context, double width) {
     return Container(
       width: double.maxFinite,
-      margin: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.only(left: 8.0, right: 8, top: 20),
       height: 50,
       child: ElevatedButton(
         child: const Text(
@@ -280,180 +280,180 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
     );
   }
 
-  Row fieldWeight(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 20),
-          width: width * .7,
-          height: 60,
-          child: TextFormField(
-            initialValue: productOtop.weight.toString(),
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกน้ำหนัก';
-              return null;
-            },
-            onSaved: (String? weight) =>
-                productOtop.weight = double.parse(weight!),
-            decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: 'น้ำหนัก(กก.) :',
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                prefix: Icon(
-                  Icons.attach_money,
-                  color: MyConstant.colorStore,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                )),
-            style: TextStyle(
-              color: MyConstant.colorStore,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Row fieldWeight(double width) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         margin: const EdgeInsets.only(top: 20),
+  //         width: width * .7,
+  //         height: 60,
+  //         child: TextFormField(
+  //           initialValue: productOtop.weight.toString(),
+  //           keyboardType: TextInputType.phone,
+  //           validator: (value) {
+  //             if (value!.isEmpty) return 'กรุณากรอกน้ำหนัก';
+  //             return null;
+  //           },
+  //           onSaved: (String? weight) =>
+  //               productOtop.weight = double.parse(weight!),
+  //           decoration: InputDecoration(
+  //               fillColor: Colors.white,
+  //               filled: true,
+  //               labelText: 'น้ำหนัก(กก.) :',
+  //               labelStyle: TextStyle(color: Colors.grey[600]),
+  //               prefix: Icon(
+  //                 Icons.attach_money,
+  //                 color: MyConstant.colorStore,
+  //               ),
+  //               enabledBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade200),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //               focusedBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade400),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               )),
+  //           style: TextStyle(
+  //             color: MyConstant.colorStore,
+  //             fontWeight: FontWeight.w700,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Row fieldWidth(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 20),
-          width: width * .7,
-          height: 60,
-          child: TextFormField(
-            initialValue: productOtop.width.toString(),
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกความกว้าง';
-              return null;
-            },
-            onSaved: (String? width) =>
-                productOtop.width = double.parse(width!),
-            decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: 'ความกว้าง(ซ.ม.) :',
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                prefix: Icon(
-                  Icons.attach_money,
-                  color: MyConstant.colorStore,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                )),
-            style: TextStyle(
-              color: MyConstant.colorStore,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Row fieldWidth(double width) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         margin: const EdgeInsets.only(top: 20),
+  //         width: width * .7,
+  //         height: 60,
+  //         child: TextFormField(
+  //           initialValue: productOtop.width.toString(),
+  //           keyboardType: TextInputType.phone,
+  //           validator: (value) {
+  //             if (value!.isEmpty) return 'กรุณากรอกความกว้าง';
+  //             return null;
+  //           },
+  //           onSaved: (String? width) =>
+  //               productOtop.width = double.parse(width!),
+  //           decoration: InputDecoration(
+  //               fillColor: Colors.white,
+  //               filled: true,
+  //               labelText: 'ความกว้าง(ซ.ม.) :',
+  //               labelStyle: TextStyle(color: Colors.grey[600]),
+  //               prefix: Icon(
+  //                 Icons.attach_money,
+  //                 color: MyConstant.colorStore,
+  //               ),
+  //               enabledBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade200),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //               focusedBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade400),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               )),
+  //           style: TextStyle(
+  //             color: MyConstant.colorStore,
+  //             fontWeight: FontWeight.w700,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Row fieldHeight(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 20),
-          width: width * .7,
-          height: 60,
-          child: TextFormField(
-            initialValue: productOtop.height.toString(),
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกความสูง';
-              return null;
-            },
-            onSaved: (String? height) =>
-                productOtop.height = double.parse(height!),
-            decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: 'ความสูง(ซ.ม.) :',
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                prefix: Icon(
-                  Icons.attach_money,
-                  color: MyConstant.colorStore,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                )),
-            style: TextStyle(
-              color: MyConstant.colorStore,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Row fieldHeight(double width) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         margin: const EdgeInsets.only(top: 20),
+  //         width: width * .7,
+  //         height: 60,
+  //         child: TextFormField(
+  //           initialValue: productOtop.height.toString(),
+  //           keyboardType: TextInputType.phone,
+  //           validator: (value) {
+  //             if (value!.isEmpty) return 'กรุณากรอกความสูง';
+  //             return null;
+  //           },
+  //           onSaved: (String? height) =>
+  //               productOtop.height = double.parse(height!),
+  //           decoration: InputDecoration(
+  //               fillColor: Colors.white,
+  //               filled: true,
+  //               labelText: 'ความสูง(ซ.ม.) :',
+  //               labelStyle: TextStyle(color: Colors.grey[600]),
+  //               prefix: Icon(
+  //                 Icons.attach_money,
+  //                 color: MyConstant.colorStore,
+  //               ),
+  //               enabledBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade200),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //               focusedBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade400),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               )),
+  //           style: TextStyle(
+  //             color: MyConstant.colorStore,
+  //             fontWeight: FontWeight.w700,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Row fieldLong(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 20),
-          width: width * .7,
-          height: 60,
-          child: TextFormField(
-            initialValue: productOtop.long.toString(),
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกความยาว';
-              return null;
-            },
-            onSaved: (String? long) => productOtop.long = double.parse(long!),
-            decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: 'ความยาว(ซ.ม.) :',
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                prefix: Icon(
-                  Icons.attach_money,
-                  color: MyConstant.colorStore,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                )),
-            style: TextStyle(
-              color: MyConstant.colorStore,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Row fieldLong(double width) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         margin: const EdgeInsets.only(top: 20),
+  //         width: width * .7,
+  //         height: 60,
+  //         child: TextFormField(
+  //           initialValue: productOtop.long.toString(),
+  //           keyboardType: TextInputType.phone,
+  //           validator: (value) {
+  //             if (value!.isEmpty) return 'กรุณากรอกความยาว';
+  //             return null;
+  //           },
+  //           onSaved: (String? long) => productOtop.long = double.parse(long!),
+  //           decoration: InputDecoration(
+  //               fillColor: Colors.white,
+  //               filled: true,
+  //               labelText: 'ความยาว(ซ.ม.) :',
+  //               labelStyle: TextStyle(color: Colors.grey[600]),
+  //               prefix: Icon(
+  //                 Icons.attach_money,
+  //                 color: MyConstant.colorStore,
+  //               ),
+  //               enabledBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade200),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //               focusedBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade400),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               )),
+  //           style: TextStyle(
+  //             color: MyConstant.colorStore,
+  //             fontWeight: FontWeight.w700,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Row buildDropdown(double width) {
     return Row(

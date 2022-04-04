@@ -8,6 +8,7 @@ import 'package:chanthaburi_app/utils/sqlite/sqlite_helper.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:flutter/material.dart';
+
 class CartOtop extends StatefulWidget {
   CartOtop({Key? key}) : super(key: key);
 
@@ -87,7 +88,8 @@ class _CartOtopState extends State<CartOtop> {
                                   snapshot.data![indexRes].businessName,
                                   snapshot.data![indexRes].businessId,
                                 ),
-                                listviewProduct(width, height, foodSnapshot.data!),
+                                listviewProduct(
+                                    width, height, foodSnapshot.data!),
                                 buildButtonToConfirm(
                                     foodSnapshot.data!,
                                     snapshot.data![indexRes].businessName,
@@ -106,8 +108,8 @@ class _CartOtopState extends State<CartOtop> {
     );
   }
 
-  Padding buildButtonToConfirm(List<ProductCartModel> products,
-      String otopName, String otopId) {
+  Padding buildButtonToConfirm(
+      List<ProductCartModel> products, String otopName, String otopId) {
     num sumTotalPrice = 0;
     for (ProductCartModel food in products) {
       sumTotalPrice += food.totalPrice;
@@ -126,7 +128,7 @@ class _CartOtopState extends State<CartOtop> {
             ),
           ),
           ElevatedButton(
-            child: const Text('สั่งอาหาร'),
+            child: const Text('สั่งสินค้า'),
             onPressed: () {
               Navigator.push(
                 context,

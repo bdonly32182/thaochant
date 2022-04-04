@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/notification/notification.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/notification_collection.dart';
+import 'package:chanthaburi_app/utils/get_random_element.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
@@ -15,19 +17,54 @@ final CollectionReference restaurant =
     _firestore.collection(MyConstant.restaurantCollection);
 
 class RestaurantCollection {
-  static Future<QuerySnapshot> restaurants(
-      DocumentSnapshot? lastDocument) async {
+  static Future<QuerySnapshot>
+      restaurants(DocumentSnapshot? lastDocument) async {
+    // if (lastDocument != null) {
+    //   QuerySnapshot _loadMoreRestaurant = await restaurant
+    //       .orderBy("statusOpen", descending: true)
+    //       .startAfterDocument(lastDocument)
+    //       .limit(3)
+    //       .get();
+    //   return _loadMoreRestaurant;
+    // }
+    // List<QueryDocumentSnapshot<BusinessModel>> randomRestaurant = [];
+    // QuerySnapshot<BusinessModel> _restuarants = await restaurant
+    //     .withConverter<BusinessModel>(
+    //         fromFirestore: (_firestore, _) =>
+    //             BusinessModel.fromMap(_firestore.data()!),
+    //         toFirestore: (model, _) => model.toMap())
+    //     .get();
+    // for (var i = 0; i < _restuarants.docs.length; i++) {
+    //   QueryDocumentSnapshot<BusinessModel> businessModel =
+    //       getRandomElement(_restuarants.docs);
+    //   randomRestaurant.add(businessModel);
+    // }
+    // final random = Random();
+    // int indexCurrent = 0;
+    // int indexRandom = 0;
+    // int totalInList = randomRestaurant.length;
+    // int totalInQuery = _restuarants.docs.length;
+    // while (indexCurrent != indexRandom && totalInList != totalInQuery) {
+    //   if (indexRandom != indexCurrent) {
+
+    //     randomRestaurant.add(_restuarants.docs[indexRandom]);
+    //     indexCurrent = indexRandom;
+    //   } else {
+    //     indexRandom = random.nextInt(_restuarants.docs.length);
+    //   }
+    // }
+    // return randomRestaurant;
     if (lastDocument != null) {
       QuerySnapshot _loadMoreRestaurant = await restaurant
           .orderBy("statusOpen", descending: true)
           .startAfterDocument(lastDocument)
-          .limit(3)
+          .limit(20)
           .get();
       return _loadMoreRestaurant;
     }
     QuerySnapshot _restuarants = await restaurant
         .orderBy("statusOpen", descending: true)
-        .limit(3)
+        .limit(20)
         .get();
     return _restuarants;
   }
@@ -40,29 +77,23 @@ class RestaurantCollection {
   }
 
   static Future<Map<String, dynamic>> createRestaurant(
-      BusinessModel restaurantModel, File? imageRef, bool isAdmin) async {
+      BusinessModel restaurantModel,
+      File? imageRef,
+      File? qrcodeImage,
+      bool isAdmin) async {
     try {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
         restaurantModel.imageRef = await StorageFirebase.uploadImage(
             "images/restaurant/$fileName", imageRef);
       }
-      DocumentReference _newRestaurant = await restaurant.add({
-        "businessName": restaurantModel.businessName,
-        "sellerId": restaurantModel.sellerId,
-        "address": restaurantModel.address,
-        "latitude": restaurantModel.latitude,
-        "longitude": restaurantModel.longitude,
-        "statusOpen": restaurantModel.statusOpen,
-        "policyName": restaurantModel.policyName,
-        "policyDescription": restaurantModel.policyDescription,
-        "promptPay": restaurantModel.promptPay,
-        "phoneNumber": restaurantModel.phoneNumber,
-        "link": restaurantModel.link,
-        "imageRef": restaurantModel.imageRef,
-        "point": restaurantModel.point,
-        "ratingCount": restaurantModel.ratingCount,
-      });
+      if (qrcodeImage != null) {
+        String fileName = basename(qrcodeImage.path);
+        restaurantModel.qrcodeRef = await StorageFirebase.uploadImage(
+            "images/qrcode/$fileName", qrcodeImage);
+      }
+      DocumentReference _newRestaurant =
+          await restaurant.add(restaurantModel.toMap());
       if (isAdmin) {
         NotificationModel _notiModel = NotificationModel(
           message: 'แอดมินสร้างร้านอาหารให้เรียบร้อยแล้ว',
@@ -96,12 +127,13 @@ class RestaurantCollection {
         "ratingCount": FieldValue.increment(1),
       });
     } catch (e) {}
-  } 
+  }
 
   static Future<Map<String, dynamic>> editRestaurant(
     String restaurantId,
     BusinessModel restaurantModel,
     File? imageUpdate,
+    File? qrcodeUpdate,
   ) async {
     try {
       if (imageUpdate != null) {
@@ -115,19 +147,18 @@ class RestaurantCollection {
             "images/restaurant/$fileName", imageUpdate);
       }
 
-      await restaurant.doc(restaurantId).update({
-        "businessName": restaurantModel.businessName,
-        "address": restaurantModel.address,
-        "latitude": restaurantModel.latitude,
-        "longitude": restaurantModel.longitude,
-        "statusOpen": restaurantModel.statusOpen,
-        "policyName": restaurantModel.policyName,
-        "policyDescription": restaurantModel.policyDescription,
-        "promptPay": restaurantModel.promptPay,
-        "phoneNumber": restaurantModel.phoneNumber,
-        "link": restaurantModel.link,
-        "imageRef": restaurantModel.imageRef,
-      });
+      if (qrcodeUpdate != null) {
+        if (restaurantModel.qrcodeRef.isNotEmpty) {
+          String imageURL =
+              StorageFirebase.getReference(restaurantModel.qrcodeRef);
+          StorageFirebase.deleteFile(imageURL);
+        }
+        String fileName = basename(qrcodeUpdate.path);
+        restaurantModel.qrcodeRef = await StorageFirebase.uploadImage(
+            "images/qrcode/$fileName", qrcodeUpdate);
+      }
+
+      await restaurant.doc(restaurantId).update(restaurantModel.toMap());
       // if (isAdmin) {
       //   NotificationModel _notiModel = NotificationModel(
       //     message: 'แอดมินแก้ไขร้านอาหารให้เรียบร้อยแล้ว',

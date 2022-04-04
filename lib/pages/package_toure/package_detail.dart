@@ -1,8 +1,10 @@
 import 'package:chanthaburi_app/models/packagetour/id_name.dart';
 import 'package:chanthaburi_app/models/packagetour/package_tour.dart';
 import 'package:chanthaburi_app/pages/package_toure/booking_tour.dart';
+import 'package:chanthaburi_app/pages/package_toure/preview_pdf.dart';
 import 'package:chanthaburi_app/pages/review/write_review.dart';
 import 'package:chanthaburi_app/resources/firestore/tour_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:flutter/material.dart';
@@ -37,22 +39,25 @@ class _PackageDetailState extends State<PackageDetail> {
               child: ListView(
                 children: [
                   buildImagePackage(
-                      width,
-                      height,
-                      widget.tour.imageRef,
-                      widget.tour.packageName,
-                      widget.tour.point,
-                      widget.tour.ratingCount,
-                      widget.tour.locations[0].name),
+                    width,
+                    height,
+                    widget.tour.imageRef,
+                    widget.tour.packageName,
+                    widget.tour.point,
+                    widget.tour.ratingCount,
+                    // widget.tour.locations[0].name,
+                  ),
                   buildDescriptPackage(
                     widget.tour.description,
                     widget.tour.pdfRef,
                     widget.tour.packageName,
                   ),
-                  buildTitleGallery("Preview's Locations"),
-                  buildTravelGallery(width, height, widget.tour.locations),
-                  buildTitleGallery("Preview's Resort"),
-                  buildShowResort(width, height, widget.tour.resorts)
+                  // buildTitleGallery("Preview's Locations"),
+                  // buildTravelGallery(width, height,
+                  //  widget.tour.locations
+                  //  ),
+                  // buildTitleGallery("Preview's Resort"),
+                  // buildShowResort(width, height, widget.tour.resorts)
                 ],
               ),
             ),
@@ -284,10 +289,11 @@ class _PackageDetailState extends State<PackageDetail> {
               Expanded(
                 child: Text(
                   description,
-                  style: const TextStyle(color: Colors.black54),
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                  ),
                   softWrap: true,
-                  maxLines: 5,
-                  overflow: TextOverflow.ellipsis,
                 ),
               )
             ],
@@ -298,17 +304,19 @@ class _PackageDetailState extends State<PackageDetail> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextButton(
-                  onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (builder) =>
-                    //         PreviewPdf(url: urlPdf, name: packageName),
-                    //   ),
-                    // );
-                  },
+                  onPressed: urlPdf.isEmpty
+                      ? () => dialogAlert(context, "ประกาศ", "ไม่มีไฟล์ pdf")
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) =>
+                                  PreviewPdf(url: urlPdf, name: packageName),
+                            ),
+                          );
+                        },
                   child: const Text(
-                    "ดูข้อมูลเพิ่มเติม",
+                    "ดูข้อมูลเพิ่มเติม(PDF)",
                     style: TextStyle(
                       decoration: TextDecoration.underline,
                       color: Colors.black54,
@@ -324,13 +332,14 @@ class _PackageDetailState extends State<PackageDetail> {
   }
 
   Container buildImagePackage(
-      double width,
-      double height,
-      String imageRef,
-      String packageName,
-      double point,
-      double ratingCount,
-      String locationSugguest) {
+    double width,
+    double height,
+    String imageRef,
+    String packageName,
+    double point,
+    double ratingCount,
+    // String locationSugguest
+  ) {
     return Container(
       width: width * 1,
       height: height * 0.3,
@@ -341,10 +350,14 @@ class _PackageDetailState extends State<PackageDetail> {
             pathImage: imageRef,
           ),
           buildArrowBack(),
-          buildColumnInImage(packageName, point, ratingCount, locationSugguest),
+          buildColumnInImage(
+            height,
+            packageName, point, ratingCount,
+            // locationSugguest
+          ),
         ],
       ),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         borderRadius: BorderRadius.vertical(
           bottom: Radius.circular(20),
         ),
@@ -380,68 +393,95 @@ class _PackageDetailState extends State<PackageDetail> {
     );
   }
 
-  Column buildColumnInImage(String packageName, double point,
-      double ratingCount, String locationSugguest) {
+  Column buildColumnInImage(
+    double height,
+    String packageName,
+    double point,
+    double ratingCount,
+    // String locationSugguest
+  ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
+        Container(
+          // margin: const EdgeInsets.all(8),
+          width: double.maxFinite,
+          height: height * 0.08,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                packageName,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(right: 10.0),
-                child: Center(
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    (point != 0.0 && ratingCount != 0.0
-                            ? (point / ratingCount).floor()
-                            : 0)
-                        .toString(),
+                    packageName,
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    softWrap: true,
+                    maxLines: 1,
+                    overflow: TextOverflow.clip,
                   ),
                 ),
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.black38,
-                  borderRadius: BorderRadius.circular(10),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber[600],
+                    ),
+                    Text(
+                      (point != 0.0 && ratingCount != 0.0
+                              ? (point / ratingCount).floor()
+                              : 0)
+                          .toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "($ratingCount)",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    )
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            bottom: 15.0,
-            left: 8.0,
-          ),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.location_on_outlined,
-                color: Colors.white70,
-              ),
-              Text(
-                "$locationSugguest และ อื่นๆ",
-                style: const TextStyle(
-                  color: Colors.white70,
-                ),
-              ),
-            ],
+          decoration: BoxDecoration(
+            color: Colors.black38,
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
+        // Padding(
+        //   padding: const EdgeInsets.only(
+        //     bottom: 15.0,
+        //     left: 8.0,
+        //   ),
+        //   child: Row(
+        //     children: [
+        //       const Icon(
+        //         Icons.location_on_outlined,
+        //         color: Colors.white70,
+        //       ),
+        //       Text(
+        //         "$locationSugguest และ อื่นๆ",
+        //         style: const TextStyle(
+        //           color: Colors.white70,
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }

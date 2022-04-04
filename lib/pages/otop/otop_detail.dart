@@ -60,7 +60,7 @@ class _OtopDetailState extends State<OtopDetail> {
                     Expanded(
                       child: ListView(
                         children: [
-                          buildImageRestaurant(
+                          buildImageOtop(
                               width, height, snapshot.data!.get('imageRef')),
                           buildDetail(
                             width,
@@ -119,7 +119,7 @@ class _OtopDetailState extends State<OtopDetail> {
                     style: const TextStyle(fontSize: 18),
                   ),
                   const Text(
-                    'สั่งอาหาร',
+                    'สั่งสินค้า',
                     style: TextStyle(fontSize: 18),
                   ),
                   Text(
@@ -164,11 +164,11 @@ class _OtopDetailState extends State<OtopDetail> {
     return Card(
       child: SizedBox(
         width: width * 1,
-        height: height * 0.14,
+        height: height * 0.18,
         child: Column(
           children: [
-            buildNameRestaurant(width, businessName, address, phoneNumber, lat,
-                lng, point, ratingCount, policyDescription, policyName),
+            buildNameOtop(width, businessName, address, phoneNumber, lat, lng,
+                point, ratingCount, policyDescription, policyName),
             buildDescription(width, address, point, ratingCount),
           ],
         ),
@@ -176,7 +176,7 @@ class _OtopDetailState extends State<OtopDetail> {
     );
   }
 
-  Stack buildImageRestaurant(double width, double height, String imageRef) {
+  Stack buildImageOtop(double width, double height, String imageRef) {
     return Stack(
       children: [
         Container(
@@ -267,7 +267,7 @@ class _OtopDetailState extends State<OtopDetail> {
     );
   }
 
-  Row buildNameRestaurant(
+  Row buildNameOtop(
       double width,
       String businessName,
       address,

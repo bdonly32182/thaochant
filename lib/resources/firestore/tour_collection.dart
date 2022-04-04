@@ -48,7 +48,17 @@ class TourCollection {
     await packageTourCollection.doc(docId).update({"status": status});
   }
 
-  static Stream<QuerySnapshot<PackageTourModel>> tours() {
+  static Stream<QuerySnapshot<PackageTourModel>> tours(bool isAdmin) {
+    if (isAdmin) {
+      Stream<QuerySnapshot<PackageTourModel>> _tours = packageTourCollection
+        .orderBy("ratingCount", descending: true)
+        .withConverter<PackageTourModel>(
+            fromFirestore: (snapshot, _) =>
+                PackageTourModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .snapshots();
+    return _tours;
+    }
     Stream<QuerySnapshot<PackageTourModel>> _tours = packageTourCollection
         .where("status", isEqualTo: 1)
         .orderBy("ratingCount", descending: true)

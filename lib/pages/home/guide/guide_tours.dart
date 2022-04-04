@@ -30,7 +30,7 @@ class _GuideToursState extends State<GuideTours> {
         title: const Text('แพ็คเกจท่องเที่ยว'),
       ),
       body: StreamBuilder(
-        stream: TourCollection.tours(),
+        stream: TourCollection.tours(false),
         builder:
             (context, AsyncSnapshot<QuerySnapshot<PackageTourModel>> snapshot) {
           if (snapshot.hasError) {

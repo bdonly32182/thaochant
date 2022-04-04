@@ -13,7 +13,8 @@ class BusinessModel {
   num point;
   List<dynamic> policyName;
   List<dynamic> policyDescription;
-  String promptPay;
+  String paymentNumber;
+  String qrcodeRef;
   String phoneNumber;
   String link;
   String imageRef;
@@ -29,7 +30,8 @@ class BusinessModel {
     required this.point,
     required this.policyName,
     required this.policyDescription,
-    required this.promptPay,
+    required this.paymentNumber,
+    required this.qrcodeRef,
     required this.phoneNumber,
     required this.link,
     required this.imageRef,
@@ -48,7 +50,8 @@ class BusinessModel {
     num? point,
     List<dynamic>? policyName,
     List<dynamic>? policyDescription,
-    String? promptPay,
+    String? paymentNumber,
+    String? qrcodeRef,
     String? phoneNumber,
     String? link,
     String? imageRef,
@@ -65,7 +68,8 @@ class BusinessModel {
       point: point ?? this.point,
       policyName: policyName ?? this.policyName,
       policyDescription: policyDescription ?? this.policyDescription,
-      promptPay: promptPay ?? this.promptPay,
+      paymentNumber: paymentNumber ?? this.paymentNumber,
+      qrcodeRef: qrcodeRef ?? this.qrcodeRef,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       link: link ?? this.link,
       imageRef: imageRef ?? this.imageRef,
@@ -85,7 +89,8 @@ class BusinessModel {
       'point': point,
       'policyName': policyName,
       'policyDescription': policyDescription,
-      'promptPay': promptPay,
+      'paymentNumber': paymentNumber,
+      'qrcodeRef': qrcodeRef,
       'phoneNumber': phoneNumber,
       'link': link,
       'imageRef': imageRef,
@@ -105,7 +110,8 @@ class BusinessModel {
       point: map['point'] ?? 0,
       policyName: List<dynamic>.from(map['policyName']),
       policyDescription: List<dynamic>.from(map['policyDescription']),
-      promptPay: map['promptPay'] ?? '',
+      paymentNumber: map['paymentNumber'] ?? '',
+      qrcodeRef: map['qrcodeRef'] ?? '',
       phoneNumber: map['phoneNumber'] ?? '',
       link: map['link'] ?? '',
       imageRef: map['imageRef'] ?? '',
@@ -119,7 +125,7 @@ class BusinessModel {
 
   @override
   String toString() {
-    return 'BusinessModel(businessName: $businessName, sellerId: $sellerId, address: $address, latitude: $latitude, longitude: $longitude, statusOpen: $statusOpen, ratingCount: $ratingCount, point: $point, policyName: $policyName, policyDescription: $policyDescription, promptPay: $promptPay, phoneNumber: $phoneNumber, link: $link, imageRef: $imageRef, startPrice: $startPrice)';
+    return 'BusinessModel(businessName: $businessName, sellerId: $sellerId, address: $address, latitude: $latitude, longitude: $longitude, statusOpen: $statusOpen, ratingCount: $ratingCount, point: $point, policyName: $policyName, policyDescription: $policyDescription, paymentNumber: $paymentNumber, qrcodeRef: $qrcodeRef, phoneNumber: $phoneNumber, link: $link, imageRef: $imageRef, startPrice: $startPrice)';
   }
 
   @override
@@ -137,7 +143,8 @@ class BusinessModel {
       other.point == point &&
       listEquals(other.policyName, policyName) &&
       listEquals(other.policyDescription, policyDescription) &&
-      other.promptPay == promptPay &&
+      other.paymentNumber == paymentNumber &&
+      other.qrcodeRef == qrcodeRef &&
       other.phoneNumber == phoneNumber &&
       other.link == link &&
       other.imageRef == imageRef &&
@@ -156,7 +163,8 @@ class BusinessModel {
       point.hashCode ^
       policyName.hashCode ^
       policyDescription.hashCode ^
-      promptPay.hashCode ^
+      paymentNumber.hashCode ^
+      qrcodeRef.hashCode ^
       phoneNumber.hashCode ^
       link.hashCode ^
       imageRef.hashCode ^

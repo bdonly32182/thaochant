@@ -119,16 +119,16 @@ class _ConfirmOrderProductState extends State<ConfirmOrderProduct> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('ค่าจุดส่ง  '),
-                Text("${priceShipping.toStringAsFixed(2)} ฿"),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       const Text('ค่าจุดส่ง  '),
+          //       Text("${priceShipping.toStringAsFixed(2)} ฿"),
+          //     ],
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -136,7 +136,7 @@ class _ConfirmOrderProductState extends State<ConfirmOrderProduct> {
               children: [
                 const Text('สรุปราคาที่ต้องชำระ '),
                 Text(
-                  '${totalPriceAndShipping.toStringAsFixed(2)} ฿',
+                  '${totalPriceProduct.toStringAsFixed(2)} ฿',
                   style: TextStyle(
                     fontSize: 18,
                     color: MyConstant.themeApp,
@@ -162,14 +162,14 @@ class _ConfirmOrderProductState extends State<ConfirmOrderProduct> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('คำสั่งซื้อทั้งหมด (${products.length} รายการ)'),
-                Text(
-                  totalPriceProduct.toString(),
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: MyConstant.themeApp,
-                  ),
-                ),
+                Text('สินค้าทั้งหมด (${products.length} รายการ)'),
+                // Text(
+                //   totalPriceProduct.toString(),
+                //   style: TextStyle(
+                //     fontSize: 18,
+                //     color: MyConstant.themeApp,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -387,7 +387,8 @@ class _ConfirmOrderProductState extends State<ConfirmOrderProduct> {
                 ),
               ),
               Text(
-                (totalPriceProduct + priceShipping).toStringAsFixed(2),
+                // (totalPriceProduct + priceShipping).toStringAsFixed(2),
+                totalPriceProduct.toStringAsFixed(2),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,

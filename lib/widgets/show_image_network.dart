@@ -12,13 +12,15 @@ class ShowImageNetwork extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
-    return Image.network(
-      pathImage,
-      fit: BoxFit.fitWidth,
-      width: width * 0.99,
-      errorBuilder: (BuildContext buildImageError, object, stackthree) {
-        return ImageBlank(imageColor: colorImageBlank);
-      },
-    );
+    return pathImage.isNotEmpty
+        ? Image.network(
+            pathImage,
+            fit: BoxFit.fitWidth,
+            width: width * 0.99,
+            errorBuilder: (BuildContext buildImageError, object, stackthree) {
+              return ImageBlank(imageColor: colorImageBlank);
+            },
+          )
+        : Center(child: ImageBlank(imageColor: colorImageBlank));
   }
 }

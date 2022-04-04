@@ -153,7 +153,7 @@ class _OrderProductsState extends State<OrderProducts> {
                             width,
                             index,
                             orders[index]["addressInfo"]["fullName"],
-                            orders[index]["prepaidPrice"],
+                            orders[index]["totalPrice"],
                             orders[index]["product"].length,
                             orders[index]["status"],
                             orders[index]["dateCreate"],

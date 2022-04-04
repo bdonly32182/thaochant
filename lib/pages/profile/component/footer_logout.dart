@@ -11,7 +11,7 @@ class FooterLogout extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     return Container(
       margin: const EdgeInsets.only(top: 30),
-      width: width * 0.36,
+      width: width * 0.4,
       child: ElevatedButton(
         child: Row(
           children: const [

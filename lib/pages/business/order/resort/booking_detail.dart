@@ -93,7 +93,7 @@ class _BookingDetailState extends State<BookingDetail> {
         ),
       ),
       decoration: BoxDecoration(
-        color: MyConstant.themeApp,
+        color: MyConstant.colorStore,
         borderRadius: BorderRadius.circular(10),
       ),
     );
@@ -191,7 +191,7 @@ class _BookingDetailState extends State<BookingDetail> {
           ),
           Text(
             text,
-            style:  TextStyle(
+            style: TextStyle(
               color: MyConstant.colorStore,
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -299,8 +299,8 @@ class _BookingDetailState extends State<BookingDetail> {
       children: [
         Container(
           margin: const EdgeInsets.all(10),
-          width: width * .7,
-          height: height * .3,
+          width: width * .8,
+          height: height * .4,
           child: ShowImageNetwork(
             pathImage: imagePayment,
             colorImageBlank: MyConstant.colorStore,

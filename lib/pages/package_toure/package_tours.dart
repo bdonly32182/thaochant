@@ -13,7 +13,8 @@ import 'package:flutter/material.dart';
 class PackageTours extends StatefulWidget {
   bool isAdmin;
   bool isBuyer;
-  PackageTours({Key? key, required this.isAdmin,required this.isBuyer}) : super(key: key);
+  PackageTours({Key? key, required this.isAdmin, required this.isBuyer})
+      : super(key: key);
 
   @override
   State<PackageTours> createState() => _PackageToursState();
@@ -48,7 +49,7 @@ class _PackageToursState extends State<PackageTours> {
             : [],
       ),
       body: StreamBuilder(
-        stream: TourCollection.tours(),
+        stream: TourCollection.tours(widget.isAdmin),
         builder:
             (context, AsyncSnapshot<QuerySnapshot<PackageTourModel>> snapshot) {
           if (snapshot.hasError) {
@@ -112,7 +113,8 @@ class _PackageToursState extends State<PackageTours> {
                 MaterialPageRoute(
                   builder: (builder) => PackageDetail(
                     tour: tour,
-                    tourId: tourId, isBuyer: widget.isBuyer,
+                    tourId: tourId,
+                    isBuyer: widget.isBuyer,
                   ),
                 ),
               );

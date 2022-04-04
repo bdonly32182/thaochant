@@ -155,7 +155,7 @@ class _AddToCartState extends State<AddToCart> {
                         decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
-                            labelText: 'เช่น ไม่เผ็ด',
+                            labelText: 'รายละเอียดเพิ่มเติม',
                             labelStyle: TextStyle(color: Colors.grey[600]),
                             prefix: Icon(
                               Icons.account_balance,

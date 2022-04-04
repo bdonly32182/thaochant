@@ -244,8 +244,8 @@ class _BookingTourState extends State<BookingTour> {
             ],
           ),
           buildAdult(width, widget.priceAdult),
-          buildSenior(width, widget.priceSenior),
-          buildYouth(width, widget.priceYouth),
+          buildSenior(width, widget.priceAdult),
+          buildYouth(width, widget.priceAdult),
         ],
       ),
       decoration: const BoxDecoration(
@@ -257,12 +257,12 @@ class _BookingTourState extends State<BookingTour> {
     );
   }
 
-  Row buildYouth(double width, double priceYouth) {
+  Row buildYouth(double width, double priceAdult) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Text(
-          'เด็ก (ราคา $priceYouth)      ',
+          'เด็ก (ราคา $priceAdult)      ',
           style: TextStyle(
             fontSize: 16,
             color: MyConstant.themeApp,
@@ -277,7 +277,7 @@ class _BookingTourState extends State<BookingTour> {
                 onPressed: totalYouth <= 0
                     ? null
                     : () {
-                        _decreaseMember(priceYouth, 'youth');
+                        _decreaseMember(priceAdult, 'youth');
                       },
                 icon: Icon(
                   Icons.remove_circle_outline_rounded,
@@ -296,7 +296,7 @@ class _BookingTourState extends State<BookingTour> {
               IconButton(
                 onPressed: () => totalAdult == 0 && totalSenior == 0
                     ? null
-                    : _increaseMember(priceYouth, 'youth'),
+                    : _increaseMember(priceAdult, 'youth'),
                 icon: Icon(
                   Icons.add_circle_outline,
                   color: Colors.grey[700],

@@ -299,8 +299,8 @@ class _OrderFoodDetailState extends State<OrderFoodDetail> {
       children: [
         Container(
           margin: const EdgeInsets.all(10),
-          width: width * .7,
-          height: height * .3,
+          width: width * 0.8,
+          height: height * 0.4,
           child: ShowImageNetwork(
             pathImage: imagePayment,
             colorImageBlank: MyConstant.colorStore,

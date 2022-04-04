@@ -23,21 +23,23 @@ class SettingBusiness extends StatefulWidget {
 
 class _SettingBusinessState extends State<SettingBusiness> {
   final BusinessModel _businessModel = BusinessModel(
-      address: '',
-      businessName: '',
-      imageRef: '',
-      latitude: 0,
-      link: '',
-      longitude: 0,
-      phoneNumber: '',
-      point: 0,
-      policyDescription: [],
-      policyName: [],
-      promptPay: '',
-      ratingCount: 0,
-      sellerId: '',
-      statusOpen: 1,
-      startPrice: 0);
+    address: '',
+    businessName: '',
+    imageRef: '',
+    latitude: 0,
+    link: '',
+    longitude: 0,
+    phoneNumber: '',
+    point: 0,
+    policyDescription: [],
+    policyName: [],
+    paymentNumber: '',
+    qrcodeRef: '',
+    ratingCount: 0,
+    sellerId: '',
+    statusOpen: 1,
+    startPrice: 0,
+  );
 
   @override
   void initState() {
@@ -70,11 +72,13 @@ class _SettingBusinessState extends State<SettingBusiness> {
       _businessModel.latitude = business.get('latitude');
       _businessModel.longitude = business.get('longitude');
       _businessModel.link = business.get('link');
+      _businessModel.sellerId = business.get('sellerId');
       _businessModel.phoneNumber = business.get('phoneNumber');
       _businessModel.policyName = business.get('policyName');
       _businessModel.policyDescription = business.get('policyDescription');
-      _businessModel.promptPay = business.get('promptPay');
+      _businessModel.paymentNumber = business.get('paymentNumber');
       _businessModel.statusOpen = business.get('statusOpen');
+      _businessModel.qrcodeRef = business.get("qrcodeRef");
       if (widget.typeBusiness == MyConstant.roomCollection) {
         _businessModel.startPrice = business.get('startPrice') ?? 0.0;
       }

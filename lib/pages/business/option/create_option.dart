@@ -258,7 +258,6 @@ class _CreateOptionFoodState extends State<CreateOptionFood> {
             fillColor: Colors.white,
             filled: true,
             labelText: 'ชื่อกลุ่มตัวเลือกเสริม :',
-            // hintText: 'ตัวอย่างเช่น ความเผ็ด',
             labelStyle: TextStyle(color: Colors.grey[600]),
             prefix: Icon(
               Icons.category_outlined,

@@ -70,7 +70,7 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
               widget.order["addressInfo"]["fullName"],
               widget.order["addressInfo"]["phoneNumber"],
               widget.order["product"].length,
-              widget.order["prepaidPrice"],
+              widget.order["totalPrice"],
             ),
             buildSlipword(),
             buildSlipImage(width, height, widget.order["imagePayment"]),
@@ -93,14 +93,14 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
         ),
       ),
       decoration: BoxDecoration(
-        color: MyConstant.themeApp,
+        color: MyConstant.colorStore,
         borderRadius: BorderRadius.circular(10),
       ),
     );
   }
 
   Container cardDetail(double width, String fullName, phoneNumber,
-      int amountFoods, double prepaidPrice) {
+      int amountProduct, double totalPrice) {
     return Container(
       width: width * .8,
       child: Column(
@@ -108,8 +108,8 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
           const SizedBox(height: 15),
           buildField("ชื่อผู้สั่งซื้อ :", fullName),
           buildField("เบอร์โทรติดต่อ :", phoneNumber),
-          buildField("จำนวนอาหาร :", "$amountFoods รายการ"),
-          buildField("ราคา :", "$prepaidPrice บาท"),
+          buildField("จำนวนสินค้า :", "$amountProduct รายการ"),
+          buildField("ราคา :", "$totalPrice บาท"),
           buildShippingAddress(width, widget.order.data().addressInfo.address),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -265,8 +265,8 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
       children: [
         Container(
           margin: const EdgeInsets.all(10),
-          width: width * .7,
-          height: height * .3,
+          width: width * 0.8,
+          height: height * 0.4,
           child: ShowImageNetwork(
             pathImage: imagePayment,
             colorImageBlank: MyConstant.colorStore,

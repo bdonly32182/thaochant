@@ -36,6 +36,7 @@ class _EditBusinessState extends State<EditBusiness> {
   BusinessModel? _businessModel;
   final _formKey = GlobalKey<FormState>();
   File? imageSelected;
+  File? qrcodeImage;
 
   @override
   void initState() {
@@ -68,6 +69,42 @@ class _EditBusinessState extends State<EditBusiness> {
     if (takePhoto != null) {
       setState(() {
         imageSelected = takePhoto;
+      });
+    } else {
+      PermissionStatus cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Camera',
+          'โปรดแชร์ Camera',
+        );
+      }
+    }
+  }
+
+  getImageQRcode() async {
+    File? image = await PickerImage.getImage();
+    if (image != null) {
+      setState(() {
+        qrcodeImage = image;
+      });
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (photoStatus.isPermanentlyDenied) {
+        alertService(
+          context,
+          'ไม่อนุญาติแชร์ Photo',
+          'โปรดแชร์ Photo',
+        );
+      }
+    }
+  }
+
+  takePhotoQRcode() async {
+    File? takePhoto = await PickerImage.takePhoto();
+    if (takePhoto != null) {
+      setState(() {
+        qrcodeImage = takePhoto;
       });
     } else {
       PermissionStatus cameraStatus = await Permission.camera.status;
@@ -134,15 +171,15 @@ class _EditBusinessState extends State<EditBusiness> {
       Map<String, dynamic>? response;
       if (typeBusiness == MyConstant.foodCollection) {
         response = await RestaurantCollection.editRestaurant(
-            widget.businessId, _businessModel!, imageSelected);
+            widget.businessId, _businessModel!, imageSelected, qrcodeImage);
       }
       if (typeBusiness == MyConstant.productOtopCollection) {
         response = await OtopCollection.editOtop(
-            widget.businessId, _businessModel!, imageSelected);
+            widget.businessId, _businessModel!, imageSelected, qrcodeImage);
       }
       if (typeBusiness == MyConstant.roomCollection) {
         response = await ResortCollection.editResort(
-            widget.businessId, _businessModel!, imageSelected);
+            widget.businessId, _businessModel!, imageSelected, qrcodeImage);
       }
       Navigator.pop(dialogContext);
       showDialog(
@@ -235,8 +272,10 @@ class _EditBusinessState extends State<EditBusiness> {
                   inputStartPrice(width),
                   const SizedBox(height: 25),
                   buildShowmap(width, height, context),
-                  buildTextSelectImage(),
+                  buildTextSelectImage('เลือกรูปภาพสำหรับธุรกิจ'),
                   buildPhoto(width),
+                  buildTextSelectImage('เลือกรูปภาพ QRcode'),
+                  buildQRcode(width),
                   const SizedBox(height: 20),
                   buildCreateOption(
                     'เพิ่มนโยบายของธุรกิจ',
@@ -250,6 +289,59 @@ class _EditBusinessState extends State<EditBusiness> {
           ),
         ),
       ),
+    );
+  }
+
+  Row buildQRcode(double width) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InkWell(
+          onTap: () {
+            dialogCamera(context, getImageQRcode, takePhotoQRcode,
+                MyConstant.colorStore);
+          },
+          child: Container(
+            width: width * .6,
+            height: 150,
+            child: qrcodeImage != null
+                ? Image.file(
+                    qrcodeImage!,
+                    fit: BoxFit.cover,
+                  )
+                : Image.network(
+                    _businessModel!.qrcodeRef,
+                    fit: BoxFit.fitWidth,
+                    width: width * 0.26,
+                    height: 110.0,
+                    errorBuilder:
+                        (BuildContext buildImageError, object, stackthree) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.image,
+                            color: MyConstant.colorStore,
+                            size: 60,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: qrcodeImage != null ? Colors.black54 : Colors.white,
+              boxShadow: const [
+                BoxShadow(
+                  blurRadius: 10,
+                  color: Colors.black54,
+                  offset: Offset(0, 5),
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -315,17 +407,20 @@ class _EditBusinessState extends State<EditBusiness> {
           margin: const EdgeInsets.only(top: 20),
           width: width * .8,
           child: TextFormField(
-            initialValue: _businessModel!.promptPay,
+            initialValue: _businessModel!.paymentNumber,
             keyboardType: TextInputType.phone,
             validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกพร้อมเพย์';
+              if (value!.isEmpty) {
+                return 'กรุณากรอกเลขบัญชี / พร้อมเพย์ ของท่าน';
+              }
               return null;
             },
-            onSaved: (promptpay) => _businessModel!.promptPay = promptpay ?? '',
+            onSaved: (promptpay) =>
+                _businessModel!.paymentNumber = promptpay ?? '',
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'พร้อมเพย์ :',
+                labelText: 'เลขบัญชี / พร้อมเพย์  :',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefix: Icon(
                   Icons.account_balance,
@@ -405,14 +500,14 @@ class _EditBusinessState extends State<EditBusiness> {
     );
   }
 
-  Row buildTextSelectImage() {
+  Row buildTextSelectImage(String text) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            'เลือกรูปภาพสำหรับธุรกิจ',
+            text,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,

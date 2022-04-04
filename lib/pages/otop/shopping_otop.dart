@@ -18,6 +18,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+
 class ShoppingOtop extends StatefulWidget {
   ShoppingOtop({Key? key}) : super(key: key);
 
@@ -31,7 +32,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
       _pagingController = PagingController(firstPageKey: 0);
   QueryDocumentSnapshot? lastDocument;
   List<ProductCartModel> productByOtop = [];
-  final int _pageSize = 3;
+  final int _pageSize = 20;
   bool isSearch = false;
   int? itemCart;
   void onSearch(bool isStatusShow) {
@@ -101,7 +102,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
             child: Search(
               searchController: searchController,
               onSearch: onSearch,
-              labelText: 'ค้นหาร้านอาหาร :',
+              labelText: 'ค้นหาร้านผลิตภัณฑ์ :',
               colorIcon: MyConstant.colorStore,
             ),
           ),
@@ -116,8 +117,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (builder) =>
-                            CartOtop(),
+                        builder: (builder) => CartOtop(),
                       ),
                     );
                   },
@@ -130,8 +130,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
         backgroundColor: MyConstant.backgroudApp,
         body: isSearch
             ? FutureBuilder(
-                future: OtopCollection.searchOtop(
-                    searchController.text),
+                future: OtopCollection.searchOtop(searchController.text),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return const InternalError();
@@ -166,7 +165,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
                         children: [
                           Container(
                             child: index == 0
-                                ? buildTitle('ร้านอาหารทั้งหมด')
+                                ? buildTitle('ร้านผลิตภัณฑ์ทั้งหมด')
                                 : null,
                           ),
                           buildCardOtopAll(
@@ -264,7 +263,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
           }
         },
         child: SizedBox(
-          height: height * .25,
+          height: height * .22,
           width: width * 1,
           child: Column(
             children: [
@@ -348,23 +347,6 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 25),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.delivery_dining_outlined,
-                      color: Colors.grey.shade700,
-                    ),
-                    Text(
-                      'จองเท่านั้น',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ],
-                ),
-              )
             ],
           ),
         ),

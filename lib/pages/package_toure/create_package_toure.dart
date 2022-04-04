@@ -136,11 +136,12 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
     late BuildContext dialogContext;
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      if (imageSelected != null &&
-          pdfSelected != null &&
-          _packageTourModel.guides.isNotEmpty &&
-          _packageTourModel.locations.isNotEmpty &&
-          _packageTourModel.resorts.isNotEmpty) {
+      if (imageSelected != null
+          // pdfSelected != null &&
+          // _packageTourModel.guides.isNotEmpty &&
+          // _packageTourModel.locations.isNotEmpty &&
+          // _packageTourModel.resorts.isNotEmpty
+          ) {
         showDialog(
           barrierDismissible: false,
           context: context,
@@ -168,7 +169,7 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
         showDialog(
           context: context,
           builder: (BuildContext showContext) => const ResponseDialog(
-              response: {"status": "199", "message": "กรุณาเลือกให้ครบ"}),
+              response: {"status": "199", "message": "กรุณาแนบรูปภาพ"}),
         );
       }
     }
@@ -193,13 +194,14 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
               children: [
                 fieldPackageName(width),
                 fieldPriceAdult(width),
-                fieldPriceSenior(width),
-                fieldPriceYouth(width),
+                // fieldPriceSenior(width),
+                // fieldPriceYouth(width),
                 fieldOwnerPromptPay(width),
                 fieldPromptPay(width),
-                fieldSearchGuide(width),
-                fieldSearchLocation(width),
-                fieldSearchResort(width),
+                // fieldSearchGuide(width),
+                fieldDrescription(width),
+                // fieldSearchLocation(width),
+                // fieldSearchResort(width),
                 Container(
                   margin: const EdgeInsets.only(top: 20, bottom: 10.0),
                   child: Center(
@@ -578,7 +580,7 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
           margin: const EdgeInsets.only(top: 20),
           width: width * .8,
           child: TextFormField(
-            maxLines: 5,
+            maxLines: 20,
             onSaved: (description) =>
                 _packageTourModel.description = description!,
             validator: (value) {
@@ -630,96 +632,6 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
           child: TextFormField(
             onSaved: (adult) =>
                 _packageTourModel.priceAdult = double.parse(adult!),
-            decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: 'ราคาแพ็คเกจทัวร์ของผู้ใหญ่ :',
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                prefixIcon: Icon(
-                  Icons.paid_sharp,
-                  color: MyConstant.colorGuide,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                )),
-            style: TextStyle(
-                color: MyConstant.colorGuide, fontWeight: FontWeight.w700),
-          ),
-          decoration: const BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Row fieldPriceSenior(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 20),
-          width: width * .8,
-          height: 60,
-          child: TextFormField(
-            onSaved: (senior) =>
-                _packageTourModel.priceOlder = double.parse(senior!),
-            decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: 'ราคาแพ็คเกจทัวร์ของผู้สูงอายุ :',
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                prefixIcon: Icon(
-                  Icons.paid_sharp,
-                  color: MyConstant.colorGuide,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                )),
-            style: TextStyle(
-                color: MyConstant.colorGuide, fontWeight: FontWeight.w700),
-          ),
-          decoration: const BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Row fieldPriceYouth(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 20),
-          width: width * .8,
-          height: 60,
-          child: TextFormField(
-            onSaved: (youth) =>
-                _packageTourModel.priceYouth = double.parse(youth!),
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกราคาแพ็คเกจทัวร์';
               return null;
@@ -727,7 +639,7 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                labelText: 'ราคาแพ็คเกจทัวร์ของเด็ก :',
+                labelText: 'ราคาแพ็คเกจทัวร์:',
                 labelStyle: TextStyle(color: Colors.grey[600]),
                 prefixIcon: Icon(
                   Icons.paid_sharp,
@@ -757,6 +669,100 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
       ],
     );
   }
+
+  // Row fieldPriceSenior(double width) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         margin: const EdgeInsets.only(top: 20),
+  //         width: width * .8,
+  //         height: 60,
+  //         child: TextFormField(
+  //           onSaved: (senior) =>
+  //               _packageTourModel.priceOlder = double.parse(senior!),
+  //           decoration: InputDecoration(
+  //               fillColor: Colors.white,
+  //               filled: true,
+  //               labelText: 'ราคาแพ็คเกจทัวร์ของผู้สูงอายุ :',
+  //               labelStyle: TextStyle(color: Colors.grey[600]),
+  //               prefixIcon: Icon(
+  //                 Icons.paid_sharp,
+  //                 color: MyConstant.colorGuide,
+  //               ),
+  //               enabledBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade200),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //               focusedBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade400),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               )),
+  //           style: TextStyle(
+  //               color: MyConstant.colorGuide, fontWeight: FontWeight.w700),
+  //         ),
+  //         decoration: const BoxDecoration(
+  //           boxShadow: [
+  //             BoxShadow(
+  //               color: Colors.black26,
+  //               blurRadius: 10,
+  //               offset: Offset(0, 5),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  // Row fieldPriceYouth(double width) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         margin: const EdgeInsets.only(top: 20),
+  //         width: width * .8,
+  //         height: 60,
+  //         child: TextFormField(
+  //           onSaved: (youth) =>
+  //               _packageTourModel.priceYouth = double.parse(youth!),
+  //             // validator: (value) {
+  //             //   if (value!.isEmpty) return 'กรุณากรอกราคาแพ็คเกจทัวร์';
+  //             //   return null;
+  //             // },
+  //           decoration: InputDecoration(
+  //               fillColor: Colors.white,
+  //               filled: true,
+  //               labelText: 'ราคาแพ็คเกจทัวร์ของเด็ก :',
+  //               labelStyle: TextStyle(color: Colors.grey[600]),
+  //               prefixIcon: Icon(
+  //                 Icons.paid_sharp,
+  //                 color: MyConstant.colorGuide,
+  //               ),
+  //               enabledBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade200),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //               focusedBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Colors.grey.shade400),
+  //                 borderRadius: BorderRadius.circular(10),
+  //               )),
+  //           style: TextStyle(
+  //               color: MyConstant.colorGuide, fontWeight: FontWeight.w700),
+  //         ),
+  //         decoration: const BoxDecoration(
+  //           boxShadow: [
+  //             BoxShadow(
+  //               color: Colors.black26,
+  //               blurRadius: 10,
+  //               offset: Offset(0, 5),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Row fieldPackageName(double width) {
     return Row(

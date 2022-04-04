@@ -17,31 +17,20 @@ final CollectionReference _resort =
     _firestore.collection(MyConstant.resortCollection);
 
 class ResortCollection {
-  static Future<Map<String, dynamic>> createResort(
-      BusinessModel resort, File? imageRef, bool isAdmin) async {
+  static Future<Map<String, dynamic>> createResort(BusinessModel resort,
+      File? imageRef, File? imageQRcode, bool isAdmin) async {
     try {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
         resort.imageRef = await StorageFirebase.uploadImage(
             "images/resort/$fileName", imageRef);
       }
-      DocumentReference _newResort = await _resort.add({
-        "businessName": resort.businessName,
-        "sellerId": resort.sellerId,
-        "address": resort.address,
-        "latitude": resort.latitude,
-        "longitude": resort.longitude,
-        "statusOpen": resort.statusOpen,
-        "policyName": resort.policyName,
-        "policyDescription": resort.policyDescription,
-        "promptPay": resort.promptPay,
-        "phoneNumber": resort.phoneNumber,
-        "link": resort.link,
-        "imageRef": resort.imageRef,
-        "point": resort.point,
-        "ratingCount": resort.ratingCount,
-        "startPrice": resort.startPrice,
-      });
+      if (imageQRcode != null) {
+        String fileName = basename(imageQRcode.path);
+        resort.qrcodeRef = await StorageFirebase.uploadImage(
+            "images/qrcode/$fileName", imageQRcode);
+      }
+      DocumentReference _newResort = await _resort.add(resort.toMap());
       if (isAdmin) {
         NotificationModel _notiModel = NotificationModel(
           message: 'แอดมินสร้างบ้านพักให้เรียบร้อยแล้ว',
@@ -63,15 +52,17 @@ class ResortCollection {
     return _myResorts;
   }
 
-  static Future<QuerySnapshot<BusinessModel>> allResort(DocumentSnapshot? lastDocument) async {
+  static Future<QuerySnapshot<BusinessModel>> allResort(
+      DocumentSnapshot? lastDocument) async {
     if (lastDocument != null) {
       QuerySnapshot<BusinessModel> _lastResorts = await _resort
-        .withConverter<BusinessModel>(
-          fromFirestore: (snapshot, _) =>
-              BusinessModel.fromMap(snapshot.data()!),
-          toFirestore: (model, _) => model.toMap(),
-        ).limit(10)
-        .get();
+          .withConverter<BusinessModel>(
+            fromFirestore: (snapshot, _) =>
+                BusinessModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap(),
+          )
+          .limit(10)
+          .get();
       return _lastResorts;
     }
     QuerySnapshot<BusinessModel> _allResorts = await _resort
@@ -79,7 +70,8 @@ class ResortCollection {
           fromFirestore: (snapshot, _) =>
               BusinessModel.fromMap(snapshot.data()!),
           toFirestore: (model, _) => model.toMap(),
-        ).limit(10)
+        )
+        .limit(10)
         .get();
     return _allResorts;
   }
@@ -97,10 +89,12 @@ class ResortCollection {
     for (QueryDocumentSnapshot<BusinessModel> resort in _resortSnapshot.docs) {
       QuerySnapshot<RoomModel> room =
           await RoomCollection.roomsByUser(resort.id);
-      QuerySnapshot bookings = await BookingCollection.bookingOfRoom(
-          room.docs[0].id, checkIn, checkOut);
-      if (bookings.docs.length < room.docs[0].data().totalRoom) {
-        resorts.add(resort);
+      if (room.docs.isNotEmpty) {
+        QuerySnapshot bookings = await BookingCollection.bookingOfRoom(
+            room.docs[0].id, checkIn, checkOut);
+        if (bookings.docs.length < room.docs[0].data().totalRoom) {
+          resorts.add(resort);
+        }
       }
     }
     return resorts;
@@ -131,6 +125,7 @@ class ResortCollection {
     String resortId,
     BusinessModel resort,
     File? imageUpdate,
+    File? qrcodeUpdate,
   ) async {
     try {
       if (imageUpdate != null) {
@@ -142,21 +137,17 @@ class ResortCollection {
         resort.imageRef = await StorageFirebase.uploadImage(
             "images/resort/$fileName", imageUpdate);
       }
+      if (qrcodeUpdate != null) {
+        if (resort.qrcodeRef.isNotEmpty) {
+          String imageURL = StorageFirebase.getReference(resort.qrcodeRef);
+          StorageFirebase.deleteFile(imageURL);
+        }
+        String fileName = basename(qrcodeUpdate.path);
+        resort.qrcodeRef = await StorageFirebase.uploadImage(
+            "images/qrcode/$fileName", qrcodeUpdate);
+      }
 
-      await _resort.doc(resortId).update({
-        "businessName": resort.businessName,
-        "address": resort.address,
-        "latitude": resort.latitude,
-        "longitude": resort.longitude,
-        "statusOpen": resort.statusOpen,
-        "policyName": resort.policyName,
-        "policyDescription": resort.policyDescription,
-        "promptPay": resort.promptPay,
-        "phoneNumber": resort.phoneNumber,
-        "link": resort.link,
-        "imageRef": resort.imageRef,
-        "startPrice": resort.startPrice,
-      });
+      await _resort.doc(resortId).update(resort.toMap());
 
       return {"status": "200", "message": "แก้ไขข้อมูลห้องพักเรียบร้อย"};
     } catch (e) {
