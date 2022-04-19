@@ -6,7 +6,6 @@ import 'package:chanthaburi_app/models/notification/notification.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/notification_collection.dart';
-import 'package:chanthaburi_app/utils/get_random_element.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
@@ -17,63 +16,49 @@ final CollectionReference restaurant =
     _firestore.collection(MyConstant.restaurantCollection);
 
 class RestaurantCollection {
-  static Future<QuerySnapshot>
-      restaurants(DocumentSnapshot? lastDocument) async {
-    // if (lastDocument != null) {
-    //   QuerySnapshot _loadMoreRestaurant = await restaurant
-    //       .orderBy("statusOpen", descending: true)
-    //       .startAfterDocument(lastDocument)
-    //       .limit(3)
-    //       .get();
-    //   return _loadMoreRestaurant;
-    // }
-    // List<QueryDocumentSnapshot<BusinessModel>> randomRestaurant = [];
-    // QuerySnapshot<BusinessModel> _restuarants = await restaurant
-    //     .withConverter<BusinessModel>(
-    //         fromFirestore: (_firestore, _) =>
-    //             BusinessModel.fromMap(_firestore.data()!),
-    //         toFirestore: (model, _) => model.toMap())
-    //     .get();
-    // for (var i = 0; i < _restuarants.docs.length; i++) {
-    //   QueryDocumentSnapshot<BusinessModel> businessModel =
-    //       getRandomElement(_restuarants.docs);
-    //   randomRestaurant.add(businessModel);
-    // }
-    // final random = Random();
-    // int indexCurrent = 0;
-    // int indexRandom = 0;
-    // int totalInList = randomRestaurant.length;
-    // int totalInQuery = _restuarants.docs.length;
-    // while (indexCurrent != indexRandom && totalInList != totalInQuery) {
-    //   if (indexRandom != indexCurrent) {
-
-    //     randomRestaurant.add(_restuarants.docs[indexRandom]);
-    //     indexCurrent = indexRandom;
-    //   } else {
-    //     indexRandom = random.nextInt(_restuarants.docs.length);
-    //   }
-    // }
-    // return randomRestaurant;
-    if (lastDocument != null) {
-      QuerySnapshot _loadMoreRestaurant = await restaurant
-          .orderBy("statusOpen", descending: true)
-          .startAfterDocument(lastDocument)
-          .limit(20)
-          .get();
-      return _loadMoreRestaurant;
-    }
-    QuerySnapshot _restuarants = await restaurant
-        .orderBy("statusOpen", descending: true)
-        .limit(20)
+  static Future<List<QueryDocumentSnapshot<BusinessModel>>>
+      restaurants() async {
+    List<QueryDocumentSnapshot<BusinessModel>> randomRestaurant = [];
+    List<int> checkList = []; // เพราะว่า  withConverter<BusinessModel> ไม่สามารถเช็คได้เลยสร้างมาแค่เช็คอินเด็กพอ
+    QuerySnapshot<BusinessModel> _restuarants = await restaurant
+        .withConverter<BusinessModel>(
+            fromFirestore: (_firestore, _) =>
+                BusinessModel.fromMap(_firestore.data()!),
+            toFirestore: (model, _) => model.toMap())
         .get();
-    return _restuarants;
+    final random = Random();
+    int indexRandom = random.nextInt(_restuarants.docs.length);
+    int totalInList = 0;
+    int totalInQuery = _restuarants.docs.length;
+    while (totalInList < totalInQuery) {
+      if (checkList.contains(indexRandom)) {
+        indexRandom = random.nextInt(_restuarants.docs.length);
+      } else {
+        checkList.add(indexRandom);
+        randomRestaurant.add(_restuarants.docs[indexRandom]);
+        totalInList = randomRestaurant.length;
+      }
+    }
+    return randomRestaurant;
   }
 
-  static Future<QuerySnapshot> searchRestaurant(String search) async {
-    QuerySnapshot _resultUser = await restaurant
-        .orderBy("businessName")
-        .startAt([search]).endAt([search + '\uf8ff']).get();
-    return _resultUser;
+  static Future<List<QueryDocumentSnapshot<BusinessModel>>> searchRestaurant(
+      String search) async {
+    QuerySnapshot<BusinessModel> _resultRestaurant = await restaurant
+        .withConverter<BusinessModel>(
+            fromFirestore: (snapshot, _) =>
+                BusinessModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+    List<QueryDocumentSnapshot<BusinessModel>> searchRestaurants =
+        _resultRestaurant
+            .docs
+            .where((business) =>
+                business.data().businessName.toLowerCase().contains(search))
+            .toList();
+    // .orderBy("businessName")
+    // .startAt([search]).endAt([search + '\uf8ff']).get();
+    return searchRestaurants;
   }
 
   static Future<Map<String, dynamic>> createRestaurant(

@@ -1,11 +1,12 @@
+import 'package:chanthaburi_app/models/user/partner.dart';
 import 'package:chanthaburi_app/pages/userlist/component/card_partner.dart';
+import 'package:chanthaburi_app/pages/userlist/partner_detail.dart';
 import 'package:chanthaburi_app/resources/firestore/user_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/bad_request_error.dart';
 import 'package:chanthaburi_app/widgets/fetch/search_result_found.dart';
 import 'package:chanthaburi_app/widgets/fetch/show_data_empty.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
-import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -24,7 +25,7 @@ class ApprovePartner extends StatefulWidget {
 class _ApprovePartnerState extends State<ApprovePartner> {
   TextEditingController searchController = TextEditingController();
   final int _pageSize = 10;
-  final PagingController<int, QueryDocumentSnapshot<Object?>>
+  final PagingController<int, QueryDocumentSnapshot<PartnerModel>>
       _pagingController = PagingController(firstPageKey: 0);
   QueryDocumentSnapshot? lastDocument;
 
@@ -39,7 +40,7 @@ class _ApprovePartnerState extends State<ApprovePartner> {
 
   Future<void> loadMoreBuyers(int pageKey) async {
     try {
-      QuerySnapshot _resultBuyer =
+      QuerySnapshot<PartnerModel> _resultBuyer =
           await UserCollection.approveList(lastDocument);
       final isLastPage = _resultBuyer.docs.length < _pageSize;
       if (isLastPage) {
@@ -50,7 +51,6 @@ class _ApprovePartnerState extends State<ApprovePartner> {
         lastDocument = _resultBuyer.docs.last;
       }
     } catch (e) {
-      print(e.toString());
       _pagingController.error = e;
     }
   }
@@ -68,66 +68,51 @@ class _ApprovePartnerState extends State<ApprovePartner> {
     _pagingController.refresh();
   }
 
-  onApprove(
-    String docId,
-    String fullName,
-    String role,
-    String phoneNumber,
-    String profileRef,
-    String email,
-    String password,
-  ) async {
-    late BuildContext dialogContext;
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext showContext) {
-        dialogContext = context;
-        return const PouringHourGlass();
-      },
+  onPartnerDetail(PartnerModel partner, String docId) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (builder) => PartnerDetail(
+          partner: partner,
+          docId: docId,
+        ),
+      ),
     );
-    Map<String, dynamic> _response = await UserCollection.onApprove(
-        docId, fullName, role, phoneNumber, profileRef, email, password);
-    Navigator.pop(dialogContext);
-    showDialog(
-      context: context,
-      builder: (BuildContext showContext) {
-        dialogContext = context;
-        return ResponseDialog(response: _response);
-      },
-    );
-    setState(() {
-      lastDocument = null;
-    });
-    _pagingController.refresh();
+    onRefresh();
   }
-
-  onUnApprove(
-    String docId,
-  ) async {
-    late BuildContext dialogContext;
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext showContext) {
-        dialogContext = context;
-        return const PouringHourGlass();
-      },
-    );
-    Map<String, dynamic> _response = await UserCollection.unApprove(docId);
-    Navigator.pop(dialogContext);
-    showDialog(
-      context: context,
-      builder: (BuildContext showContext) {
-        dialogContext = context;
-        return ResponseDialog(response: _response);
-      },
-    );
-    setState(() {
-      lastDocument = null;
-    });
-    _pagingController.refresh();
-  }
+  // onApprove(
+  //   String docId,
+  //   String fullName,
+  //   String role,
+  //   String phoneNumber,
+  //   String profileRef,
+  //   String email,
+  //   String password,
+  // ) async {
+  //   late BuildContext dialogContext;
+  //   showDialog(
+  //     barrierDismissible: false,
+  //     context: context,
+  //     builder: (BuildContext showContext) {
+  //       dialogContext = context;
+  //       return const PouringHourGlass();
+  //     },
+  //   );
+  //   Map<String, dynamic> _response = await UserCollection.onApprove(
+  //       docId, fullName, role, phoneNumber, profileRef, email, password);
+  //   Navigator.pop(dialogContext);
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext showContext) {
+  //       dialogContext = context;
+  //       return ResponseDialog(response: _response);
+  //     },
+  //   );
+  //   setState(() {
+  //     lastDocument = null;
+  //   });
+  //   _pagingController.refresh();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -136,9 +121,10 @@ class _ApprovePartnerState extends State<ApprovePartner> {
       body: widget.isSearch && widget.textSearch.isNotEmpty
           ? RefreshIndicator(
               onRefresh: () => Future.sync(() => onRefresh()),
-              child: FutureBuilder<QuerySnapshot>(
+              child: FutureBuilder<QuerySnapshot<PartnerModel>>(
                 future: UserCollection.searchApprovePartner(widget.textSearch),
-                builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {
+                builder: (builder,
+                    AsyncSnapshot<QuerySnapshot<PartnerModel>> snapshot) {
                   if (snapshot.hasError) {
                     return const BadRequestError();
                   }
@@ -153,15 +139,9 @@ class _ApprovePartnerState extends State<ApprovePartner> {
                     return ListView.builder(
                       itemCount: _sellers.length,
                       itemBuilder: (builder, index) => CardPartner(
-                        role: _sellers[index]['role'],
-                        fullName: _sellers[index]['fullName'],
-                        phoneNumber: _sellers[index]['phoneNumber'],
-                        onApprove: onApprove,
-                        onUnApprove: onUnApprove,
+                        partner: snapshot.data!.docs[index].data(),
                         docId: _sellers[index].id,
-                        email: _sellers[index]['email'],
-                        profileRef: _sellers[index]['profileRef'],
-                        password: _sellers[index]['password'],
+                        navigatePartnerDetail: onPartnerDetail,
                       ),
                     );
                   }
@@ -171,21 +151,15 @@ class _ApprovePartnerState extends State<ApprovePartner> {
             )
           : RefreshIndicator(
               onRefresh: () => Future.sync(() => onRefresh()),
-              child: PagedListView<int, QueryDocumentSnapshot>(
+              child: PagedListView<int, QueryDocumentSnapshot<PartnerModel>>(
                 pagingController: _pagingController,
-                builderDelegate:
-                    PagedChildBuilderDelegate<QueryDocumentSnapshot>(
+                builderDelegate: PagedChildBuilderDelegate<
+                    QueryDocumentSnapshot<PartnerModel>>(
                   itemBuilder: (context, item, index) {
                     return CardPartner(
-                      fullName: item.get("fullName"),
-                      role: item.get("role"),
-                      phoneNumber: item.get("phoneNumber"),
-                      profileRef: item.get("profileRef"),
-                      email: item.get("email"),
+                      partner: item.data(),
                       docId: item.id,
-                      onApprove: onApprove,
-                      onUnApprove: onUnApprove,
-                      password: item.get('password'),
+                      navigatePartnerDetail: onPartnerDetail,
                     );
                   },
                   firstPageErrorIndicatorBuilder: (_) =>

@@ -138,8 +138,10 @@ class _BookingRoomsState extends State<BookingRooms> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              BookingDetail(booking: orders[index]),
+                          builder: (context) => BookingDetail(
+                            booking: orders[index],
+                            isOwner: true,
+                          ),
                         ),
                       );
                     },

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:chanthaburi_app/models/resort/participant.dart';
+import 'package:chanthaburi_app/models/user/partner.dart';
 import 'package:chanthaburi_app/models/user/user.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -17,37 +19,46 @@ final CollectionReference _approvePartner =
 
 class AuthMethods {
   static Future<Map<String, dynamic>> register(
-      UserModel _user, bool isPartner, File? imageRef) async {
+      UserModel _user, File? imageRef) async {
     try {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
         _user.profileRef = await StorageFirebase.uploadImage(
             "images/register/$fileName", imageRef);
       }
-      if (isPartner) {
-        await _approvePartner.add({
-          "email": _user.email,
-          "fullName": _user.fullName,
-          "phoneNumber": _user.phoneNumber,
-          "profileRef": _user.profileRef,
-          "role": _user.role,
-          "password": _user.password,
-        });
-      } else {
-        UserCredential userCredential =
-            await _firebaseAuth.createUserWithEmailAndPassword(
-          email: _user.email as String,
-          password: _user.password as String,
-        );
-        String uid = userCredential.user!.uid;
-        await _userCollection.doc(uid).set({
-          "email": _user.email,
-          "fullName": _user.fullName,
-          "phoneNumber": _user.phoneNumber,
-          "profileRef": _user.profileRef,
-          "role": _user.role,
-        });
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+        email: _user.email as String,
+        password: _user.password as String,
+      );
+      String uid = userCredential.user!.uid;
+      await _userCollection.doc(uid).set({
+        "email": _user.email,
+        "fullName": _user.fullName,
+        "phoneNumber": _user.phoneNumber,
+        "profileRef": _user.profileRef,
+        "role": _user.role,
+      });
+      return {"status": "200", "message": "สร้างบัญชีผู้ใช้งานเรียบร้อย"};
+    } on FirebaseAuthException catch (e) {
+      return {"status": "400", "message": e.code};
+    }
+  }
+
+  static Future<Map<String, dynamic>> registerPartner(
+      PartnerModel partner, File? imageRef,File? verifyImage) async {
+    try {
+      if (imageRef != null) {
+        String fileName = basename(imageRef.path);
+        partner.profileRef = await StorageFirebase.uploadImage(
+            "images/partner/$fileName", imageRef);
       }
+      if (verifyImage != null) {
+        String fileName = basename(verifyImage.path);
+        partner.verifyRef = await StorageFirebase.uploadImage(
+            "images/verify/$fileName", verifyImage);
+      }
+      await _approvePartner.add(partner.toMap());
       return {"status": "200", "message": "สร้างบัญชีผู้ใช้งานเรียบร้อย"};
     } on FirebaseAuthException catch (e) {
       return {"status": "400", "message": e.code};
@@ -80,8 +91,8 @@ class AuthMethods {
     await _firebaseAuth.signOut();
     ShareRefferrence.setReferrence("", "");
   }
-  
+
   static String currentUser() {
-   return _firebaseAuth.currentUser!.uid;
+    return _firebaseAuth.currentUser!.uid;
   }
 }

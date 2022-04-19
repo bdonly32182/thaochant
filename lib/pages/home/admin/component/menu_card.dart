@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class MenuCard extends StatelessWidget {
-  Widget? gotoWidget;
+  Widget gotoWidget;
   String imageUrl;
   String? title;
   Color titleColor;
   MenuCard({
     Key? key,
-    this.gotoWidget,
+    required this.gotoWidget,
     required this.imageUrl,
     required this.title,
     required this.titleColor,
@@ -17,47 +17,42 @@ class MenuCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return Card(
-      margin: const EdgeInsets.all(10),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
       child: InkWell(
-        onTap: () {
-          if (gotoWidget != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => gotoWidget!,
-              ),
-            );
-          }
-          print("go to ...");
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        onTap: () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => gotoWidget)),
+        child: Stack(
           children: [
             SizedBox(
-              width: width * 0.4,
-              child: Image.asset(imageUrl),
+              height: double.maxFinite,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            SizedBox(
-              width: width * .5,
+            Container(
+              width: width * 1,
               child: Center(
                 child: Text(
                   title!,
-                  style: TextStyle(
-                    color: titleColor,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    shadows: const [
-                      Shadow(
-                        color: Colors.grey,
-                        offset: Offset(0, 2.2),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          color: Colors.grey,
+                          offset: Offset(0, 2.2),
+                          blurRadius: 6,
+                        )
+                      ]),
                 ),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(10),
               ),
             )
           ],

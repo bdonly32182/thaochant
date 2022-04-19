@@ -1,31 +1,33 @@
 import 'package:chanthaburi_app/pages/review/reviews.dart';
 import 'package:chanthaburi_app/resources/firestore/review_collection.dart';
-import 'package:chanthaburi_app/utils/map/show_map.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
+import 'package:chanthaburi_app/widgets/show_image_network.dart';
+import 'package:chanthaburi_app/widgets/url_luncher_map.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DetailBusiness extends StatefulWidget {
-  String businessId, businessName, address, phoneNumber;
+  String businessId, businessName, address, phoneNumber, imageRef;
   num point, ratingCount;
   double lat, lng;
   List<dynamic> policyName;
   List<dynamic> policyDescription;
-  DetailBusiness(
-      {Key? key,
-      required this.address,
-      required this.businessId,
-      required this.businessName,
-      required this.lat,
-      required this.lng,
-      required this.phoneNumber,
-      required this.point,
-      required this.ratingCount,
-      required this.policyDescription,
-      required this.policyName})
-      : super(key: key);
+  DetailBusiness({
+    Key? key,
+    required this.address,
+    required this.businessId,
+    required this.businessName,
+    required this.lat,
+    required this.lng,
+    required this.phoneNumber,
+    required this.point,
+    required this.ratingCount,
+    required this.policyDescription,
+    required this.policyName,
+    required this.imageRef,
+  }) : super(key: key);
 
   @override
   _DetailBusinessState createState() => _DetailBusinessState();
@@ -36,7 +38,6 @@ class _DetailBusinessState extends State<DetailBusiness> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    print(widget.policyName);
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
       appBar: AppBar(
@@ -49,7 +50,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
             Card(
               child: Column(
                 children: [
-                  buildShowMap(width, height),
+                  buildShowMap(width, height,widget.imageRef),
                   buildName(width),
                   buildRowRating(),
                   buildSection(width, 'ข้อมูลทีอยู่ร้าน', widget.address),
@@ -214,14 +215,11 @@ class _DetailBusinessState extends State<DetailBusiness> {
     );
   }
 
-  SizedBox buildShowMap(double width, double height) {
+  SizedBox buildShowMap(double width, double height,String imageRef) {
     return SizedBox(
       width: width * 1,
       height: height * 0.24,
-      child: ShowMap(
-        lat: widget.lat,
-        lng: widget.lng,
-      ),
+      child: ShowImageNetwork(colorImageBlank: MyConstant.themeApp,pathImage: imageRef,),
     );
   }
 
@@ -241,17 +239,27 @@ class _DetailBusinessState extends State<DetailBusiness> {
 
   Row buildRowRating() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Icon(
-            Icons.star,
-            color: Colors.yellow[700],
-          ),
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.star,
+                color: Colors.yellow[700],
+              ),
+            ),
+            Text(
+              '${widget.point != 0.0 && widget.ratingCount != 0.0 ? (widget.point / widget.ratingCount).floor() : 0}(${widget.ratingCount} รีวิว)',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
         ),
-        Text(
-          '${widget.point != 0.0 && widget.ratingCount != 0.0 ? (widget.point / widget.ratingCount).floor() : 0}(${widget.ratingCount} รีวิว)',
-          style: const TextStyle(fontSize: 16),
+        UrlLuncherMap(
+          lat: widget.lat,
+          lng: widget.lng,
+          businessName: widget.businessName,
         ),
       ],
     );

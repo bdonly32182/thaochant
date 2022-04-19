@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/models/booking/booking.dart';
+import 'package:chanthaburi_app/pages/business/order/resort/booking_detail.dart';
 import 'package:chanthaburi_app/pages/resort/resort_detail.dart';
 import 'package:chanthaburi_app/pages/review/write_review.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
@@ -70,6 +71,13 @@ class _TrackingBookingState extends State<TrackingBooking> {
                               ConnectionState.waiting) {
                             return const Text('loading ...');
                           }
+                          if (resort.data!.data() == null) {
+                            return const Center(
+                                child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text('ไม่พบข้อมูลของบ้านพัก'),
+                            ));
+                          }
                           return Card(
                             child: Column(
                               children: [
@@ -85,44 +93,57 @@ class _TrackingBookingState extends State<TrackingBooking> {
                                     ],
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.all(10.0),
-                                      width: width * 0.30,
-                                      height: 120,
-                                      child: ShowImageNetwork(
-                                        colorImageBlank: MyConstant.themeApp,
-                                        pathImage: resort.data!.get("imageRef"),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (builder) => BookingDetail(
+                                            booking: bookings[index],
+                                            isOwner: false),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.6,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            resort.data!.get("businessName"),
-                                          ),
-                                          Text(
-                                              'ราคาที่ชำระ ${bookings[index]["prepaidPrice"]} (${bookings[index]["totalRoom"]} ห้อง)'),
-                                          Text(
-                                              'ราคาทั้งหมด ${bookings[index]["totalPrice"]}'),
-                                          Text(
-                                            MyConstant.statusColor[
-                                                bookings[index]
-                                                    ["status"]]!["text"],
-                                            style: TextStyle(
-                                              color: MyConstant.statusColor[
-                                                  bookings[index]
-                                                      ["status"]]!["color"],
+                                    );
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.all(10.0),
+                                        width: width * 0.30,
+                                        height: 120,
+                                        child: ShowImageNetwork(
+                                          colorImageBlank: MyConstant.themeApp,
+                                          pathImage:
+                                              resort.data!.get("imageRef"),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: width * 0.6,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              resort.data!.get("businessName"),
                                             ),
-                                          ),
-                                        ],
+                                            Text(
+                                                'ราคาที่ชำระ ${bookings[index]["prepaidPrice"]} (${bookings[index]["totalRoom"]} ห้อง)'),
+                                            Text(
+                                                'ราคาทั้งหมด ${bookings[index]["totalPrice"]}'),
+                                            Text(
+                                              MyConstant.statusColor[
+                                                  bookings[index]
+                                                      ["status"]]!["text"],
+                                              style: TextStyle(
+                                                color: MyConstant.statusColor[
+                                                    bookings[index]
+                                                        ["status"]]!["color"],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 const Divider(),
                                 Row(
@@ -176,7 +197,10 @@ class _TrackingBookingState extends State<TrackingBooking> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (builder) => ResortDetail( resortId: resort.data!.id),
+                                              builder: (builder) =>
+                                                  ResortDetail(
+                                                      resortId:
+                                                          resort.data!.id),
                                             ),
                                           );
                                         },

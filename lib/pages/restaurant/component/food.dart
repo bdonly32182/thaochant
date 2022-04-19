@@ -2,6 +2,7 @@ import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/restaurant/add_to_cart.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
 import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,7 @@ import 'package:provider/provider.dart';
 class Food extends StatefulWidget {
   String businessId, categoryId, categoryName, restaurantName;
   List<ProductCartModel> foods;
+  int status;
   Food({
     Key? key,
     required this.businessId,
@@ -18,6 +20,7 @@ class Food extends StatefulWidget {
     required this.categoryName,
     required this.restaurantName,
     required this.foods,
+    required this.status,
   }) : super(key: key);
 
   @override
@@ -65,31 +68,36 @@ class _FoodState extends State<Food> {
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (_, index) {
                 return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => AddToCart(
-                          foodId: snapshot.data!.docs[index].id,
-                          price: snapshot.data!.docs[index]["price"],
-                          foodImage: snapshot.data!.docs[index]["imageRef"],
-                          foodName: snapshot.data!.docs[index]["foodName"],
-                          description: snapshot.data!.docs[index]
-                              ["description"],
-                          restaurantId: snapshot.data!.docs[index]
-                              ["restaurantId"],
-                          restaurantName: widget.restaurantName,
-                          foods: widget.foods
-                              .where(
-                                (element) =>
-                                    element.productId ==
-                                    snapshot.data!.docs[index].id,
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    );
-                  },
+                  onTap: widget.status == 0
+                      ? () => dialogAlert(
+                          context, "ประกาศ", "ร้านยังไม่เปิดให้บริการชั่วคราว")
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AddToCart(
+                                foodId: snapshot.data!.docs[index].id,
+                                price: snapshot.data!.docs[index]["price"],
+                                foodImage: snapshot.data!.docs[index]
+                                    ["imageRef"],
+                                foodName: snapshot.data!.docs[index]
+                                    ["foodName"],
+                                description: snapshot.data!.docs[index]
+                                    ["description"],
+                                restaurantId: snapshot.data!.docs[index]
+                                    ["restaurantId"],
+                                restaurantName: widget.restaurantName,
+                                foods: widget.foods
+                                    .where(
+                                      (element) =>
+                                          element.productId ==
+                                          snapshot.data!.docs[index].id,
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                          );
+                        },
                   child: Card(
                     child: Row(
                       children: [
@@ -118,7 +126,7 @@ class _FoodState extends State<Food> {
                                   snapshot.data!.docs[index]["foodName"],
                                   style: const TextStyle(fontSize: 16),
                                   overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   softWrap: true,
                                 ),
                               ),

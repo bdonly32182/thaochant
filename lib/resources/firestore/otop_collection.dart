@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/notification/notification.dart';
@@ -15,31 +16,48 @@ final CollectionReference otopCollection =
     _firestore.collection(MyConstant.otopCollection);
 
 class OtopCollection {
-  static Future<QuerySnapshot> otops(
-      DocumentSnapshot? lastDocument) async {
-    if (lastDocument != null) {
-      QuerySnapshot _loadMoreOtop = await otopCollection
-          .orderBy("statusOpen", descending: true)
-          .startAfterDocument(lastDocument)
-          .limit(20)
-          .get();
-      return _loadMoreOtop;
-    }
-    QuerySnapshot _otops = await otopCollection
-        .orderBy("statusOpen", descending: true)
-        .limit(20)
+  static Future<List<QueryDocumentSnapshot<BusinessModel>>> otops() async {
+    List<QueryDocumentSnapshot<BusinessModel>> randomOtops = [];
+    List<int> checkList = [];
+    QuerySnapshot<BusinessModel> _otops = await otopCollection
+        .withConverter<BusinessModel>(
+            fromFirestore: (_firestore, _) =>
+                BusinessModel.fromMap(_firestore.data()!),
+            toFirestore: (model, _) => model.toMap())
         .get();
-    return _otops;
+    final random = Random();
+    int indexRandom = random.nextInt(_otops.docs.length);
+    int totalInList = 0;
+    int totalInQuery = _otops.docs.length;
+    while (totalInList < totalInQuery) {
+      if (checkList.contains(indexRandom)) {
+        indexRandom = random.nextInt(_otops.docs.length);
+      } else {
+        checkList.add(indexRandom);
+        randomOtops.add(_otops.docs[indexRandom]);
+        totalInList = randomOtops.length;
+      }
+    }
+    return randomOtops;
   }
 
-  static Future<QuerySnapshot> searchOtop(String search) async {
-    QuerySnapshot _resultOtop = await otopCollection
-        .orderBy("businessName")
-        .startAt([search]).endAt([search + '\uf8ff']).get();
-    return _resultOtop;
+  static Future<List<QueryDocumentSnapshot<BusinessModel>>> searchOtop(
+      String search) async {
+    QuerySnapshot<BusinessModel> _resultOtop = await otopCollection
+        .withConverter<BusinessModel>(
+            fromFirestore: (snapshot, _) =>
+                BusinessModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+    List<QueryDocumentSnapshot<BusinessModel>> searchOtop = _resultOtop.docs
+        .where((business) =>
+            business.data().businessName.toLowerCase().contains(search))
+        .toList();
+    return searchOtop;
   }
-  static Future<Map<String, dynamic>> createOtop(
-      BusinessModel otop, File? imageRef,File? imageQRcode, bool isAdmin) async {
+
+  static Future<Map<String, dynamic>> createOtop(BusinessModel otop,
+      File? imageRef, File? imageQRcode, bool isAdmin) async {
     try {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
@@ -74,8 +92,14 @@ class OtopCollection {
     return _myOtops;
   }
 
-  static Future<DocumentSnapshot> otopById(String otopId) async {
-    DocumentSnapshot _otopDoc = await otopCollection.doc(otopId).get();
+  static Future<DocumentSnapshot<BusinessModel>> otopById(String otopId) async {
+    DocumentSnapshot<BusinessModel> _otopDoc = await otopCollection
+        .doc(otopId)
+        .withConverter<BusinessModel>(
+            fromFirestore: (snapshot, _) =>
+                BusinessModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
     return _otopDoc;
   }
 
@@ -139,7 +163,7 @@ class OtopCollection {
         "ratingCount": FieldValue.increment(1),
       });
     } catch (e) {}
-  } 
+  }
 
   static Future<void> changeStatus(String docId, int status) async {
     try {

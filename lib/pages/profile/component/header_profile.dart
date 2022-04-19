@@ -31,10 +31,10 @@ class HeaderProfile extends StatelessWidget {
                   child: ShowImage(
                     pathImage: MyConstant.iconUser,
                   ),
-                  decoration:const BoxDecoration(
+                  decoration: const BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black,
+                        color: Colors.grey,
                         blurRadius: 2,
                         offset: Offset(0, 02),
                       ),

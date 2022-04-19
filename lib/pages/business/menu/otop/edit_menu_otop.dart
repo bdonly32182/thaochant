@@ -193,10 +193,10 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
                 fieldPrice(width),
                 fieldDescription(width),
                 buildDropdown(width),
-                fieldWeight(width),
-                fieldWidth(width),
-                fieldHeight(width),
-                fieldLong(width),
+                // fieldWeight(width),
+                // fieldWidth(width),
+                // fieldHeight(width),
+                // fieldLong(width),
                 const SizedBox(height: 35),
                 Center(
                   child: Text(
@@ -298,7 +298,6 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             controller: priceController,
             keyboardType: TextInputType.phone,
@@ -342,14 +341,13 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             controller: weightController,
             keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกน้ำหนัก';
-              return null;
-            },
+            // validator: (value) {
+            //   if (value!.isEmpty) return 'กรุณากรอกน้ำหนัก';
+            //   return null;
+            // },
             onSaved: (String? weight) =>
                 productOtop.weight = double.parse(weight!),
             decoration: InputDecoration(
@@ -386,16 +384,15 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             controller: widthController,
             keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกความกว้าง';
-              return null;
-            },
-            onSaved: (String? width) =>
-                productOtop.width = double.parse(width!),
+            // validator: (value) {
+            //   if (value!.isEmpty) return 'กรุณากรอกความกว้าง';
+            //   return null;
+            // },
+            // onSaved: (String? width) =>
+            //     productOtop.width = double.parse(width!),
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
@@ -430,16 +427,15 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             controller: heightController,
             keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกความสูง';
-              return null;
-            },
-            onSaved: (String? height) =>
-                productOtop.height = double.parse(height!),
+            // validator: (value) {
+            //   if (value!.isEmpty) return 'กรุณากรอกความสูง';
+            //   return null;
+            // },
+            // onSaved: (String? height) =>
+            //     productOtop.height = double.parse(height!),
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
@@ -474,7 +470,6 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             controller: longController,
             keyboardType: TextInputType.phone,
@@ -517,7 +512,6 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: categorys.isNotEmpty
               ? DropdownButton(
                   hint: const Text('เลือกเลือกประเภทสินค้า'),
@@ -560,7 +554,6 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 30),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             controller: productNameController,
             validator: (value) {

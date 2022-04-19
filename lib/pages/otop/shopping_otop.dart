@@ -1,14 +1,16 @@
 import 'package:badges/badges.dart';
+import 'package:chanthaburi_app/models/business/business.dart';
+import 'package:chanthaburi_app/models/otop/product.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/otop/cart_otop.dart';
 import 'package:chanthaburi_app/pages/otop/otop_detail.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/product_otop_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sqlite/sql_otop.dart';
 import 'package:chanthaburi_app/utils/sqlite/sqlite_helper.dart';
-import 'package:chanthaburi_app/widgets/error/bad_request_error.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/fetch/show_data_empty.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
@@ -17,7 +19,6 @@ import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class ShoppingOtop extends StatefulWidget {
   ShoppingOtop({Key? key}) : super(key: key);
@@ -28,12 +29,11 @@ class ShoppingOtop extends StatefulWidget {
 
 class _ShoppingOtopState extends State<ShoppingOtop> {
   TextEditingController searchController = TextEditingController();
-  final PagingController<int, QueryDocumentSnapshot<Object?>>
-      _pagingController = PagingController(firstPageKey: 0);
-  QueryDocumentSnapshot? lastDocument;
+  List<QueryDocumentSnapshot<BusinessModel>> randomOtops = [];
+  List<QueryDocumentSnapshot<ProductOtopModel>> randomProducts = [];
   List<ProductCartModel> productByOtop = [];
-  final int _pageSize = 20;
   bool isSearch = false;
+  bool isLoading = true;
   int? itemCart;
   void onSearch(bool isStatusShow) {
     setState(() {
@@ -43,11 +43,18 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
 
   @override
   void initState() {
-    _pagingController.addPageRequestListener(
-      (pageKey) => loadMoreRestaurant(pageKey),
-    );
     super.initState();
+    fetchRandomProducts();
+    onFetchsOtop();
     getTotalRestaurant();
+  }
+
+  fetchRandomProducts() async {
+    List<QueryDocumentSnapshot<ProductOtopModel>> _randomFoods =
+        await ProductOtopCollection.randomProducts();
+    setState(() {
+      randomProducts = _randomFoods;
+    });
   }
 
   Future<void> getTotalRestaurant() async {
@@ -59,33 +66,23 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
     });
   }
 
-  Future<void> loadMoreRestaurant(int pageKey) async {
-    try {
-      QuerySnapshot _resultRestaurant =
-          await OtopCollection.otops(lastDocument);
-      final isLastPage = _resultRestaurant.docs.length < _pageSize;
-      if (isLastPage) {
-        _pagingController.appendLastPage(_resultRestaurant.docs);
-      } else {
-        final nextPageKey = pageKey + 1;
-        _pagingController.appendPage(_resultRestaurant.docs, nextPageKey);
-        lastDocument = _resultRestaurant.docs.last;
-      }
-    } catch (e) {
-      _pagingController.error = e;
-    }
+  onFetchsOtop() async {
+    List<QueryDocumentSnapshot<BusinessModel>> _randomOtops =
+        await OtopCollection.otops();
+    setState(() {
+      randomOtops = _randomOtops;
+      isLoading = false;
+    });
   }
 
   onRefresh() {
-    setState(() {
-      lastDocument = null;
-    });
-    _pagingController.refresh();
+    fetchRandomProducts();
+    onFetchsOtop();
+    getTotalRestaurant();
   }
 
   @override
   void dispose() {
-    _pagingController.dispose();
     SQLiteHelper().close();
     super.dispose();
   }
@@ -95,121 +92,143 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 60,
-          backgroundColor: MyConstant.themeApp,
-          title: Form(
-            child: Search(
-              searchController: searchController,
-              onSearch: onSearch,
-              labelText: 'ค้นหาร้านผลิตภัณฑ์ :',
-              colorIcon: MyConstant.colorStore,
-            ),
+      appBar: AppBar(
+        toolbarHeight: 60,
+        backgroundColor: MyConstant.themeApp,
+        title: Form(
+          child: Search(
+            searchController: searchController,
+            onSearch: onSearch,
+            labelText: 'ค้นหาร้านผลิตภัณฑ์ :',
+            colorIcon: MyConstant.colorStore,
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(top: 6.0),
-              child: Badge(
-                position: BadgePosition.topStart(),
-                badgeContent: Text(itemCart.toString()),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (builder) => CartOtop(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.shopping_cart_outlined),
-                ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(top: 6.0),
+            child: Badge(
+              position: BadgePosition.topStart(),
+              badgeContent: Text(itemCart.toString()),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (builder) => CartOtop(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.shopping_cart_outlined),
               ),
             ),
-          ],
-        ),
-        backgroundColor: MyConstant.backgroudApp,
-        body: isSearch
-            ? FutureBuilder(
-                future: OtopCollection.searchOtop(searchController.text),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return const InternalError();
+          ),
+        ],
+      ),
+      backgroundColor: MyConstant.backgroudApp,
+      body: isSearch
+          ? FutureBuilder(
+              future: OtopCollection.searchOtop(searchController.text),
+              builder: (context,
+                  AsyncSnapshot<List<QueryDocumentSnapshot<BusinessModel>>>
+                      snapshot) {
+                if (snapshot.hasError) {
+                  return const InternalError();
+                }
+                if (snapshot.connectionState == ConnectionState.done) {
+                  List<QueryDocumentSnapshot<BusinessModel>> restaurants =
+                      snapshot.data!;
+                  if (restaurants.isEmpty) {
+                    return const Center(child: ShowDataEmpty());
                   }
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    List<QueryDocumentSnapshot> restaurants =
-                        snapshot.data!.docs;
-                    if (restaurants.isEmpty) {
-                      return const Center(child: ShowDataEmpty());
-                    }
-                    return ListView(
-                      children: [
-                        Column(
-                          children: [
-                            buildTitle('ผลลัพทธ์การค้นหา'),
-                          ],
-                        ),
-                        buildListViewOtopAll(height, width, restaurants),
-                      ],
-                    );
-                  }
-                  return const PouringHourGlass();
-                })
-            : RefreshIndicator(
-                onRefresh: () => Future.sync(() => onRefresh()),
-                child: PagedListView<int, QueryDocumentSnapshot>(
-                  pagingController: _pagingController,
-                  builderDelegate:
-                      PagedChildBuilderDelegate<QueryDocumentSnapshot>(
-                    itemBuilder: (context, otops, index) {
-                      return Column(
+                  return ListView(
+                    children: [
+                      Column(
                         children: [
-                          Container(
-                            child: index == 0
-                                ? buildTitle('ร้านผลิตภัณฑ์ทั้งหมด')
-                                : null,
-                          ),
-                          buildCardOtopAll(
+                          buildTitle('ผลลัพทธ์การค้นหา'),
+                        ],
+                      ),
+                      buildListViewOtopAll(height, width, restaurants),
+                    ],
+                  );
+                }
+                return const PouringHourGlass();
+              })
+          : RefreshIndicator(
+              onRefresh: () => Future.sync(() => onRefresh()),
+              child: isLoading
+                  ? const PouringHourGlass()
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          buildTitle("แนะนำสินค้าโอทอป"),
+                          buildRecomended(height, width),
+                          buildTitle("ร้านโอทอปทั้งหมด"),
+                          buildListViewOtopAll(
                             height,
                             width,
-                            otops.id,
-                            otops.get("businessName"),
-                            otops.get("imageRef"),
-                            otops.get("point"),
-                            otops.get("ratingCount"),
-                            otops.get("statusOpen"),
-                            otops.get("address"),
-                            otops.get("phoneNumber"),
-                            otops.get("latitude"),
-                            otops.get("longitude"),
+                            randomOtops,
                           ),
                         ],
-                      );
-                    },
-                    firstPageErrorIndicatorBuilder: (_) =>
-                        const BadRequestError(),
-                    noItemsFoundIndicatorBuilder: (ctx) =>
-                        const ShowDataEmpty(),
-                    firstPageProgressIndicatorBuilder: (context) =>
-                        const PouringHourGlass(),
-                    noMoreItemsIndicatorBuilder: (context) => const Center(
-                      child: Text("ไม่มีข้อมูล"),
+                      ),
                     ),
-                    newPageErrorIndicatorBuilder: (context) =>
-                        const BadRequestError(),
-                    newPageProgressIndicatorBuilder: (context) =>
-                        CircularProgressIndicator(
-                      color: MyConstant.colorStore,
-                    ),
-                  ),
-                ),
-              ));
+            ),
+    );
   }
 
-  ListView buildListViewOtopAll(
-      double height, double width, List<QueryDocumentSnapshot> otops) {
+  SizedBox buildRecomended(double height, double width) {
+    return SizedBox(
+      height: height * 0.22,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        physics: const ScrollPhysics(),
+        itemCount: randomProducts.length,
+        itemBuilder: (itemBuilder, index) {
+          return InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    OtopDetail(otopId: randomProducts[index].data().otopId),
+              ),
+            ),
+            child: Container(
+              margin: const EdgeInsets.all(6.0),
+              width: width * 0.34,
+              height: height * 0.2,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: height * 0.15,
+                    child: ShowImageNetwork(
+                      pathImage: randomProducts[index].data().imageRef,
+                      colorImageBlank: MyConstant.colorStore,
+                    ),
+                  ),
+                  Text(
+                    randomProducts[index].data().productName,
+                    maxLines: 2,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  ListView buildListViewOtopAll(double height, double width,
+      List<QueryDocumentSnapshot<BusinessModel>> otops) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const ScrollPhysics(),
       itemCount: otops.length,
       itemBuilder: (BuildContext context, int index) {
         return buildCardOtopAll(

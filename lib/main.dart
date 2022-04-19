@@ -1,4 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:chanthaburi_app/pages/register_partner.dart';
 import 'package:chanthaburi_app/provider/address_provider.dart';
 import 'package:chanthaburi_app/provider/participant_provider.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
@@ -23,6 +24,7 @@ final Map<String, WidgetBuilder> routesMap = {
   '/sellerService': (BuildContext context) => SellerService(),
   '/buyerService': (BuildContext context) => BuyerService(),
   '/guideService': (BuildContext context) => GuideService(),
+  '/registerPartner': (BuildContext context) => RegisterPartner(),
 };
 final Map<String, Widget> splashWidget = {
   '/authen': Authen(),
@@ -31,6 +33,7 @@ final Map<String, Widget> splashWidget = {
   '/sellerService': SellerService(),
   '/buyerService': BuyerService(),
   '/guideService': GuideService(),
+  '/registerPartner': RegisterPartner(),
 };
 
 String? initialRoute;
@@ -88,6 +91,12 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        builder: (context, child) {
+          return MediaQuery(
+            child: child!,
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          );
+        },
         title: MyConstant.appName,
         routes: routesMap,
         theme: ThemeData(primaryColor: MyConstant.themeApp),
@@ -97,6 +106,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
           splashTransition: SplashTransition.scaleTransition,
           splashIconSize: 600,
+          duration: 1500,
           nextScreen: FutureBuilder(
             future: _initialFirebase,
             builder: (context, snapshot) {

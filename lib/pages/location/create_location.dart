@@ -495,7 +495,6 @@ class _CreateLocationsState extends State<CreateLocations> {
         Container(
             margin: const EdgeInsets.only(top: 20),
             width: width * .8,
-            height: 60,
             child: TextFormField(
               controller: placeName,
               validator: (value) {

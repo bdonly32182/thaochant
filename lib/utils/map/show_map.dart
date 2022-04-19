@@ -30,7 +30,7 @@ class _ShowMapState extends State<ShowMap> {
       },
       initialCameraPosition: CameraPosition(
         target: LatLng(widget.lat, widget.lng),
-        zoom: 12.0,
+        zoom: 14,
       ),
       markers: <Marker>{
         Marker(

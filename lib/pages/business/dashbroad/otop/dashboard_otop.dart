@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/models/order/order.dart';
+import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/resources/firestore/order_product_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
@@ -28,24 +29,22 @@ class _DashboardOtopState extends State<DashboardOtop> {
     MyConstant.shipping,
     MyConstant.rejected,
     MyConstant.payed,
+    MyConstant.received,
+    MyConstant.notReceive
   ];
-  List<OrderModel> orderPrepaid = [];
-  List<OrderModel> orderAccept = [];
-  List<OrderModel> orderPayed = [];
-  List<OrderModel> orderReject = [];
-  _selectDate(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    switch (theme.platform) {
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
-        return buildMaterialDatePicker(context);
-      case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
-        return buildCupertinoDatePicker(context);
-    }
-  }
+  // _selectDate(BuildContext context) {
+  //   final ThemeData theme = Theme.of(context);
+  //   switch (theme.platform) {
+  //     case TargetPlatform.android:
+  //     case TargetPlatform.fuchsia:
+  //     case TargetPlatform.linux:
+  //     case TargetPlatform.windows:
+  //       return buildMaterialDatePicker(context);
+  //     case TargetPlatform.iOS:
+  //     case TargetPlatform.macOS:
+  //       return buildCupertinoDatePicker(context);
+  //   }
+  // }
 
   bool focusIncomeMonth = true;
   bool focusIncomeYear = false;
@@ -59,7 +58,7 @@ class _DashboardOtopState extends State<DashboardOtop> {
     }
     if (type == 'month') {
       String month = MyConstant.monthThailand[date.month - 1];
-      return '${month}  ${date.year}';
+      return '$month  ${date.year}';
     }
   }
 
@@ -97,6 +96,53 @@ class _DashboardOtopState extends State<DashboardOtop> {
     return totalPrice;
   }
 
+  List<Map<String, dynamic>> popularSort(
+    List<QueryDocumentSnapshot<OrderModel>> orderShipping,
+    List<QueryDocumentSnapshot<OrderModel>> orderReceived,
+  ) {
+    List<String> foodId = [];
+    List<Map<String, dynamic>> popular = [];
+
+    for (QueryDocumentSnapshot<OrderModel> shipping in orderShipping) {
+      for (ProductCartModel food in shipping.data().product) {
+        if (foodId.contains(food.productId)) {
+          int indexDuplicate =
+              popular.indexWhere((menu) => menu["productId"] == food.productId);
+          popular[indexDuplicate]["score"] =
+              popular[indexDuplicate]["score"] + 1;
+        } else {
+          foodId.add(food.productId);
+          popular.add({
+            "productId": food.productId,
+            "productName": food.productName,
+            "imageURL": food.imageURL,
+            "score": 1,
+          });
+        }
+      }
+    }
+    for (QueryDocumentSnapshot<OrderModel> received in orderReceived) {
+      for (ProductCartModel food in received.data().product) {
+        if (foodId.contains(food.productId)) {
+          int indexDuplicate =
+              popular.indexWhere((menu) => menu["productId"] == food.productId);
+          popular[indexDuplicate]["score"] =
+              popular[indexDuplicate]["score"] + 1;
+        } else {
+          foodId.add(food.productId);
+          popular.add({
+            "productId": food.productId,
+            "productName": food.productName,
+            "imageURL": food.imageURL,
+            "score": 1,
+          });
+        }
+      }
+    }
+    popular.sort((a, b) => b["score"].compareTo(a["score"]));
+    return popular;
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -108,7 +154,8 @@ class _DashboardOtopState extends State<DashboardOtop> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              buildRestaurant(width, height, widget.imageRef, widget.otopName),
+              buildOtop(width, height, widget.imageRef, widget.otopName),
+              buildFilterDashboard(),
               buildShowAndSelectDate(width),
               StreamBuilder(
                   stream: OrderProductCollection.orderByOtopId(widget.otopId,
@@ -140,24 +187,110 @@ class _DashboardOtopState extends State<DashboardOtop> {
                         .where((order) =>
                             order.data().status == MyConstant.rejected)
                         .toList();
+                    List<QueryDocumentSnapshot<OrderModel>> orderReceived =
+                        orders
+                            .where((order) =>
+                                order.data().status == MyConstant.received)
+                            .toList();
+                    List<QueryDocumentSnapshot<OrderModel>> orderNotReceived =
+                        orders
+                            .where((order) =>
+                                order.data().status == MyConstant.notReceive)
+                            .toList();
                     return Column(
                       children: [
-                        buildOrderList('ออร์เดอร์ที่จ่ายครบ',
-                            orderPayed.length.toString()),
-                        buildOrderList('ออร์เดอร์ที่อนุมัติ',
-                            orderAccept.length.toString()),
                         buildOrderList(
-                            'ออร์เดอร์จัดส่ง', orderShipping.length.toString()),
-                        buildOrderList('ออร์เดอร์ที่ปฏิเสธ',
-                            orderReject.length.toString()),
-                        buildTotalIncome('รวมรายได้ทั้งหมด', orderShipping,
-                            orderAccept, orderPayed, orderReject),
+                          'ออร์เดอร์ที่จ่ายครบ',
+                          orderPayed.length.toString(),
+                        ),
+                        buildOrderList(
+                          'ออร์เดอร์ที่อนุมัติ',
+                          orderAccept.length.toString(),
+                        ),
+                        buildOrderList(
+                          'ออร์เดอร์จัดส่ง',
+                          orderShipping.length.toString(),
+                        ),
+                        buildOrderList(
+                          'ลูกค้าได้รับออร์เดอร์',
+                          orderReceived.length.toString(),
+                        ),
+                        buildOrderList(
+                          'ลูกค้าไม่ได้รับออร์เดอร์',
+                          orderNotReceived.length.toString(),
+                        ),
+                        buildOrderList(
+                          'ออร์เดอร์ที่ปฏิเสธ',
+                          orderReject.length.toString(),
+                        ),
+                        buildTotalIncome(
+                          'รวมรายได้ทั้งหมด',
+                          orderShipping,
+                          orderAccept,
+                          orderPayed,
+                          orderReject,
+                        ),
+                        Row(
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "เมนูยอดนิยม",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        buildPopularMenu(
+                            width, height, orderShipping, orderReceived)
                       ],
                     );
                   }),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  SizedBox buildPopularMenu(
+    double width,
+    double height,
+    List<QueryDocumentSnapshot<OrderModel>> orderShipping,
+    List<QueryDocumentSnapshot<OrderModel>> orderReceived,
+  ) {
+    List<Map<String, dynamic>> populars =
+        popularSort(orderShipping, orderReceived);
+    return SizedBox(
+      width: width * 1,
+      height: height * 0.2,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        physics: const ScrollPhysics(),
+        itemCount: populars.length > 5 ? 5 : populars.length,
+        itemBuilder: (itemBuilder, index) {
+          return Container(
+            margin: const EdgeInsets.all(6.0),
+            width: width * 0.34,
+            height: height * 0.2,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: height * 0.15,
+                  child: ShowImageNetwork(
+                    pathImage: populars[index]["imageURL"],
+                    colorImageBlank: MyConstant.colorStore,
+                  ),
+                ),
+                Text(populars[index]["productName"]),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -206,7 +339,7 @@ class _DashboardOtopState extends State<DashboardOtop> {
                 child: child!,
               )
             : AlertDialog(
-                title: Text("เลือกปีที่ต้องการดูรายรับ"),
+                title: const Text("เลือกปีที่ต้องการดูรายรับ"),
                 content: Container(
                   width: 300,
                   height: 300,
@@ -226,10 +359,11 @@ class _DashboardOtopState extends State<DashboardOtop> {
               );
       },
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
       });
+    }
   }
 
   Row buildTotalIncome(
@@ -246,10 +380,10 @@ class _DashboardOtopState extends State<DashboardOtop> {
           padding: const EdgeInsets.only(left: 20.0, top: 15, bottom: 20),
           child: Text(
             type,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 18,
-              color: Color.fromRGBO(41, 187, 137, 1),
+              color: MyConstant.colorStore,
             ),
           ),
         ),
@@ -257,10 +391,10 @@ class _DashboardOtopState extends State<DashboardOtop> {
           padding: const EdgeInsets.only(right: 25.0, top: 15, bottom: 20),
           child: Text(
             '$totalPrice  บาท',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 18,
-              color: Color.fromRGBO(41, 187, 137, 1),
+              color: MyConstant.colorStore,
             ),
           ),
         ),
@@ -321,13 +455,13 @@ class _DashboardOtopState extends State<DashboardOtop> {
 
   Container buildYear() {
     return Container(
-      margin: const EdgeInsets.only(top: 15, left: 15),
+      margin: const EdgeInsets.only(top: 10, left: 15),
       child: ElevatedButton(
         child: focusIncomeYear
-            ? const Text(
+            ? Text(
                 'รายปี',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: MyConstant.colorStore,
                   fontWeight: FontWeight.bold,
                 ),
               )
@@ -355,13 +489,13 @@ class _DashboardOtopState extends State<DashboardOtop> {
 
   Container buildMonth() {
     return Container(
-      margin: const EdgeInsets.only(top: 15, left: 15),
+      margin: const EdgeInsets.only(top: 10, left: 15),
       child: ElevatedButton(
         child: focusIncomeMonth
-            ? const Text(
+            ? Text(
                 'รายเดือน',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: MyConstant.colorStore,
                   fontWeight: FontWeight.bold,
                 ),
               )
@@ -393,109 +527,31 @@ class _DashboardOtopState extends State<DashboardOtop> {
     return SizedBox(
       width: width * .35,
       child: IconButton(
-          onPressed: () => _selectDate(context), icon: const Icon(Icons.list)),
+          onPressed: () => buildMaterialDatePicker(context),
+          icon: const Icon(Icons.list)),
     );
   }
 
-  Row buildSecondChart(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 10),
-          width: width * .45,
-          height: 120,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'ออร์เดอร์ที่จ่ายครบ',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                orderPayed.length.toString(),
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color.fromRGBO(70, 186, 90, 1),
-                Color.fromRGBO(153, 228, 110, 1),
-              ],
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: 10),
-          width: width * .45,
-          height: 120,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'ออร์เดอร์ที่ปฏิเสธ',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                orderReject.length.toString(),
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color.fromRGBO(255, 111, 112, 1),
-                Color.fromRGBO(255, 60, 66, 0.7),
-              ],
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Row buildRestaurant(double width, height, String imageRef, restaurantName) {
+  Row buildOtop(double width, height, String imageRef, otopName) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Container(
           width: width * 1,
-          height: height * 0.3,
+          height: height * 0.24,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: width * 1,
-                height: height * 0.26,
+                height: height * 0.2,
                 child: ShowImageNetwork(
-                    pathImage: imageRef,
-                    colorImageBlank: MyConstant.colorStore),
+                  pathImage: imageRef,
+                  colorImageBlank: MyConstant.colorStore,
+                ),
               ),
               Text(
-                restaurantName,
+                otopName,
                 style: const TextStyle(
                   fontSize: 24,
                   color: Colors.white,
@@ -506,7 +562,7 @@ class _DashboardOtopState extends State<DashboardOtop> {
           ),
           decoration: BoxDecoration(
             color: MyConstant.colorStore,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(5),
           ),
         ),
       ],

@@ -1,27 +1,16 @@
+import 'package:chanthaburi_app/models/user/partner.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
 
 class CardPartner extends StatelessWidget {
-  final String email;
-  final String profileRef;
   final String docId;
-  final String fullName;
-  final String role;
-  final String phoneNumber;
-  final String password;
-  final Function onApprove;
-  final Function onUnApprove;
-  const CardPartner({
+  PartnerModel partner;
+  Function navigatePartnerDetail;
+  CardPartner({
     Key? key,
-    required this.role,
-    required this.fullName,
-    required this.phoneNumber,
-    required this.onApprove,
-    required this.onUnApprove,
+    required this.partner,
     required this.docId,
-    required this.email,
-    required this.profileRef,
-    required this.password,
+    required this.navigatePartnerDetail,
   }) : super(key: key);
 
   @override
@@ -34,8 +23,9 @@ class CardPartner extends StatelessWidget {
       ),
       child: Container(
         width: width * 1,
-        height: 160,
+        height: 128,
         child: InkWell(
+          onTap: () => navigatePartnerDetail(partner,docId),
           child: Column(
             children: [
               Row(
@@ -73,7 +63,7 @@ class CardPartner extends StatelessWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 15.0),
                                   child: Text(
-                                    fullName,
+                                    partner.fullName,
                                     style: TextStyle(
                                       color: MyConstant.colorStore,
                                       fontSize: 18,
@@ -97,7 +87,7 @@ class CardPartner extends StatelessWidget {
                                 width: 15,
                               ),
                               Text(
-                                phoneNumber,
+                                partner.phoneNumber,
                                 style: TextStyle(
                                   color: MyConstant.colorStore,
                                   fontSize: 16,
@@ -116,7 +106,7 @@ class CardPartner extends StatelessWidget {
                                 width: 15,
                               ),
                               Text(
-                                role,
+                                partner.role,
                                 style: TextStyle(
                                   color: MyConstant.colorStore,
                                   fontSize: 16,
@@ -138,45 +128,20 @@ class CardPartner extends StatelessWidget {
                 ],
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () => onApprove(docId, fullName, role,
-                          phoneNumber, profileRef, email,password),
-                      child: Text(
-                        "อนุมัติ",
-                        style: TextStyle(color: MyConstant.themeApp),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
-                        shadowColor: MyConstant.backgroudApp,
-                        side: BorderSide(
-                          color: MyConstant.themeApp,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () => onUnApprove(docId),
-                      child: const Text(
-                        "ไม่อนุมัติ",
-                        style: TextStyle(color: Colors.red),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
-                        shadowColor: MyConstant.backgroudApp,
-                        side: const BorderSide(
-                          color: Colors.red,
-                        ),
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: Text(
+                      "ตรวจสอบข้อมูล",
+                      style: TextStyle(
+                        color: MyConstant.colorStore,
+                        decoration: TextDecoration.underline,
                       ),
                     ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),

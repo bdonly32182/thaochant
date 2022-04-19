@@ -18,6 +18,7 @@ class ProductCartModel {
   num width;
   num height;
   num long;
+  int? poplarScore;
   ProductCartModel({
     this.id,
     this.sumTotalPrice,

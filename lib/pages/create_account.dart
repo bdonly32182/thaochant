@@ -23,7 +23,6 @@ class _CreateAccountState extends State<CreateAccount> {
 
   bool eyesPassword = true;
   bool eyesConfirm = true;
-  bool isPartner = false;
   final _formKey = GlobalKey<FormState>();
   final UserModel _user = UserModel(
     email: '',
@@ -90,7 +89,7 @@ class _CreateAccountState extends State<CreateAccount> {
           },
         );
         Map<String, dynamic> response =
-            await AuthMethods.register(_user, isPartner, profileImage);
+            await AuthMethods.register(_user, profileImage);
         Navigator.pop(dialogContext);
         showDialog(
           context: context,
@@ -105,7 +104,6 @@ class _CreateAccountState extends State<CreateAccount> {
           confirmPassController.clear();
           eyesPassword = true;
           eyesConfirm = true;
-          isPartner = false;
         });
       }
     }
@@ -130,38 +128,11 @@ class _CreateAccountState extends State<CreateAccount> {
                   buildConfirmPassword(width),
                   buildName(width),
                   buildPhone(width),
-                  buildCheckbokPartner(width),
                   buildButton(width),
                   buildLogin(width),
                 ],
               ),
             )),
-      ),
-    );
-  }
-
-  Container buildCheckbokPartner(double width) {
-    return Container(
-      margin: EdgeInsets.only(left: width * 0.12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Checkbox(
-            activeColor: MyConstant.themeApp,
-            value: isPartner,
-            onChanged: (bool? value) {
-              if (value!) {
-                _user.role = MyConstant.sellerName;
-              }
-              setState(() {
-                isPartner = value;
-              });
-            },
-          ),
-          const Text(
-            "ต้องการเป็นพาร์ทเนอร์หรือไม่",
-          ),
-        ],
       ),
     );
   }
@@ -297,35 +268,37 @@ class _CreateAccountState extends State<CreateAccount> {
             onSaved: (String? password) => _user.password = password!,
             obscureText: eyesPassword,
             validator: (value) {
-              if (value!.isEmpty) return 'Please input password';
+              if (value!.isEmpty) return 'กรุณากรอกรหัสผ่าน';
+              if (value.length < 6) return 'กรุณากรอกรหัสผ่านอย่างน้อย 6 ตัว';
               return null;
             },
             decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: 'รหัสผ่าน :',
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                suffixIcon: IconButton(
-                  icon: eyesPassword
-                      ? Icon(Icons.remove_red_eye, color: MyConstant.themeApp)
-                      : Icon(Icons.remove_red_eye_outlined,
-                          color: MyConstant.themeApp),
-                  onPressed: () => setState(() {
-                    eyesPassword = !eyesPassword;
-                  }),
-                ),
-                prefixIcon: Icon(
-                  Icons.lock_outlined,
-                  color: MyConstant.themeApp,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                )),
+              fillColor: Colors.white,
+              filled: true,
+              labelText: 'รหัสผ่าน :',
+              labelStyle: TextStyle(color: Colors.grey[600]),
+              suffixIcon: IconButton(
+                icon: eyesPassword
+                    ? Icon(Icons.remove_red_eye, color: MyConstant.themeApp)
+                    : Icon(Icons.remove_red_eye_outlined,
+                        color: MyConstant.themeApp),
+                onPressed: () => setState(() {
+                  eyesPassword = !eyesPassword;
+                }),
+              ),
+              prefixIcon: Icon(
+                Icons.lock_outlined,
+                color: MyConstant.themeApp,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade200),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             style: TextStyle(
               color: MyConstant.themeApp,
               fontWeight: FontWeight.w700,

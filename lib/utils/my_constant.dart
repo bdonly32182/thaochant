@@ -12,6 +12,7 @@ class MyConstant {
   static String routeBuyerService = '/buyerService';
   static String routeGuideService = '/guideService';
   static String routeMemberList = '/member';
+  static String routeRegisterPartner = '/registerPartner';
 
   // role
   static String buyerName = "buyer";
@@ -59,9 +60,14 @@ class MyConstant {
   static String guideImage = 'images/guide.jpg';
   static String partnerImage = 'images/partner.png';
   static String homestayImage = 'images/homestay.jpg';
-  static String currentLocation = 'images/current_location.png';
+  static String currentLocation = 'images/location.png';
   static String promptPayImage = 'images/promptpay.jpeg';
   static String notifyImage = 'images/notify.png';
+  static String otopPicture= 'images/aluar.jpeg';
+  static String locationPicture = 'images/location_image.jpeg';
+  static String thaiFood = 'images/thai-food.jpeg';
+  static String resortPicture = 'images/baanlek.jpeg';
+  static String packagePicture = 'images/package.jpeg';
 
   // color
   static Color backgroudApp =
@@ -72,7 +78,7 @@ class MyConstant {
   static Color themeApp = const Color.fromRGBO(
       41, 187, 137, 1); // this color is themeApp and resort
   static Color colorLocation = const Color.fromRGBO(159, 156, 213, 1);
-  static Color colorTour = const Color.fromRGBO(160,191,225, 1);
+  static Color colorTour = const Color.fromRGBO(160, 191, 225, 1);
 
   //status restaurant and resort
   static String prepaidStatus = "Prepaid"; // ชำระเงินล่วงหน้าแล้ว
@@ -81,6 +87,8 @@ class MyConstant {
   static String rejected = "Rejected"; // กรณีเช็คเงินแล้วไม่ผ่าน
 // more otop
   static String shipping = "Shipping"; // จัดส่งสินค้าแล้ว
+  static String received = "Received";
+  static String notReceive = "NotReceive";
   // more tour
   static String joined = "Joined"; // เข้าร่วมทริป
 
@@ -109,6 +117,14 @@ class MyConstant {
     'Joined': {
       'text': 'เข้าร่วมทริปแล้ว',
       'color': const Color.fromRGBO(85, 172, 238, 1)
+    },
+    'Received': {
+      'text': 'ได้รับสินค้าแล้ว',
+      'color': const Color.fromRGBO(110, 203, 99, 1)
+    },
+    'NotReceive': {
+      'text': 'ยังไม่ได้รับสินค้า',
+      'color': const Color.fromRGBO(218, 0, 55, 1)
     }
   };
   static List<String> monthThailand = [

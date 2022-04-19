@@ -8,14 +8,15 @@ import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 class DashboardResort extends StatefulWidget {
   String resortId, imageRef, resortName;
-  DashboardResort(
-      {Key? key,
-      required this.resortId,
-      required this.imageRef,
-      required this.resortName,})
-      : super(key: key);
+  DashboardResort({
+    Key? key,
+    required this.resortId,
+    required this.imageRef,
+    required this.resortName,
+  }) : super(key: key);
 
   @override
   State<DashboardResort> createState() => _DashboardResortState();
@@ -29,24 +30,6 @@ class _DashboardResortState extends State<DashboardResort> {
     MyConstant.rejected,
     MyConstant.payed,
   ];
-  List<OrderModel> orderPrepaid = [];
-  List<OrderModel> orderAccept = [];
-  List<OrderModel> orderPayed = [];
-  List<OrderModel> orderReject = [];
-  _selectDate(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    switch (theme.platform) {
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
-        return buildMaterialDatePicker(context);
-      case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
-        return buildCupertinoDatePicker(context);
-    }
-  }
-
   bool focusIncomeMonth = true;
   bool focusIncomeYear = false;
   bool focusSelectDate = false;
@@ -59,7 +42,7 @@ class _DashboardResortState extends State<DashboardResort> {
     }
     if (type == 'month') {
       String month = MyConstant.monthThailand[date.month - 1];
-      return '${month}  ${date.year}';
+      return '$month  ${date.year}';
     }
   }
 
@@ -110,15 +93,12 @@ class _DashboardResortState extends State<DashboardResort> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              buildRestaurant(
-                  width, height, widget.imageRef, widget.resortName),
+              buildResort(width, height, widget.imageRef, widget.resortName),
+              buildFilterDashboard(),
               buildShowAndSelectDate(width),
               StreamBuilder(
-                  stream: BookingCollection.orderByResort(
-                      widget.resortId,
-                      orderCategory,
-                      betweenDate[0],
-                      betweenDate[1]),
+                  stream: BookingCollection.orderByResort(widget.resortId,
+                      orderCategory, betweenDate[0], betweenDate[1]),
                   builder: (context,
                       AsyncSnapshot<QuerySnapshot<BookingModel>> snapshot) {
                     if (snapshot.hasError) {
@@ -134,18 +114,21 @@ class _DashboardResortState extends State<DashboardResort> {
                             .where((order) =>
                                 order.data().status == MyConstant.prepaidStatus)
                             .toList();
-                    List<QueryDocumentSnapshot<BookingModel>> orderAccept = orders
-                        .where((order) =>
-                            order.data().status == MyConstant.acceptOrder)
-                        .toList();
-                    List<QueryDocumentSnapshot<BookingModel>> orderPayed = orders
-                        .where(
-                            (order) => order.data().status == MyConstant.payed)
-                        .toList();
-                    List<QueryDocumentSnapshot<BookingModel>> orderReject = orders
-                        .where((order) =>
-                            order.data().status == MyConstant.rejected)
-                        .toList();
+                    List<QueryDocumentSnapshot<BookingModel>> orderAccept =
+                        orders
+                            .where((order) =>
+                                order.data().status == MyConstant.acceptOrder)
+                            .toList();
+                    List<QueryDocumentSnapshot<BookingModel>> orderPayed =
+                        orders
+                            .where((order) =>
+                                order.data().status == MyConstant.payed)
+                            .toList();
+                    List<QueryDocumentSnapshot<BookingModel>> orderReject =
+                        orders
+                            .where((order) =>
+                                order.data().status == MyConstant.rejected)
+                            .toList();
                     return Column(
                       children: [
                         buildOrderList('ออร์เดอร์จ่ายล่วงหน้า',
@@ -166,28 +149,6 @@ class _DashboardResortState extends State<DashboardResort> {
         ),
       ),
     );
-  }
-
-  buildCupertinoDatePicker(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext builder) {
-          return Container(
-            height: MediaQuery.of(context).copyWith().size.height / 3,
-            color: Colors.white,
-            child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.date,
-              onDateTimeChanged: (picked) {
-                setState(() {
-                  selectedDate = picked;
-                });
-              },
-              initialDateTime: selectedDate,
-              minimumYear: 2021,
-              maximumYear: 2100,
-            ),
-          );
-        });
   }
 
   buildMaterialDatePicker(BuildContext context) async {
@@ -213,7 +174,7 @@ class _DashboardResortState extends State<DashboardResort> {
               )
             : AlertDialog(
                 title: const Text("เลือกปีที่ต้องการดูรายรับ"),
-                content: Container(
+                content: SizedBox(
                   width: 300,
                   height: 300,
                   child: YearPicker(
@@ -232,10 +193,11 @@ class _DashboardResortState extends State<DashboardResort> {
               );
       },
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
       });
+    }
   }
 
   Row buildTotalIncome(
@@ -252,10 +214,10 @@ class _DashboardResortState extends State<DashboardResort> {
           padding: const EdgeInsets.only(left: 20.0, top: 15, bottom: 20),
           child: Text(
             type,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 18,
-              color: Color.fromRGBO(41, 187, 137, 1),
+              color: MyConstant.colorStore,
             ),
           ),
         ),
@@ -263,10 +225,10 @@ class _DashboardResortState extends State<DashboardResort> {
           padding: const EdgeInsets.only(right: 25.0, top: 15, bottom: 20),
           child: Text(
             '$totalPrice  บาท',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 18,
-              color: Color.fromRGBO(41, 187, 137, 1),
+              color: MyConstant.colorStore,
             ),
           ),
         ),
@@ -330,10 +292,10 @@ class _DashboardResortState extends State<DashboardResort> {
       margin: const EdgeInsets.only(top: 15, left: 15),
       child: ElevatedButton(
         child: focusIncomeYear
-            ? const Text(
+            ? Text(
                 'รายปี',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: MyConstant.colorStore,
                   fontWeight: FontWeight.bold,
                 ),
               )
@@ -364,10 +326,10 @@ class _DashboardResortState extends State<DashboardResort> {
       margin: const EdgeInsets.only(top: 15, left: 15),
       child: ElevatedButton(
         child: focusIncomeMonth
-            ? const Text(
+            ? Text(
                 'รายเดือน',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: MyConstant.colorStore,
                   fontWeight: FontWeight.bold,
                 ),
               )
@@ -399,103 +361,24 @@ class _DashboardResortState extends State<DashboardResort> {
     return SizedBox(
       width: width * .35,
       child: IconButton(
-          onPressed: () => _selectDate(context), icon: const Icon(Icons.list)),
+          onPressed: () => buildMaterialDatePicker(context),
+          icon: const Icon(Icons.list)),
     );
   }
 
-  Row buildSecondChart(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 10),
-          width: width * .45,
-          height: 120,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'ออร์เดอร์ที่จ่ายครบ',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                orderPayed.length.toString(),
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color.fromRGBO(70, 186, 90, 1),
-                Color.fromRGBO(153, 228, 110, 1),
-              ],
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: 10),
-          width: width * .45,
-          height: 120,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'ออร์เดอร์ที่ปฏิเสธ',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                orderReject.length.toString(),
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color.fromRGBO(255, 111, 112, 1),
-                Color.fromRGBO(255, 60, 66, 0.7),
-              ],
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Row buildRestaurant(double width, height, String imageRef, restaurantName) {
+  Row buildResort(double width, height, String imageRef, restaurantName) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Container(
           width: width * 1,
-          height: height * 0.3,
+          height: height * 0.28,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: width * 1,
-                height: height * 0.26,
+                height: height * 0.24,
                 child: ShowImageNetwork(
                     pathImage: imageRef,
                     colorImageBlank: MyConstant.colorStore),
@@ -512,7 +395,7 @@ class _DashboardResortState extends State<DashboardResort> {
           ),
           decoration: BoxDecoration(
             color: MyConstant.colorStore,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(5),
           ),
         ),
       ],

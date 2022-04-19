@@ -161,66 +161,70 @@ class _EditShippingAddressState extends State<EditShippingAddress> {
         title: const Text('แก้ไขที่อยู่'),
         backgroundColor: MyConstant.themeApp,
       ),
-      body: Form(
-        key: _formKey,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: const [
-                      Text('ช่องทางติดต่อ'),
-                    ],
-                  ),
-                ),
-                buildFormField(
-                  _nameController,
-                  'ชื่อ นามสกุล',
-                  Icons.person,
-                ),
-                buildFormField(
-                  _phoneController,
-                  'เบอร์โทรศัพท์',
-                  Icons.phone_callback,
-                ),
-                Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: const [
-                      Text('ที่อยู่'),
-                    ],
-                  ),
-                ),
-                buildFormAddress(),
-                buildShowmap(width, height, context),
-                Container(
-                  margin: const EdgeInsets.all(10.0),
-                  width: double.maxFinite,
-                  child: ElevatedButton(
-                    child: const Text(
-                      'ลบที่อยู่',
-                      style: TextStyle(fontSize: 18, color: Colors.red),
+      body: SingleChildScrollView(
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+          behavior: HitTestBehavior.opaque,
+          child: Form(
+            key: _formKey,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: const [
+                        Text('ช่องทางติดต่อ'),
+                      ],
                     ),
-                    onPressed: onDeleteAddress,
-                    style: ElevatedButton.styleFrom(primary: Colors.white),
                   ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-                  width: double.maxFinite,
-                  child: ElevatedButton(
-                    child: const Text(
-                      'ส่ง',
-                      style: TextStyle(fontSize: 18),
+                  buildFormField(
+                    _nameController,
+                    'ชื่อ นามสกุล',
+                    Icons.person,
+                  ),
+                  buildFormField(
+                    _phoneController,
+                    'เบอร์โทรศัพท์',
+                    Icons.phone_callback,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: const [
+                        Text('ที่อยู่'),
+                      ],
                     ),
-                    onPressed: onUpdateAddress,
-                    style:
-                        ElevatedButton.styleFrom(primary: MyConstant.themeApp),
                   ),
-                ),
-              ],
+                  buildFormAddress(),
+                  buildShowmap(width, height, context),
+                  Container(
+                    margin: const EdgeInsets.all(10.0),
+                    width: double.maxFinite,
+                    child: ElevatedButton(
+                      child: const Text(
+                        'ลบที่อยู่',
+                        style: TextStyle(fontSize: 18, color: Colors.red),
+                      ),
+                      onPressed: onDeleteAddress,
+                      style: ElevatedButton.styleFrom(primary: Colors.white),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    width: double.maxFinite,
+                    child: ElevatedButton(
+                      child: const Text(
+                        'ส่ง',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      onPressed: onUpdateAddress,
+                      style:
+                          ElevatedButton.styleFrom(primary: MyConstant.themeApp),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

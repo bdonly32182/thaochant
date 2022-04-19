@@ -66,28 +66,34 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                           buildImageRestaurant(
                               width, height, snapshot.data!.get('imageRef')),
                           buildDetail(
-                            width,
-                            height,
-                            snapshot.data!.get('businessName'),
-                            snapshot.data!.get('address'),
-                            snapshot.data!.get('phoneNumber'),
-                            snapshot.data!.get('latitude'),
-                            snapshot.data!.get('longitude'),
-                            snapshot.data!.get('point'),
-                            snapshot.data!.get('ratingCount'),
-                            snapshot.data!.get('policyDescription'),
-                            snapshot.data!.get('policyName'),
-                          ),
+                              width,
+                              height,
+                              snapshot.data!.get('businessName'),
+                              snapshot.data!.get('address'),
+                              snapshot.data!.get('phoneNumber'),
+                              snapshot.data!.get('latitude'),
+                              snapshot.data!.get('longitude'),
+                              snapshot.data!.get('point'),
+                              snapshot.data!.get('ratingCount'),
+                              snapshot.data!.get('policyDescription'),
+                              snapshot.data!.get('policyName'),
+                              snapshot.data!.get("imageRef")),
                           CategoryRestaurant(
                             businessId: widget.restaurantId,
                             restaurantName: snapshot.data!.get('businessName'),
                             foods: provider.products,
+                            status: snapshot.data!.get("statusOpen"),
                           )
                         ],
                       ),
                     ),
-                    buildButtonCheckout(height, width, provider.products,
-                        snapshot.data!.get('businessName')),
+                    buildButtonCheckout(
+                      height,
+                      width,
+                      provider.products,
+                      snapshot.data!.get('businessName'),
+                      snapshot.data!.get("statusOpen"),
+                    ),
                   ],
                 );
               });
@@ -97,7 +103,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
   }
 
   Container buildButtonCheckout(double height, double width,
-      List<ProductCartModel> foods, String restaurantName) {
+      List<ProductCartModel> foods, String restaurantName, int status) {
     num totalAmountAll = 0;
     num totalPriceAll = 0;
     for (ProductCartModel food in foods) {
@@ -131,18 +137,20 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                   ),
                 ],
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (builder) => ConfirmOrder(
-                      products: foods,
-                      businessName: restaurantName,
-                      businessId: widget.restaurantId,
-                    ),
-                  ),
-                );
-              },
+              onPressed: status == 0
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (builder) => ConfirmOrder(
+                            products: foods,
+                            businessName: restaurantName,
+                            businessId: widget.restaurantId,
+                          ),
+                        ),
+                      );
+                    },
               style: ElevatedButton.styleFrom(primary: MyConstant.themeApp),
             ),
           ),
@@ -153,25 +161,36 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
   }
 
   Card buildDetail(
-      double width,
-      double height,
-      String businessName,
-      address,
-      phoneNumber,
-      double lat,
-      lng,
-      num point,
-      ratingCount,
-      List<dynamic> policyDescription,
-      List<dynamic> policyName) {
+    double width,
+    double height,
+    String businessName,
+    address,
+    phoneNumber,
+    double lat,
+    lng,
+    num point,
+    ratingCount,
+    List<dynamic> policyDescription,
+    List<dynamic> policyName,
+    String imageRef,
+  ) {
     return Card(
       child: SizedBox(
         width: width * 1,
-        height: height * 0.14,
         child: Column(
           children: [
-            buildNameRestaurant(width, businessName, address, phoneNumber, lat,
-                lng, point, ratingCount, policyDescription, policyName),
+            buildNameRestaurant(
+                width,
+                businessName,
+                address,
+                phoneNumber,
+                lat,
+                lng,
+                point,
+                ratingCount,
+                policyDescription,
+                policyName,
+                imageRef),
             buildDescription(width, address, point, ratingCount),
           ],
         ),
@@ -237,7 +256,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
           ),
         ),
         Container(
-          margin: const EdgeInsets.only(left: 16, top: 8.0),
+          margin: const EdgeInsets.only(left: 16, bottom: 8.0),
           child: Row(
             children: [
               RatingBar.builder(
@@ -280,7 +299,8 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
       num point,
       ratingCount,
       List<dynamic> policyDescription,
-      List<dynamic> policyName) {
+      List<dynamic> policyName,
+      String imageRef) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -321,6 +341,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                     ratingCount: ratingCount,
                     policyDescription: policyDescription,
                     policyName: policyName,
+                    imageRef: imageRef,
                   ),
                 ),
               );

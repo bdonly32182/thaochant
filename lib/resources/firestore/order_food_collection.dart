@@ -17,7 +17,7 @@ class OrderFoodCollection {
   static Stream<QuerySnapshot<OrderModel>> orderByUserId(String userId) {
     Stream<QuerySnapshot<OrderModel>> _order = orderFoodCollection
         .where("userId", isEqualTo: userId)
-      .orderBy("dateCreate",descending: true)
+        .orderBy("dateCreate", descending: true)
         .limit(10)
         .withConverter<OrderModel>(
             fromFirestore: (snapshot, _) =>

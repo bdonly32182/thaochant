@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/models/order/order.dart';
+import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/resources/firestore/order_product_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -8,27 +9,42 @@ import 'package:flutter/material.dart';
 
 class OrderProductDetail extends StatefulWidget {
   QueryDocumentSnapshot<OrderModel> order;
-  OrderProductDetail({Key? key, required this.order}) : super(key: key);
+  bool isOwner;
+  OrderProductDetail({Key? key, required this.order, required this.isOwner})
+      : super(key: key);
 
   @override
   State<OrderProductDetail> createState() => _OrderProductDetailState();
 }
 
 class _OrderProductDetailState extends State<OrderProductDetail> {
-  String onChangeCategory = "ALL";
+  String? onChangeCategory;
   List<DropdownMenuItem<String>> items = [
-    "ALL",
     MyConstant.acceptOrder,
     MyConstant.payed,
     MyConstant.rejected,
     MyConstant.shipping,
+    MyConstant.received,
+    MyConstant.notReceive,
   ].map<DropdownMenuItem<String>>((String value) {
     return DropdownMenuItem<String>(
       value: value,
       child: Text(
-        value == "ALL"
-            ? "เลือกหมวดหมู่"
-            : MyConstant.statusColor[value]!["text"],
+        MyConstant.statusColor[value]!["text"],
+        style: TextStyle(
+            color: MyConstant.statusColor[value]!["color"], fontSize: 14),
+      ),
+    );
+  }).toList();
+  List<DropdownMenuItem<String>> itemsBuyer = [
+    "ALL",
+    MyConstant.received,
+    MyConstant.notReceive,
+  ].map<DropdownMenuItem<String>>((String value) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Text(
+        value == "ALL" ? "เลือกสถานะ" : MyConstant.statusColor[value]!["text"],
         style: TextStyle(
             color: value == "ALL"
                 ? MyConstant.colorStore
@@ -45,11 +61,23 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
         dialogAlert(context, "อัพเดทสถานะ",
             "อัพเดทสถานะออร์เดอร์เป็น $statusText เรียบร้อย");
       } else {
-        dialogAlert(context, "แจ้งเตือน", "กรุณาเลือกสถานะ");
+        dialogAlert(context, "แจ้ง", "ไม่สามารถอัพเดทสถานะนี้ได้");
       }
     } catch (e) {
       dialogAlert(context, "อัพเดทสถานะ", "เกิดเหตุขัดข้อง อัพเดทสถานะล้มเหลว");
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      if (widget.isOwner) {
+        onChangeCategory = widget.order.data().status;
+      } else {
+        onChangeCategory = "ALL";
+      }
+    });
   }
 
   @override
@@ -59,18 +87,28 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("รายละเอียดออร์เดอร์"),
-        backgroundColor: MyConstant.colorStore,
+        backgroundColor:
+            widget.isOwner ? MyConstant.colorStore : MyConstant.themeApp,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            buildOrderStatus(widget.order["status"]),
-            cardDetail(
+            Card(child: buildField("รหัสการสั่งซื้อ : ", widget.order.id)),
+            Card(
+              child: cardDetail(
+                width,
+                widget.order["addressInfo"]["fullName"],
+                widget.order["addressInfo"]["phoneNumber"],
+                widget.order["addressInfo"]["address"],
+                widget.order["totalPrice"],
+              ),
+            ),
+            buildCardStatus(width),
+            buildMenuList(
               width,
-              widget.order["addressInfo"]["fullName"],
-              widget.order["addressInfo"]["phoneNumber"],
-              widget.order["product"].length,
-              widget.order["totalPrice"],
+              widget.order.data().product,
+              widget.order.data().totalPrice,
+              widget.order.data().status,
             ),
             buildSlipword(),
             buildSlipImage(width, height, widget.order["imagePayment"]),
@@ -78,6 +116,57 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
         ),
       ),
       backgroundColor: Colors.grey[200],
+    );
+  }
+
+  Card buildCardStatus(double width) {
+    return Card(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: width * 0.4,
+                margin: const EdgeInsets.all(14),
+                child: widget.isOwner
+                    ? DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          items: items,
+                          style: TextStyle(color: MyConstant.themeApp),
+                          onChanged: (String? value) => setState(() {
+                            onChangeCategory = value!;
+                          }),
+                          value: onChangeCategory,
+                        ),
+                      )
+                    : DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          items: itemsBuyer,
+                          style: TextStyle(color: MyConstant.themeApp),
+                          onChanged: (String? value) => setState(() {
+                            onChangeCategory = value!;
+                          }),
+                          value: onChangeCategory,
+                        ),
+                      ),
+                decoration: BoxDecoration(
+                  boxShadow: const [BoxShadow(color: Colors.white)],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ],
+          ),
+          confirmButton(
+            onChangeCategory!,
+            "อัพเดทสถานะ",
+            widget.order.id,
+            widget.order.data().userId,
+            widget.isOwner ? MyConstant.colorStore : MyConstant.themeApp,
+          ),
+        ],
+      ),
     );
   }
 
@@ -93,60 +182,23 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
         ),
       ),
       decoration: BoxDecoration(
-        color: MyConstant.colorStore,
+        color: widget.isOwner ? MyConstant.colorStore : MyConstant.themeApp,
         borderRadius: BorderRadius.circular(10),
       ),
     );
   }
 
   Container cardDetail(double width, String fullName, phoneNumber,
-      int amountProduct, double totalPrice) {
+      String address, double prepaidPrice) {
     return Container(
-      width: width * .8,
+      width: double.maxFinite,
       child: Column(
         children: [
           const SizedBox(height: 15),
           buildField("ชื่อผู้สั่งซื้อ :", fullName),
           buildField("เบอร์โทรติดต่อ :", phoneNumber),
-          buildField("จำนวนสินค้า :", "$amountProduct รายการ"),
-          buildField("ราคา :", "$totalPrice บาท"),
-          buildShippingAddress(width, widget.order.data().addressInfo.address),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 30),
-                width: width * .5,
-                height: 60,
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                    items: items,
-                    style: TextStyle(color: MyConstant.themeApp),
-                    onChanged: (String? value) => setState(() {
-                      onChangeCategory = value!;
-                    }),
-                    value: onChangeCategory,
-                  ),
-                ),
-                decoration: BoxDecoration(
-                  boxShadow: const [BoxShadow(color: Colors.white)],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              confirmButton(
-                onChangeCategory,
-                "เปลี่ยนแปลงสถานะ",
-                widget.order.id,
-                widget.order.data().userId,
-                MyConstant.colorStore,
-              ),
-            ],
-          ),
+          buildField("ที่อยู่ : ", address),
+          buildField("ราคา : ", "฿ $prepaidPrice บาท"),
         ],
       ),
       decoration: BoxDecoration(
@@ -159,7 +211,7 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
   Container confirmButton(
       String status, title, orderId, recipientId, Color colorStyle) {
     return Container(
-      margin: const EdgeInsets.all(6.0),
+      margin: const EdgeInsets.only(right: 10),
       child: ElevatedButton(
         child: Text(
           title,
@@ -178,60 +230,31 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
 
   Container buildField(String title, String text) {
     return Container(
-      height: 35,
-      margin: const EdgeInsets.all(5),
+      margin: const EdgeInsets.all(10.0),
+      width: double.maxFinite,
       child: Row(
         children: [
           Text(
             title,
             style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Text(
-            text,
-            style: TextStyle(
-              color: MyConstant.colorStore,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          )
-        ],
-      ),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(10),
-      ),
-    );
-  }
-
-  Card buildShippingAddress(double width, String address) {
-    return Card(
-      margin: const EdgeInsets.all(5),
-      color: Colors.grey[200],
-      child: Row(
-        children: [
-          Text(
-            'ที่อยู่ในการจัดส่ง : ',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 16,
+              color: Colors.grey[700],
+              fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
           ),
           Expanded(
             child: Text(
-              address,
+              text,
               style: TextStyle(
-                color: MyConstant.colorStore,
-                fontSize: 16,
+                color: widget.isOwner
+                    ? MyConstant.colorStore
+                    : MyConstant.themeApp,
+                fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
               maxLines: 3,
               softWrap: true,
-              overflow: TextOverflow.fade,
+              overflow: TextOverflow.clip,
             ),
           ),
         ],
@@ -239,22 +262,99 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
     );
   }
 
-  Container buildOrderStatus(String status) {
-    return Container(
-      margin: const EdgeInsets.only(top: 40),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          MyConstant.statusColor[status]!["text"],
-          style: TextStyle(
-            color: MyConstant.statusColor[status]!["color"],
-            fontSize: 17,
-          ),
-        ),
+  Card buildMenuList(double width, List<ProductCartModel> products,
+      num totalPrice, String status) {
+    return Card(
+      margin: const EdgeInsets.only(
+        top: 10,
+        left: 30,
+        right: 30,
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "รายละเอียดสินค้า (${MyConstant.statusColor[status]!["text"]})",
+              style: TextStyle(
+                color: MyConstant.statusColor[status]!["color"],
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(10.0),
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const ScrollPhysics(),
+              itemCount: products.length,
+              itemBuilder: (BuildContext context, index) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text("x ${products[index].amount}"),
+                        Container(
+                          margin: const EdgeInsets.only(left: 12, top: 10),
+                          width: width * 0.6,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                products[index].productName,
+                                softWrap: true,
+                                maxLines: 2,
+                              ),
+                              Text("- ${products[index].addtionMessage}")
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "${products[index].totalPrice} ฿",
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "ทั้งหมด",
+                  style: TextStyle(
+                    color: widget.isOwner
+                        ? MyConstant.colorStore
+                        : MyConstant.themeApp,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "฿ $totalPrice",
+                  style: TextStyle(
+                    color: widget.isOwner
+                        ? MyConstant.colorStore
+                        : MyConstant.themeApp,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

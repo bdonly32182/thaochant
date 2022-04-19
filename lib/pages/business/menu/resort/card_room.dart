@@ -74,16 +74,26 @@ class CardRoom extends StatelessWidget {
                           child: const Icon(Icons.food_bank),
                         ),
                 ),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(roomName),
-                        const Icon(Icons.arrow_forward_ios),
-                      ],
-                    ),
-                    Text(price.toString()),
-                  ],
+                SizedBox(
+                  width: width * 0.6,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              roomName,
+                              softWrap: true,
+                              maxLines: 2,
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios),
+                        ],
+                      ),
+                      Text(price.toString()),
+                    ],
+                  ),
                 ),
               ],
             ),

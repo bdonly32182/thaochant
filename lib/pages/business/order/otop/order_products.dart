@@ -24,6 +24,8 @@ class _OrderProductsState extends State<OrderProducts> {
     MyConstant.rejected,
     MyConstant.payed,
     MyConstant.shipping,
+    MyConstant.received,
+    MyConstant.notReceive,
   ];
   String onChangeCategory = "ALL";
   DateTime now = DateTime.now();
@@ -138,8 +140,10 @@ class _OrderProductsState extends State<OrderProducts> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              OrderProductDetail(order: orders[index]),
+                          builder: (context) => OrderProductDetail(
+                            order: orders[index],
+                            isOwner: true,
+                          ),
                         ),
                       );
                     },
@@ -191,7 +195,6 @@ class _OrderProductsState extends State<OrderProducts> {
             Container(
               margin: const EdgeInsets.only(top: 30),
               width: width * .5,
-              height: 60,
               child: DropdownButtonHideUnderline(
                 child: DropdownButton(
                   items: items,
@@ -249,7 +252,9 @@ class _OrderProductsState extends State<OrderProducts> {
                     MyConstant.acceptOrder,
                     MyConstant.rejected,
                     MyConstant.payed,
-                    MyConstant.shipping
+                    MyConstant.shipping,
+                    MyConstant.received,
+                    MyConstant.notReceive,
                   ];
                 } else {
                   orderCategory = [onChangeCategory];

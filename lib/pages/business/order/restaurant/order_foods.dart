@@ -134,7 +134,7 @@ class _OrderFoodsState extends State<OrderFoods> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              OrderFoodDetail(order: orders[index]),
+                              OrderFoodDetail(order: orders[index],isOwner: true,),
                         ),
                       );
                     },

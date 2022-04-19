@@ -2,6 +2,7 @@ import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/restaurant/confirm_order.dart';
 import 'package:chanthaburi_app/pages/restaurant/restaurant_detail.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
+import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sqlite/cart_restaurant.dart';
 import 'package:chanthaburi_app/utils/sqlite/sqlite_helper.dart';
@@ -156,80 +157,102 @@ class _CartRestaurantState extends State<CartRestaurant> {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: foods.length,
       itemBuilder: (BuildContext context, int indexFood) {
-        return Card(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 14.0,
-                  bottom: 14.0,
-                  left: 10.0,
-                ),
-                width: width * 0.28,
-                height: height * 0.1,
-                child: ShowImageNetwork(
-                  colorImageBlank: MyConstant.themeApp,
-                  pathImage: foods[indexFood].imageURL,
-                ),
-              ),
-              SizedBox(
-                width: width * 0.46,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        return FutureBuilder(
+            future: FoodCollection.checkFoodInCart(
+              foods[indexFood].productName,
+              foods[indexFood].businessId,
+            ),
+            builder: (context, AsyncSnapshot snapshot) {
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text("เกิดเหตุขัดข้อง"),
+                );
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const PouringHourGlass();
+              }
+              if (snapshot.data == 0) {
+                SQLiteRestaurant()
+                    .deleteFood(foods[indexFood].productId, userId);
+                return const Center(
+                  child: Text("ไม่พบสินค้ารายการนี้ กรุณาโหลดใหม่"),
+                );
+              }
+              return Card(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 15,
-                        left: 10,
+                    Container(
+                      margin: const EdgeInsets.only(
+                        top: 14.0,
+                        bottom: 14.0,
+                        left: 10.0,
                       ),
-                      child: Text(
-                        foods[indexFood].productName,
-                        softWrap: true,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      width: width * 0.28,
+                      height: height * 0.1,
+                      child: ShowImageNetwork(
+                        colorImageBlank: MyConstant.themeApp,
+                        pathImage: foods[indexFood].imageURL,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                        bottom: 5,
+                    SizedBox(
+                      width: width * 0.46,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 15,
+                              left: 10,
+                            ),
+                            child: Text(
+                              foods[indexFood].productName,
+                              softWrap: true,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 10,
+                              bottom: 5,
+                            ),
+                            child: Text(
+                                '${foods[indexFood].amount} x ${foods[indexFood].price}'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 10,
+                              left: 10,
+                            ),
+                            child: Text(
+                              '${foods[indexFood].totalPrice} ฿',
+                              style: TextStyle(
+                                color: MyConstant.themeApp,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                          '${foods[indexFood].amount} x ${foods[indexFood].price}'),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 10,
-                        left: 10,
-                      ),
-                      child: Text(
-                        '${foods[indexFood].totalPrice} ฿',
-                        style: TextStyle(
-                          color: MyConstant.themeApp,
-                        ),
-                      ),
+                    SizedBox(
+                      width: width * 0.16,
+                      child: IconButton(
+                          onPressed: () {
+                            onDeleteFood(foods[indexFood].productId);
+                            setState(() {
+                              foods.removeAt(indexFood);
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.delete_rounded,
+                            color: Colors.red,
+                          )),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(
-                width: width * 0.16,
-                child: IconButton(
-                    onPressed: () {
-                      onDeleteFood(foods[indexFood].productId);
-                      setState(() {
-                        foods.removeAt(indexFood);
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.delete_rounded,
-                      color: Colors.red,
-                    )),
-              ),
-            ],
-          ),
-        );
+              );
+            });
       },
     );
   }

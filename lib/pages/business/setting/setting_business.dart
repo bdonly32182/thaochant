@@ -88,7 +88,6 @@ class _SettingBusinessState extends State<SettingBusiness> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    print(widget.typeBusiness);
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
       appBar: AppBar(

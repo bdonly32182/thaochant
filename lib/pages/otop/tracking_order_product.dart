@@ -1,4 +1,6 @@
+import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/order/order.dart';
+import 'package:chanthaburi_app/pages/business/order/otop/order_otop_detail.dart';
 import 'package:chanthaburi_app/pages/otop/otop_detail.dart';
 import 'package:chanthaburi_app/pages/review/write_review.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
@@ -55,13 +57,21 @@ class _TrackingOrderProductState extends State<TrackingOrderProduct> {
                     return FutureBuilder(
                         future: OtopCollection.otopById(
                             orders[index]["businessId"]),
-                        builder:
-                            (context, AsyncSnapshot<DocumentSnapshot> otop) {
+                        builder: (context,
+                            AsyncSnapshot<DocumentSnapshot<BusinessModel>>
+                                otop) {
                           if (otop.hasError) {
                             return const Text('internal error');
                           }
                           if (otop.connectionState == ConnectionState.waiting) {
                             return const Text('loading ...');
+                          }
+                          if (otop.data!.data() == null) {
+                            return const Center(
+                                child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text('ไม่พบข้อมูลของร้านค้า'),
+                            ));
                           }
                           return Card(
                             child: Column(
@@ -78,41 +88,57 @@ class _TrackingOrderProductState extends State<TrackingOrderProduct> {
                                     ],
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.all(10.0),
-                                      width: width * 0.30,
-                                      height: 120,
-                                      child: ShowImageNetwork(
-                                        colorImageBlank: MyConstant.themeApp,
-                                        pathImage: otop.data!.get("imageRef"),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (builder) =>
+                                            OrderProductDetail(
+                                          order: orders[index],
+                                          isOwner: false,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.6,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            otop.data!.get("businessName"),
-                                          ),
-                                          Text(
-                                              'ราคาที่ชำระ ${orders[index]["totalPrice"]} ฿ (${orders[index]["product"].length}รายการ)'),
-                                          Text(
-                                            MyConstant.statusColor[orders[index]
-                                                ["status"]]!["text"],
-                                            style: TextStyle(
-                                              color: MyConstant.statusColor[
-                                                  orders[index]
-                                                      ["status"]]!["color"],
+                                    );
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.all(10.0),
+                                        width: width * 0.30,
+                                        height: 120,
+                                        child: ShowImageNetwork(
+                                          colorImageBlank: MyConstant.themeApp,
+                                          pathImage:
+                                              otop.data!.data()!.imageRef,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: width * 0.6,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              otop.data!.get("businessName"),
                                             ),
-                                          ),
-                                        ],
+                                            Text(
+                                                'ราคาที่ชำระ ${orders[index]["totalPrice"]} ฿ (${orders[index]["product"].length}รายการ)'),
+                                            Text(
+                                              MyConstant.statusColor[
+                                                  orders[index]
+                                                      ["status"]]!["text"],
+                                              style: TextStyle(
+                                                color: MyConstant.statusColor[
+                                                    orders[index]
+                                                        ["status"]]!["color"],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 const Divider(),
                                 Row(

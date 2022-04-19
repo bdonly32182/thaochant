@@ -65,40 +65,54 @@ class _CardMenuOtopState extends State<CardMenuOtop> {
                           child: const Icon(Icons.food_bank),
                         ),
                 ),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(widget.productName),
-                        const Icon(Icons.arrow_forward_ios),
-                      ],
-                    ),
-                    Text(widget.price),
-                  ],
+                SizedBox(
+                  width: width * 0.4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.productName,
+                              softWrap: true,
+                              maxLines: 2,
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios),
+                        ],
+                      ),
+                      Text(widget.price.toString()),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: width * 0.3,
+                  margin: const EdgeInsets.only(left: 6),
+                  child: ToggleSwitch(
+                    totalSwitches: 2,
+                    minWidth: 50.0,
+                    cornerRadius: 20.0,
+                    activeBgColors: [
+                      [Colors.red.shade600],
+                      [MyConstant.colorStore],
+                    ],
+                    labels: const ['หมด', 'ขาย'],
+                    activeFgColor: Colors.white,
+                    inactiveBgColor: MyConstant.backgroudApp,
+                    inactiveFgColor: Colors.grey,
+                    initialLabelIndex: widget.status,
+                    radiusStyle: true,
+                    onToggle: (index) {
+                      if (widget.status != index) {
+                        ProductOtopCollection.changeStatusProduct(
+                            widget.productId, index);
+                      }
+                    },
+                  ),
                 ),
               ],
             ),
-          ),
-          ToggleSwitch(
-            totalSwitches: 2,
-            minWidth: 50.0,
-            cornerRadius: 20.0,
-            activeBgColors: [
-              [Colors.red.shade600],
-              [MyConstant.colorStore],
-            ],
-            labels: const ['หมด', 'ขาย'],
-            activeFgColor: Colors.white,
-            inactiveBgColor: MyConstant.backgroudApp,
-            inactiveFgColor: Colors.grey,
-            initialLabelIndex: widget.status,
-            radiusStyle: true,
-            onToggle: (index) {
-              if (widget.status != index) {
-                ProductOtopCollection.changeStatusProduct(
-                    widget.productId, index);
-              }
-            },
           ),
         ],
       ),

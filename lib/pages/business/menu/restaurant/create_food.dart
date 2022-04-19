@@ -233,7 +233,6 @@ class _CreateFoodState extends State<CreateFood> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             keyboardType: TextInputType.phone,
             validator: (value) {
@@ -323,7 +322,6 @@ class _CreateFoodState extends State<CreateFood> {
         Container(
           margin: const EdgeInsets.only(top: 30),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกชื่อเมนูอาหาร';

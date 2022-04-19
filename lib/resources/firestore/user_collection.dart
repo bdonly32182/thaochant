@@ -1,3 +1,5 @@
+import 'package:chanthaburi_app/models/user/partner.dart';
+import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sharePreferrence/share_referrence.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,10 +39,18 @@ class UserCollection {
     return _resultUser;
   }
 
-  static Future<QuerySnapshot> searchApprovePartner(String search) async {
-    QuerySnapshot _resultApprovePartner = await _approvePartner
+  static Future<QuerySnapshot<PartnerModel>> searchApprovePartner(
+      String search) async {
+    QuerySnapshot<PartnerModel> _resultApprovePartner = await _approvePartner
+        .where("isAccept", isEqualTo: false)
         .orderBy("fullName")
-        .startAt([search]).endAt([search + '\uf8ff']).get();
+        .startAt([search])
+        .endAt([search + '\uf8ff'])
+        .withConverter<PartnerModel>(
+            fromFirestore: (snapshot, _) =>
+                PartnerModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
     return _resultApprovePartner;
   }
 
@@ -59,18 +69,30 @@ class UserCollection {
     return _resultBuyer;
   }
 
-  static Future<QuerySnapshot<Object?>> approveList(
+  static Future<QuerySnapshot<PartnerModel>> approveList(
       DocumentSnapshot? lastDocument) async {
     if (lastDocument != null) {
-      QuerySnapshot _nextPageApprove = await _approvePartner
+      QuerySnapshot<PartnerModel> _nextPageApprove = await _approvePartner
+          .where("isAccept", isEqualTo: false)
           .orderBy("fullName")
           .startAfterDocument(lastDocument)
+          .withConverter<PartnerModel>(
+              fromFirestore: (snapshot, _) =>
+                  PartnerModel.fromMap(snapshot.data()!),
+              toFirestore: (model, _) => model.toMap())
           .limit(10)
           .get();
       return _nextPageApprove;
     }
-    QuerySnapshot _resultApprove =
-        await _approvePartner.orderBy("fullName").limit(10).get();
+    QuerySnapshot<PartnerModel> _resultApprove = await _approvePartner
+        .where("isAccept", isEqualTo: false)
+        .orderBy("fullName")
+        .limit(10)
+        .withConverter<PartnerModel>(
+            fromFirestore: (snapshot, _) =>
+                PartnerModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
     return _resultApprove;
   }
 
@@ -97,40 +119,47 @@ class UserCollection {
   }
 
   static Future<Map<String, dynamic>> onApprove(
-      String docId,
-      String fullName,
-      String role,
-      String phoneNumber,
-      String profileRef,
-      String email,
-      String password) async {
+    String docId,
+    PartnerModel partner,
+  ) async {
     try {
       UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: partner.email,
+        password: partner.password,
       );
       String uid = userCredential.user!.uid;
       await _userCollection.doc(uid).set({
-        "email": email,
-        "fullName": fullName,
-        "phoneNumber": phoneNumber,
-        "role": role,
-        "profileRef": profileRef
+        "email": partner.email,
+        "fullName": partner.fullName,
+        "phoneNumber": partner.phoneNumber,
+        "role": partner.role,
+        "profileRef": partner.profileRef
       });
-      await _approvePartner.doc(docId).delete();
+      await _approvePartner.doc(docId).update({
+        "isAccept": true,
+        "password": "**secret***",
+      });
       return {"status": "200", "message": "อนุมัติเรียบร้อย"};
     } on FirebaseException catch (e) {
-      return {"status": "400", "message": "อนุมัติล้มเหลว"};
+      return {"status": "400", "message": e.message};
     }
   }
 
-  static Future<Map<String, dynamic>> unApprove(String docId) async {
+  static Future<Map<String, dynamic>> unApprove(
+      String docId, String profileRef, String verifyRef) async {
     try {
       await _approvePartner.doc(docId).delete();
+      if (profileRef.isNotEmpty) {
+        String referenceImage = StorageFirebase.getReference(profileRef);
+        StorageFirebase.deleteFile(referenceImage);
+      }
+      if (verifyRef.isNotEmpty) {
+        String referenceImage = StorageFirebase.getReference(verifyRef);
+        StorageFirebase.deleteFile(referenceImage);
+      }
       return {"status": "200", "message": "ไม่อนุมัติเรียบร้อย"};
     } on FirebaseException catch (e) {
-      print(e.code);
       return {"status": "400", "message": "ไม่อนุมัติล้มเหลว"};
     }
   }

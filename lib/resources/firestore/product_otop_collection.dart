@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:chanthaburi_app/models/otop/product.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
@@ -89,13 +90,13 @@ class ProductOtopCollection {
     }
   }
 
-  static Future<Map<String, dynamic>> deleteProduct(String productId,String imageUrl) async {
+  static Future<Map<String, dynamic>> deleteProduct(
+      String productId, String imageUrl) async {
     try {
       await productOtopCollection.doc(productId).delete();
       if (imageUrl.isNotEmpty) {
-        String referenceImage =
-              StorageFirebase.getReference(imageUrl);
-          StorageFirebase.deleteFile(referenceImage);
+        String referenceImage = StorageFirebase.getReference(imageUrl);
+        StorageFirebase.deleteFile(referenceImage);
       }
       return {"status": "200", "message": "ลบข้อมูลสินค้าเรียบร้อย"};
     } catch (e) {
@@ -120,7 +121,44 @@ class ProductOtopCollection {
   }
 
   static Future<QuerySnapshot> productsInOtop(String otopId) async {
-    QuerySnapshot products = await productOtopCollection.where(otopId).get();
+    QuerySnapshot products =
+        await productOtopCollection.where("otopId", isEqualTo: otopId).get();
     return products;
+  }
+
+  static Future<int> checkProductInCart(
+      String productName, String otopId) async {
+    QuerySnapshot _products = await productOtopCollection
+        .where("otopId", isEqualTo: otopId)
+        .where("productName", isEqualTo: productName)
+        .get();
+    return _products.size;
+  }
+
+  static Future<List<QueryDocumentSnapshot<ProductOtopModel>>>
+      randomProducts() async {
+    List<QueryDocumentSnapshot<ProductOtopModel>> randomProducts = [];
+    List<int> checkList = [];
+    QuerySnapshot<ProductOtopModel> _products = await productOtopCollection
+        .where("imageRef", isNotEqualTo: "")
+        .withConverter<ProductOtopModel>(
+            fromFirestore: (_firestore, _) =>
+                ProductOtopModel.fromMap(_firestore.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+    final random = Random();
+    int indexRandom = random.nextInt(_products.docs.length);
+    int totalInList = 0;
+    int totalInQuery = _products.docs.length > 10 ? 10 : _products.docs.length;
+    while (totalInList < totalInQuery) {
+      if (checkList.contains(indexRandom)) {
+        indexRandom = random.nextInt(_products.docs.length);
+      } else {
+        checkList.add(indexRandom);
+        randomProducts.add(_products.docs[indexRandom]);
+        totalInList = randomProducts.length;
+      }
+    }
+    return randomProducts;
   }
 }

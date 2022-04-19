@@ -287,7 +287,6 @@ class _EditFoodState extends State<EditFood> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             initialValue: widget.price.toString(),
             keyboardType: TextInputType.phone,
@@ -330,7 +329,6 @@ class _EditFoodState extends State<EditFood> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: categorys.isNotEmpty
               ? DropdownButton(
                   hint: const Text('เลือกประเภทอาหาร'),
@@ -373,7 +371,6 @@ class _EditFoodState extends State<EditFood> {
         Container(
           margin: const EdgeInsets.only(top: 30),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             initialValue: widget.foodName,
             validator: (value) {

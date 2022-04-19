@@ -104,7 +104,8 @@ class _CreateShippingAddressState extends State<CreateShippingAddress> {
           await ShippingAddressCollection.createAddress(address);
       if (widget.isNewAddress) {
         await SQLAdress().createAddress(address);
-        var addressProvider = Provider.of<AddressProvider>(context,listen:false);
+        var addressProvider =
+            Provider.of<AddressProvider>(context, listen: false);
         addressProvider.createAddress(address);
       }
 
@@ -139,52 +140,59 @@ class _CreateShippingAddressState extends State<CreateShippingAddress> {
         title: const Text('สร้างที่อยู่ใหม่'),
         backgroundColor: MyConstant.themeApp,
       ),
-      body: Form(
-        key: _formKey,
-        child: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: const [
-                    Text('ช่องทางติดต่อ'),
-                  ],
-                ),
-              ),
-              buildFormField(
-                _nameController,
-                'ชื่อ นามสกุล',
-                Icons.person,
-              ),
-              buildFormField(
-                _phoneController,
-                'เบอร์โทรศัพท์',
-                Icons.phone_callback,
-              ),
-              Container(
-                margin: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: const [
-                    Text('ที่อยู่'),
-                  ],
-                ),
-              ),
-              buildFormAddress(),
-              buildShowmap(width, height, context),
-              Container(
-                margin: const EdgeInsets.all(10.0),
-                width: double.maxFinite,
-                child: ElevatedButton(
-                  child: const Text(
-                    'ส่ง',
-                    style: TextStyle(fontSize: 18),
+      body: SingleChildScrollView(
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+          behavior: HitTestBehavior.opaque,
+          child: Form(
+            key: _formKey,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: const [
+                        Text('ช่องทางติดต่อ'),
+                      ],
+                    ),
                   ),
-                  onPressed: onCreateAddress,
-                  style: ElevatedButton.styleFrom(primary: MyConstant.themeApp),
-                ),
-              )
-            ],
+                  buildFormField(
+                    _nameController,
+                    'ชื่อ นามสกุล',
+                    Icons.person,
+                  ),
+                  buildFormField(
+                    _phoneController,
+                    'เบอร์โทรศัพท์',
+                    Icons.phone_callback,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: const [
+                        Text('ที่อยู่'),
+                      ],
+                    ),
+                  ),
+                  buildFormAddress(),
+                  buildShowmap(width, height, context),
+                  Container(
+                    margin: const EdgeInsets.all(10.0),
+                    width: double.maxFinite,
+                    child: ElevatedButton(
+                      child: const Text(
+                        'ส่ง',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      onPressed: onCreateAddress,
+                      style: ElevatedButton.styleFrom(
+                          primary: MyConstant.themeApp),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -244,7 +252,7 @@ class _CreateShippingAddressState extends State<CreateShippingAddress> {
       child: TextFormField(
         controller: _addressController,
         maxLines: 3,
-        validator: (text){
+        validator: (text) {
           if (text!.isEmpty) {
             return "กรุณากรอกรายละเอียดที่อยู่";
           }
@@ -275,7 +283,7 @@ class _CreateShippingAddressState extends State<CreateShippingAddress> {
       margin: const EdgeInsets.all(10.0),
       child: TextFormField(
         controller: textController,
-        validator: (text){
+        validator: (text) {
           if (text!.isEmpty) {
             return "กรุณากรอก$labelText";
           }

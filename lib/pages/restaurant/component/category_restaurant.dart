@@ -10,8 +10,9 @@ import 'package:flutter/material.dart';
 class CategoryRestaurant extends StatefulWidget {
   String businessId, restaurantName;
   List<ProductCartModel> foods;
+  int status;
   CategoryRestaurant(
-      {Key? key, required this.businessId, required this.restaurantName,required this.foods})
+      {Key? key, required this.businessId, required this.restaurantName,required this.foods,required this.status})
       : super(key: key);
 
   @override
@@ -42,6 +43,7 @@ class _CategoryRestaurantState extends State<CategoryRestaurant> {
                 categoryName: snapshot.data!.docs[index]["categoryName"],
                 restaurantName: widget.restaurantName,
                 foods: widget.foods,
+                status: widget.status,
               );
             },
           );

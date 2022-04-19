@@ -231,6 +231,7 @@ class _EditRoomState extends State<EditRoom> {
                 fieldDescription(width),
                 buildDropdown(width),
                 fieldRoomSize(width),
+                fieldTotalRoom(width),
                 fieldTotalGuest(width),
                 const SizedBox(height: 35),
                 Center(
@@ -367,6 +368,49 @@ class _EditRoomState extends State<EditRoom> {
     );
   }
 
+  Row fieldTotalRoom(double width) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 20),
+          width: width * .7,
+          child: TextFormField(
+            initialValue: widget.totalRoom.toString(),
+            keyboardType: TextInputType.phone,
+            validator: (value) {
+              if (value!.isEmpty) return 'กรุณากรอกจำนวนห้องทั้งหมด';
+              return null;
+            },
+            onSaved: (String? totalGuest) =>
+                _roomModel.totalRoom = int.parse(totalGuest!),
+            decoration: InputDecoration(
+                fillColor: Colors.white,
+                filled: true,
+                labelText: 'จำนวนห้องทั้งหมด :',
+                labelStyle: TextStyle(color: Colors.grey[600]),
+                prefix: Icon(
+                  Icons.attach_money,
+                  color: MyConstant.colorStore,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade400),
+                  borderRadius: BorderRadius.circular(10),
+                )),
+            style: TextStyle(
+              color: MyConstant.colorStore,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Container buildEditRoomButton(BuildContext context, double width) {
     return Container(
       width: double.maxFinite,
@@ -448,7 +492,6 @@ class _EditRoomState extends State<EditRoom> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             initialValue: widget.price.toString(),
             keyboardType: TextInputType.phone,
@@ -491,7 +534,6 @@ class _EditRoomState extends State<EditRoom> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             initialValue: widget.roomSize.toString(),
             keyboardType: TextInputType.phone,
@@ -535,7 +577,6 @@ class _EditRoomState extends State<EditRoom> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             initialValue: widget.totalGuest.toString(),
             keyboardType: TextInputType.phone,
@@ -579,7 +620,6 @@ class _EditRoomState extends State<EditRoom> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: categorys.isNotEmpty
               ? DropdownButton(
                   hint: const Text('เลือกเลือกประเภทสินค้า'),
@@ -622,7 +662,6 @@ class _EditRoomState extends State<EditRoom> {
         Container(
           margin: const EdgeInsets.only(top: 30),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             initialValue: widget.roomName,
             validator: (value) {

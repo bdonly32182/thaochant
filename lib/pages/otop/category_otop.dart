@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 class CategoryOtop extends StatefulWidget {
   final String businessId,otopName;
   List<ProductCartModel> products;
-  CategoryOtop({Key? key,required this.businessId,required this.products, required this.otopName}) : super(key: key);
+  int status;
+  CategoryOtop({Key? key,required this.businessId,required this.products, required this.otopName,required this.status}) : super(key: key);
 
   @override
   State<CategoryOtop> createState() => _CategoryOtopState();
@@ -39,6 +40,7 @@ class _CategoryOtopState extends State<CategoryOtop> {
                 categoryName: snapshot.data!.docs[index]["categoryName"],
                 otopName: widget.otopName,
                 products: widget.products,
+                status: widget.status,
               );
             },
           );

@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/models/order/order.dart';
+import 'package:chanthaburi_app/pages/business/order/restaurant/order_food_detail.dart';
 import 'package:chanthaburi_app/pages/restaurant/restaurant_detail.dart';
 import 'package:chanthaburi_app/pages/review/write_review.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
@@ -64,6 +65,13 @@ class _TrackingOrderFoodState extends State<TrackingOrderFood> {
                                 ConnectionState.waiting) {
                               return const Text('loading ...');
                             }
+                            if (restaurant.data!.data() == null) {
+                              return const Center(
+                                  child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text('ไม่พบข้อมูลของร้านค้า'),
+                              ));
+                            }
                             return Card(
                               child: Column(
                                 children: [
@@ -79,45 +87,60 @@ class _TrackingOrderFoodState extends State<TrackingOrderFood> {
                                       ],
                                     ),
                                   ),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        margin: const EdgeInsets.all(10.0),
-                                        width: width * 0.30,
-                                        height: 120,
-                                        child: ShowImageNetwork(
-                                          colorImageBlank: MyConstant.themeApp,
-                                          pathImage:
-                                              restaurant.data!.get("imageRef"),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (builder) => OrderFoodDetail(
+                                              order: orders[index],
+                                              isOwner: false),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: width * 0.6,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              restaurant.data!
-                                                  .get("businessName"),
-                                            ),
-                                            Text(
-                                                'ราคาที่ชำระ ${orders[index]["prepaidPrice"]} (${orders[index]["product"].length}รายการ)'),
-                                            Text(
-                                                'ราคาทั้งหมด ${orders[index]["totalPrice"]}'),
-                                            Text(
-                                              MyConstant.statusColor[
-                                                  orders[index]
-                                                      ["status"]]!["text"],
-                                              style: TextStyle(
-                                                  color: MyConstant.statusColor[
-                                                      orders[index][
-                                                          "status"]]!["color"]),
-                                            ),
-                                          ],
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.all(10.0),
+                                          width: width * 0.30,
+                                          height: 120,
+                                          child: ShowImageNetwork(
+                                            colorImageBlank:
+                                                MyConstant.themeApp,
+                                            pathImage: restaurant.data!
+                                                .get("imageRef"),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(
+                                          width: width * 0.56,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                restaurant.data!
+                                                    .get("businessName"),
+                                              ),
+                                              Text(
+                                                  'ราคาที่ชำระ ${orders[index]["prepaidPrice"]} (${orders[index]["product"].length}รายการ)'),
+                                              Text(
+                                                  'ราคาทั้งหมด ${orders[index]["totalPrice"]}'),
+                                              Text(
+                                                MyConstant.statusColor[
+                                                    orders[index]
+                                                        ["status"]]!["text"],
+                                                style: TextStyle(
+                                                    color: MyConstant
+                                                        .statusColor[orders[
+                                                            index]
+                                                        ["status"]]!["color"]),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Icon(Icons.arrow_forward_ios)
+                                      ],
+                                    ),
                                   ),
                                   const Divider(),
                                   Row(

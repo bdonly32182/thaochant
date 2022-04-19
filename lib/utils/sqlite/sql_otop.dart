@@ -37,14 +37,14 @@ class SQLiteOtop {
     
   }
 
-  Future<void> deleteProduct(String foodId, String userId) async {
+  Future<void> deleteProduct(String productId, String userId) async {
     Database db = await SQLiteHelper().connectDB();
-    await db.delete(tableProduct, where: 'productId = ? and userId =?', whereArgs: [foodId, userId]);
+    await db.delete(tableProduct, where: 'productId = ? and userId =?', whereArgs: [productId, userId]);
   }
 
-  Future<void> deleteProductInOtop(String restaurantId) async {
+  Future<void> deleteProductInOtop(String businessId) async {
     Database db = await SQLiteHelper().connectDB();
-    await db.delete(tableProduct, where: 'businessId = ?', whereArgs: [restaurantId]);
+    await db.delete(tableProduct, where: 'businessId = ?', whereArgs: [businessId]);
   }
 
   Future<void> editProduct(

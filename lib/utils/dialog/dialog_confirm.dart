@@ -1,5 +1,6 @@
 import 'package:chanthaburi_app/models/shipping/shipping.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
+import 'package:chanthaburi_app/widgets/show_image.dart';
 import 'package:flutter/material.dart';
 
 dialogConfirm(
@@ -7,16 +8,20 @@ dialogConfirm(
   showDialog(
     context: context,
     builder: (context) => SimpleDialog(
-      title: Text(title),
-      children: <Widget>[
-        Container(
-          margin: const EdgeInsets.all(6.0),
-          child: Text(
-            message,
-            maxLines: 3,
-            softWrap: true,
-          ),
+      title: ListTile(
+        leading: ShowImage(
+          pathImage: MyConstant.notifyImage,
         ),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 18),
+        ),
+        subtitle: Text(
+          message,
+          style: const TextStyle(fontSize: 14),
+        ),
+      ),
+      children: <Widget>[
         Container(
           margin: const EdgeInsets.only(top: 10.0),
           child: Row(
@@ -25,7 +30,7 @@ dialogConfirm(
               ElevatedButton(
                 onPressed: () {
                   onOk(context);
-                  Navigator.pop(context);
+                  // Navigator.pop(context);
                 },
                 child: Text(
                   'ยืนยัน',
@@ -157,8 +162,15 @@ dialogCamera(BuildContext context, Function getImage, Function takePhoto,
   );
 }
 
-dialogAddress(BuildContext context, Function changeAddress,
-    Function editAddress, ShippingModel address, String docId,bool isCurrent, Color myColor) {
+dialogAddress(
+  BuildContext context,
+  Function changeAddress,
+  Function editAddress,
+  ShippingModel address,
+  String docId,
+  bool isCurrent,
+  Color myColor,
+) {
   showModalBottomSheet(
     context: context,
     builder: (builder) {
@@ -198,7 +210,7 @@ dialogAddress(BuildContext context, Function changeAddress,
               height: 55,
               child: TextButton(
                 onPressed: () {
-                  editAddress(context, address, docId,isCurrent);
+                  editAddress(context, address, docId, isCurrent);
                 },
                 child: Text(
                   'แก้ไขข้อมูล',

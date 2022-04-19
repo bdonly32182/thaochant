@@ -628,7 +628,6 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .8,
-          height: 60,
           child: TextFormField(
             onSaved: (adult) =>
                 _packageTourModel.priceAdult = double.parse(adult!),
@@ -677,7 +676,6 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
   //       Container(
   //         margin: const EdgeInsets.only(top: 20),
   //         width: width * .8,
-  //         height: 60,
   //         child: TextFormField(
   //           onSaved: (senior) =>
   //               _packageTourModel.priceOlder = double.parse(senior!),
@@ -722,7 +720,6 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
   //       Container(
   //         margin: const EdgeInsets.only(top: 20),
   //         width: width * .8,
-  //         height: 60,
   //         child: TextFormField(
   //           onSaved: (youth) =>
   //               _packageTourModel.priceYouth = double.parse(youth!),
@@ -771,7 +768,6 @@ class _CreatePackageTourState extends State<CreatePackageTour> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .8,
-          height: 60,
           child: TextFormField(
             onSaved: (packageName) =>
                 _packageTourModel.packageName = packageName!,

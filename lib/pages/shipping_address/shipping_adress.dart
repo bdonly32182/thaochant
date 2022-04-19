@@ -9,6 +9,7 @@ import 'package:chanthaburi_app/utils/map/show_map.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sqlite/sql_address.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
+import 'package:chanthaburi_app/widgets/show_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class ShippingAddress extends StatefulWidget {
 
 class _ShippingAddressState extends State<ShippingAddress> {
   String userId = AuthMethods.currentUser();
- 
+
   onChangeAddress(ShippingModel address) async {
     await SQLAdress().editAddress(userId, address);
     var addressProvider = Provider.of<AddressProvider>(context, listen: false);
@@ -34,11 +35,16 @@ class _ShippingAddressState extends State<ShippingAddress> {
     Navigator.pop(context);
   }
 
-  goEdit(BuildContext contextEdit, ShippingModel address, String docId, bool isCurrent) {
+  goEdit(BuildContext contextEdit, ShippingModel address, String docId,
+      bool isCurrent) {
     Navigator.push(
       contextEdit,
       MaterialPageRoute(
-        builder: (builder) => EditShippingAddress(address: address, docId: docId, isCurrent: isCurrent,),
+        builder: (builder) => EditShippingAddress(
+          address: address,
+          docId: docId,
+          isCurrent: isCurrent,
+        ),
       ),
     );
   }
@@ -53,101 +59,107 @@ class _ShippingAddressState extends State<ShippingAddress> {
         backgroundColor: MyConstant.themeApp,
         title: const Text('ที่อยู่ในการจัดส่ง'),
       ),
-      body: 
-      Consumer<AddressProvider>(builder: (BuildContext context,AddressProvider provider, Widget? child) {
-          return 
-          ListView(
-        children: [
-          
-          
-           buildShowmap(width, height, context,provider.address[0].lat,provider.address[0].lng),
-              buildAddress(
-                width,
-                height,
-                'ที่อยู่ปัจจุบัน',
-                Icons.location_on_rounded,
-                Colors.red.shade400,
-                provider.address[0],
-              ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text('ที่อยู่ที่บันทึก'),
-          ),
-          buildCardNewAddress('เพิ่มที่อยู่ใหม่'),
-          const Divider(
-            height: 5,
-          ),
-          StreamBuilder(
-            stream: ShippingAddressCollection.myAddress(userId),
-            builder: (BuildContext context,
-                AsyncSnapshot<QuerySnapshot<ShippingModel>> snapshot) {
-              if (snapshot.hasError) {
-                return const Center(
-                  child: Text('เกิดเหตุขัดข้อง'),
-                );
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const PouringHourGlass();
-              }
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (BuildContext addressContext, int indexAddress) {
-                  bool isCurrent = provider.address[0].lat ==
-                          snapshot.data!.docs[indexAddress]["lat"] &&
-                      provider.address[0].lng ==
-                          snapshot.data!.docs[indexAddress]["lng"];
-                  return InkWell(
-                    onTap: () {
-                      dialogAddress(
-                        context,
-                        isCurrent ? goBack : onChangeAddress,
-                        goEdit,
-                        snapshot.data!.docs[indexAddress].data(),
-                        snapshot.data!.docs[indexAddress].id,
-                        isCurrent,
-                        MyConstant.themeApp,
-                      );
-                    },
-                    child: buildAddress(
+      body: Consumer<AddressProvider>(
+        builder:
+            (BuildContext context, AddressProvider provider, Widget? child) {
+          return ListView(
+            children: [
+              buildShowmap(width, height, context, provider.address),
+              provider.address.isNotEmpty
+                  ? buildAddress(
                       width,
                       height,
-                      isCurrent ? 'ที่อยู่ปัจจุบัน' : 'อื่นๆ',
-                      isCurrent ? Icons.location_pin : Icons.home_outlined,
-                      isCurrent ? Colors.red : Colors.black,
-                      snapshot.data!.docs[indexAddress].data(),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ],
-      );
-            },),
-      
+                      'ที่อยู่ปัจจุบัน',
+                      Icons.location_on_rounded,
+                      Colors.red.shade400,
+                      provider.address[0],
+                    )
+                  : const SizedBox(),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('ที่อยู่ที่บันทึก'),
+              ),
+              buildCardNewAddress('เพิ่มที่อยู่ใหม่'),
+              const Divider(
+                height: 5,
+              ),
+              buildMyAddressList(provider.address, width, height),
+            ],
+          );
+        },
+      ),
     );
   }
 
-  SizedBox buildShowmap(double width, double height, BuildContext context, double? lat,lng) {
+  StreamBuilder<QuerySnapshot<ShippingModel>> buildMyAddressList(
+      List<ShippingModel> address, double width, double height) {
+    return StreamBuilder(
+      stream: ShippingAddressCollection.myAddress(userId),
+      builder: (BuildContext context,
+          AsyncSnapshot<QuerySnapshot<ShippingModel>> snapshot) {
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text('เกิดเหตุขัดข้อง'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const PouringHourGlass();
+        }
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: snapshot.data!.docs.length,
+          itemBuilder: (BuildContext addressContext, int indexAddress) {
+            bool isCurrent = address.isNotEmpty
+                ? address[0].lat == snapshot.data!.docs[indexAddress]["lat"] &&
+                    address[0].lng == snapshot.data!.docs[indexAddress]["lng"]
+                : false;
+            return InkWell(
+              onTap: () {
+                dialogAddress(
+                  context,
+                  isCurrent ? goBack : onChangeAddress,
+                  goEdit,
+                  snapshot.data!.docs[indexAddress].data(),
+                  snapshot.data!.docs[indexAddress].id,
+                  isCurrent,
+                  MyConstant.themeApp,
+                );
+              },
+              child: buildAddress(
+                width,
+                height,
+                isCurrent ? 'ที่อยู่ปัจจุบัน' : 'อื่นๆ',
+                isCurrent ? Icons.location_pin : Icons.home_outlined,
+                isCurrent ? Colors.red : Colors.black,
+                snapshot.data!.docs[indexAddress].data(),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  SizedBox buildShowmap(double width, double height, BuildContext context,
+      List<ShippingModel> address) {
     return SizedBox(
       width: width * 1,
       height: height * 0.2,
-      child: lat != null && lng != null
+      child: address.isNotEmpty
           ? Stack(
               children: [
                 SizedBox(
                   width: width * 1,
                   height: height * 0.3,
                   child: ShowMap(
-                    lat: lat,
-                    lng: lng,
+                    lat: address[0].lat,
+                    lng: address[0].lng,
                   ),
                 ),
               ],
             )
-          : const PouringHourGlass(),
+          : ShowImage(pathImage: MyConstant.currentLocation),
     );
   }
 

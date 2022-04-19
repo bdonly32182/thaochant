@@ -1,8 +1,7 @@
 import 'package:chanthaburi_app/models/shipping/shipping.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/otop/checkout_product.dart';
-import 'package:chanthaburi_app/pages/shipping_address/create_shipping_address.dart';
-import 'package:chanthaburi_app/pages/shipping_address/shipping_adress.dart';
+import 'package:chanthaburi_app/pages/shipping_address/address_info.dart';
 import 'package:chanthaburi_app/provider/address_provider.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/utils/calculate_shipping.dart';
@@ -76,7 +75,7 @@ class _ConfirmOrderProductState extends State<ConfirmOrderProduct> {
                 Expanded(
                   child: ListView(
                     children: [
-                      buildAddressInfo(width, height, provider.address),
+                      AddressInfo(address: provider.address, userId: userId),
                       buildCardOrder(
                           width, height, widget.products, totalPriceProduct),
                       buildCardTotalPrice(
@@ -105,7 +104,7 @@ class _ConfirmOrderProductState extends State<ConfirmOrderProduct> {
 
   Card buildCardTotalPrice(
       int totalAmount, num totalPriceProduct, double priceShipping) {
-    num totalPriceAndShipping = totalPriceProduct + priceShipping;
+    // num totalPriceAndShipping = totalPriceProduct + priceShipping;
     return Card(
       child: Column(
         children: [
@@ -253,113 +252,6 @@ class _ConfirmOrderProductState extends State<ConfirmOrderProduct> {
           ),
         )
       ],
-    );
-  }
-
-  Card buildAddressInfo(
-      double width, double height, List<ShippingModel> address) {
-    return Card(
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (builder) => address.isEmpty
-                  ? CreateShippingAddress(
-                      isNewAddress: true,
-                    )
-                  : ShippingAddress(),
-            ),
-          );
-        },
-        child: address.isNotEmpty
-            ? Column(
-                children: [
-                  Container(
-                    width: width * 0.9,
-                    margin: const EdgeInsets.only(top: 10.0),
-                    child: Row(
-                      children: const [
-                        Icon(Icons.contact_mail_outlined),
-                        Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child: Text('ข้อมูลการติดต่อ'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.7,
-                    margin: const EdgeInsets.only(
-                      top: 10.0,
-                    ),
-                    child: Row(
-                      children: [
-                        Text(address[0].fullName),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 6),
-                          child: Text('|'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 6),
-                          child: Text(address[0].phoneNumber),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.only(right: 8.0),
-                        child: Icon(
-                          Icons.arrow_forward_ios_outlined,
-                          size: 15,
-                        ),
-                      )
-                    ],
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    width: width * 0.7,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            address[0].address,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              )
-            : Container(
-                margin: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: const [
-                    Text(
-                      'ไม่มีข้อมูลติดต่อ',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    Text(
-                      'สร้างข้อมูลติดต่อ',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    Text(
-                      'คลิ๊ก',
-                      style: TextStyle(
-                        color: Colors.red,
-                        decoration: TextDecoration.underline,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-      ),
     );
   }
 

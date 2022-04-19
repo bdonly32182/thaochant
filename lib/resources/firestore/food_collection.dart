@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:chanthaburi_app/models/restaurant/food.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
@@ -22,9 +23,8 @@ class FoodCollection {
   }
 
   static Future<int> checkFood(String categoryId) async {
-    QuerySnapshot _products = await foodCollection
-        .where('categoryId', isEqualTo: categoryId)
-        .get();
+    QuerySnapshot _products =
+        await foodCollection.where('categoryId', isEqualTo: categoryId).get();
     return _products.size;
   }
 
@@ -41,11 +41,11 @@ class FoodCollection {
         'foodName': foodModel.foodName,
         'price': foodModel.price,
         'imageRef': imageRef,
-        'restaurantId':foodModel.restaurantId,
+        'restaurantId': foodModel.restaurantId,
         'categoryId': foodModel.categoryId,
         'description': foodModel.description,
         'status': foodModel.status,
-        'optionId':foodModel.optionId,
+        'optionId': foodModel.optionId,
       });
 
       return {"status": "200", "message": "สร้างข้อมูลอาหารเรียบร้อย"};
@@ -60,8 +60,7 @@ class FoodCollection {
       String imageRef = food.imageRef;
       if (imageFile != null) {
         if (food.imageRef.isNotEmpty) {
-          String referenceImage =
-              StorageFirebase.getReference(food.imageRef);
+          String referenceImage = StorageFirebase.getReference(food.imageRef);
           StorageFirebase.deleteFile(referenceImage);
         }
         String fileName = basename(imageFile.path);
@@ -75,7 +74,7 @@ class FoodCollection {
         'categoryId': food.categoryId,
         'description': food.description,
         'status': food.status,
-        'optionId':food.optionId,
+        'optionId': food.optionId,
       });
       return {"status": "200", "message": "แก้ไขข้อมูลอาหารเรียบร้อย"};
     } catch (e) {
@@ -83,13 +82,13 @@ class FoodCollection {
     }
   }
 
-  static Future<Map<String, dynamic>> deleteFood(String foodId,String imageUrl) async {
+  static Future<Map<String, dynamic>> deleteFood(
+      String foodId, String imageUrl) async {
     try {
       await foodCollection.doc(foodId).delete();
       if (imageUrl.isNotEmpty) {
-        String referenceImage =
-              StorageFirebase.getReference(imageUrl);
-          StorageFirebase.deleteFile(referenceImage);
+        String referenceImage = StorageFirebase.getReference(imageUrl);
+        StorageFirebase.deleteFile(referenceImage);
       }
       return {"status": "200", "message": "ลบข้อมูลอาหารเรียบร้อย"};
     } catch (e) {
@@ -108,7 +107,44 @@ class FoodCollection {
   }
 
   static Future<QuerySnapshot> foodsInRestarurant(String restaurauntId) async {
-  QuerySnapshot foods = await foodCollection.where('restaurantId', isEqualTo: restaurauntId).get();
-  return foods;
+    QuerySnapshot foods = await foodCollection
+        .where('restaurantId', isEqualTo: restaurauntId)
+        .get();
+    return foods;
+  }
+
+  static Future<int> checkFoodInCart(
+      String foodName, String restaurantId) async {
+    QuerySnapshot _foods = await foodCollection
+        .where("restaurantId", isEqualTo: restaurantId)
+        .where("foodName", isEqualTo: foodName)
+        .get();
+    return _foods.size;
+  }
+
+  static Future<List<QueryDocumentSnapshot<FoodModel>>> randomFood() async {
+    List<QueryDocumentSnapshot<FoodModel>> randomFoods = [];
+    List<int> checkList = [];
+    QuerySnapshot<FoodModel> _foods = await foodCollection
+        .where("imageRef", isNotEqualTo: "")
+        .withConverter<FoodModel>(
+            fromFirestore: (_firestore, _) =>
+                FoodModel.fromMap(_firestore.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+    final random = Random();
+    int indexRandom = random.nextInt(_foods.docs.length);
+    int totalInList = 0;
+    int totalInQuery = _foods.docs.length > 10 ? 10 : _foods.docs.length;
+    while (totalInList < totalInQuery) {
+      if (checkList.contains(indexRandom)) {
+        indexRandom = random.nextInt(_foods.docs.length);
+      } else {
+        checkList.add(indexRandom);
+        randomFoods.add(_foods.docs[indexRandom]);
+        totalInList = randomFoods.length;
+      }
+    }
+    return randomFoods;
   }
 }

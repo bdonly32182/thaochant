@@ -2,6 +2,7 @@ import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
+import 'package:chanthaburi_app/widgets/partner_policy.dart';
 import 'package:chanthaburi_app/widgets/show_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -131,10 +132,42 @@ class _AuthenState extends State<Authen> {
                 ),
                 buildButton(size),
                 buildCreateAccount(size),
+                buildRegisterPartner(size),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Container buildRegisterPartner(double size) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      width: size * 0.5,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text("เข้าร่วมกับเรา ? "),
+          InkWell(
+            onTap: () {
+              
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (builder) => PartnerPolicy(),
+                ),
+              );
+            },
+            child: Text(
+              ' สมัครเป็นพาร์ทเนอร์',
+              style: TextStyle(
+                color: MyConstant.themeApp,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

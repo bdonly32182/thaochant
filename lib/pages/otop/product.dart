@@ -2,6 +2,7 @@ import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/otop/add_product_to_cart.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
 import 'package:chanthaburi_app/resources/firestore/product_otop_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,7 @@ import 'package:provider/provider.dart';
 class Product extends StatefulWidget {
   String businessId, categoryId, categoryName, otopName;
   List<ProductCartModel> products;
+  int status;
   Product({
     Key? key,
     required this.businessId,
@@ -18,6 +20,7 @@ class Product extends StatefulWidget {
     required this.categoryName,
     required this.otopName,
     required this.products,
+    required this.status,
   }) : super(key: key);
 
   @override
@@ -66,35 +69,39 @@ class _ProductState extends State<Product> {
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (_, index) {
                 return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => AddProductToCart(
-                          productId: snapshot.data!.docs[index].id,
-                          price: snapshot.data!.docs[index]["price"],
-                          productImage: snapshot.data!.docs[index]["imageRef"],
-                          productName: snapshot.data!.docs[index]
-                              ["productName"],
-                          description: snapshot.data!.docs[index]
-                              ["description"],
-                          otopId: snapshot.data!.docs[index]["otopId"],
-                          otopName: widget.otopName,
-                          products: widget.products
-                              .where(
-                                (element) =>
-                                    element.productId ==
-                                    snapshot.data!.docs[index].id,
-                              )
-                              .toList(),
-                          height: snapshot.data!.docs[index]["height"],
-                          long: snapshot.data!.docs[index]["long"],
-                          weight: snapshot.data!.docs[index]["weight"],
-                          width: snapshot.data!.docs[index]["width"],
-                        ),
-                      ),
-                    );
-                  },
+                  onTap: widget.status == 0
+                      ? () => dialogAlert(
+                          context, "ประกาศ", "ร้านยังไม่เปิดให้บริการชั่วคราว")
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AddProductToCart(
+                                productId: snapshot.data!.docs[index].id,
+                                price: snapshot.data!.docs[index]["price"],
+                                productImage: snapshot.data!.docs[index]
+                                    ["imageRef"],
+                                productName: snapshot.data!.docs[index]
+                                    ["productName"],
+                                description: snapshot.data!.docs[index]
+                                    ["description"],
+                                otopId: snapshot.data!.docs[index]["otopId"],
+                                otopName: widget.otopName,
+                                products: widget.products
+                                    .where(
+                                      (element) =>
+                                          element.productId ==
+                                          snapshot.data!.docs[index].id,
+                                    )
+                                    .toList(),
+                                height: snapshot.data!.docs[index]["height"],
+                                long: snapshot.data!.docs[index]["long"],
+                                weight: snapshot.data!.docs[index]["weight"],
+                                width: snapshot.data!.docs[index]["width"],
+                              ),
+                            ),
+                          );
+                        },
                   child: Card(
                     child: Row(
                       children: [
@@ -123,7 +130,7 @@ class _ProductState extends State<Product> {
                                   snapshot.data!.docs[index]["productName"],
                                   style: const TextStyle(fontSize: 16),
                                   overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   softWrap: true,
                                 ),
                               ),

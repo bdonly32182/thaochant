@@ -359,7 +359,6 @@ class _CreateRoomState extends State<CreateRoom> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             keyboardType: TextInputType.phone,
             validator: (value) {
@@ -401,7 +400,6 @@ class _CreateRoomState extends State<CreateRoom> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             keyboardType: TextInputType.phone,
             validator: (value) {
@@ -444,7 +442,6 @@ class _CreateRoomState extends State<CreateRoom> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             keyboardType: TextInputType.phone,
             validator: (value) {
@@ -452,7 +449,7 @@ class _CreateRoomState extends State<CreateRoom> {
               return null;
             },
             onSaved: (String? totalGuest) =>
-                _roomModel.totalGuest = int.parse(totalGuest!),
+                _roomModel.totalRoom = int.parse(totalGuest!),
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
@@ -487,7 +484,6 @@ class _CreateRoomState extends State<CreateRoom> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             keyboardType: TextInputType.phone,
             validator: (value) {
@@ -578,7 +574,6 @@ class _CreateRoomState extends State<CreateRoom> {
         Container(
           margin: const EdgeInsets.only(top: 30),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกชื่อห้องพัก';

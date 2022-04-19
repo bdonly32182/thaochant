@@ -6,6 +6,6 @@ class ShowImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(pathImage, fit: BoxFit.cover);
+    return Image.asset(pathImage, fit: BoxFit.fill);
   }
 }

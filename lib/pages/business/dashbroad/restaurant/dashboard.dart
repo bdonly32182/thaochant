@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/models/order/order.dart';
+import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/resources/firestore/order_food_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
@@ -29,22 +30,8 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
     MyConstant.rejected,
     MyConstant.payed,
   ];
-  List<OrderModel> orderPrepaid = [];
-  List<OrderModel> orderAccept = [];
-  List<OrderModel> orderPayed = [];
-  List<OrderModel> orderReject = [];
   _selectDate(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    switch (theme.platform) {
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
-        return buildMaterialDatePicker(context);
-      case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
-        return buildCupertinoDatePicker(context);
-    }
+    return buildMaterialDatePicker(context);
   }
 
   bool focusIncomeMonth = true;
@@ -59,7 +46,7 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
     }
     if (type == 'month') {
       String month = MyConstant.monthThailand[date.month - 1];
-      return '${month}  ${date.year}';
+      return '$month  ${date.year}';
     }
   }
 
@@ -99,6 +86,53 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
     return totalPrice;
   }
 
+  List<Map<String, dynamic>> popularSort(
+    List<QueryDocumentSnapshot<OrderModel>> orderAccept,
+    List<QueryDocumentSnapshot<OrderModel>> orderPayed,
+  ) {
+    List<String> foodId = [];
+    List<Map<String, dynamic>> popular = [];
+
+    for (QueryDocumentSnapshot<OrderModel> accept in orderAccept) {
+      for (ProductCartModel food in accept.data().product) {
+        if (foodId.contains(food.productId)) {
+          int indexDuplicate =
+              popular.indexWhere((menu) => menu["productId"] == food.productId);
+          popular[indexDuplicate]["score"] =
+              popular[indexDuplicate]["score"] + 1;
+        } else {
+          foodId.add(food.productId);
+          popular.add({
+            "productId": food.productId,
+            "productName": food.productName,
+            "imageURL": food.imageURL,
+            "score": 1,
+          });
+        }
+      }
+    }
+    for (QueryDocumentSnapshot<OrderModel> payed in orderPayed) {
+      for (ProductCartModel food in payed.data().product) {
+        if (foodId.contains(food.productId)) {
+          int indexDuplicate =
+              popular.indexWhere((menu) => menu["productId"] == food.productId);
+          popular[indexDuplicate]["score"] =
+              popular[indexDuplicate]["score"] + 1;
+        } else {
+          foodId.add(food.productId);
+          popular.add({
+            "productId": food.productId,
+            "productName": food.productName,
+            "imageURL": food.imageURL,
+            "score": 1,
+          });
+        }
+      }
+    }
+    popular.sort((a, b) => b["score"].compareTo(a["score"]));
+    return popular;
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -112,6 +146,7 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
             children: [
               buildRestaurant(
                   width, height, widget.imageRef, widget.restaurantName),
+              buildFilterDashboard(),
               buildShowAndSelectDate(width),
               StreamBuilder(
                   stream: OrderFoodCollection.orderByRestaurantId(
@@ -158,12 +193,66 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
                             orderReject.length.toString()),
                         buildTotalIncome('รวมรายได้ทั้งหมด', orderPrepaid,
                             orderAccept, orderPayed, orderReject),
+                        Row(
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "เมนูยอดนิยม",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        buildPopularMenu(
+                            width, height, orderAccept, orderPayed),
                       ],
                     );
                   }),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  SizedBox buildPopularMenu(
+    double width,
+    double height,
+    List<QueryDocumentSnapshot<OrderModel>> orderAccept,
+    List<QueryDocumentSnapshot<OrderModel>> orderPayed,
+  ) {
+    List<Map<String, dynamic>> populars = popularSort(orderAccept, orderPayed);
+    return SizedBox(
+      width: width * 1,
+      height: height * 0.2,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        physics: const ScrollPhysics(),
+        itemCount: populars.length > 5 ? 5 : populars.length,
+        itemBuilder: (itemBuilder, index) {
+          return Container(
+            margin: const EdgeInsets.all(6.0),
+            width: width * 0.34,
+            height: height * 0.2,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: height * 0.15,
+                  child: ShowImageNetwork(
+                    pathImage: populars[index]["imageURL"],
+                    colorImageBlank: MyConstant.colorStore,
+                  ),
+                ),
+                Text(populars[index]["productName"]),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -212,8 +301,8 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
                 child: child!,
               )
             : AlertDialog(
-                title: Text("เลือกปีที่ต้องการดูรายรับ"),
-                content: Container(
+                title: const Text("เลือกปีที่ต้องการดูรายรับ"),
+                content: SizedBox(
                   width: 300,
                   height: 300,
                   child: YearPicker(
@@ -232,10 +321,11 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
               );
       },
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
       });
+    }
   }
 
   Row buildTotalIncome(
@@ -252,10 +342,10 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
           padding: const EdgeInsets.only(left: 20.0, top: 15, bottom: 20),
           child: Text(
             type,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 18,
-              color: Color.fromRGBO(41, 187, 137, 1),
+              color: MyConstant.colorStore,
             ),
           ),
         ),
@@ -263,10 +353,10 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
           padding: const EdgeInsets.only(right: 25.0, top: 15, bottom: 20),
           child: Text(
             '$totalPrice  บาท',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 18,
-              color: Color.fromRGBO(41, 187, 137, 1),
+              color: MyConstant.colorStore,
             ),
           ),
         ),
@@ -327,13 +417,13 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
 
   Container buildYear() {
     return Container(
-      margin: const EdgeInsets.only(top: 15, left: 15),
+      margin: const EdgeInsets.only(top: 10, left: 15),
       child: ElevatedButton(
         child: focusIncomeYear
-            ? const Text(
+            ? Text(
                 'รายปี',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: MyConstant.colorStore,
                   fontWeight: FontWeight.bold,
                 ),
               )
@@ -361,13 +451,13 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
 
   Container buildMonth() {
     return Container(
-      margin: const EdgeInsets.only(top: 15, left: 15),
+      margin: const EdgeInsets.only(top: 10, left: 15),
       child: ElevatedButton(
         child: focusIncomeMonth
-            ? const Text(
+            ? Text(
                 'รายเดือน',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: MyConstant.colorStore,
                   fontWeight: FontWeight.bold,
                 ),
               )
@@ -399,87 +489,9 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
     return SizedBox(
       width: width * .35,
       child: IconButton(
-          onPressed: () => _selectDate(context), icon: const Icon(Icons.list)),
-    );
-  }
-
-  Row buildSecondChart(double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 10),
-          width: width * .45,
-          height: 120,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'ออร์เดอร์ที่จ่ายครบ',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                orderPayed.length.toString(),
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color.fromRGBO(70, 186, 90, 1),
-                Color.fromRGBO(153, 228, 110, 1),
-              ],
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: 10),
-          width: width * .45,
-          height: 120,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'ออร์เดอร์ที่ปฏิเสธ',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                orderReject.length.toString(),
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color.fromRGBO(255, 111, 112, 1),
-                Color.fromRGBO(255, 60, 66, 0.7),
-              ],
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-      ],
+        onPressed: () => _selectDate(context),
+        icon: const Icon(Icons.list),
+      ),
     );
   }
 
@@ -489,13 +501,13 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
       children: [
         Container(
           width: width * 1,
-          height: height * 0.3,
+          height: height * 0.24,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: width * 1,
-                height: height * 0.26,
+                height: height * 0.20,
                 child: ShowImageNetwork(
                     pathImage: imageRef,
                     colorImageBlank: MyConstant.colorStore),
@@ -512,7 +524,7 @@ class _DashboardRestaurantState extends State<DashboardRestaurant> {
           ),
           decoration: BoxDecoration(
             color: MyConstant.colorStore,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(5),
           ),
         ),
       ],

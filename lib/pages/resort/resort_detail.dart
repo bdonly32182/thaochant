@@ -45,13 +45,6 @@ class _ResortDetailState extends State<ResortDetail> {
                 return ListView(
                   children: [
                     buildDetailResort(width, height, resort!),
-                    // const Padding(
-                    //   padding: EdgeInsets.all(8.0),
-                    //   child: Text(
-                    //     'ประเภทห้องพัก',
-                    //     style: TextStyle(fontSize: 18),
-                    //   ),
-                    // ),
                     CategoryResort(
                       resortId: widget.resortId,
                       resort: resort,

@@ -1,15 +1,16 @@
 import 'package:badges/badges.dart';
 import 'package:chanthaburi_app/models/business/business.dart';
+import 'package:chanthaburi_app/models/restaurant/food.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/restaurant/cart_restaurant.dart';
 import 'package:chanthaburi_app/pages/restaurant/restaurant_detail.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
+import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sqlite/cart_restaurant.dart';
 import 'package:chanthaburi_app/utils/sqlite/sqlite_helper.dart';
-import 'package:chanthaburi_app/widgets/error/bad_request_error.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/fetch/show_data_empty.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
@@ -18,7 +19,6 @@ import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class ShoppingRestaurant extends StatefulWidget {
   ShoppingRestaurant({Key? key}) : super(key: key);
@@ -29,12 +29,11 @@ class ShoppingRestaurant extends StatefulWidget {
 
 class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
   TextEditingController searchController = TextEditingController();
-  final PagingController<int, QueryDocumentSnapshot<Object?>>
-      _pagingController = PagingController(firstPageKey: 0);
-  QueryDocumentSnapshot? lastDocument;
   List<ProductCartModel> foodByRestaurant = [];
-  final int _pageSize = 20;
+  List<QueryDocumentSnapshot<BusinessModel>> randomRestaurants = [];
+  List<QueryDocumentSnapshot<FoodModel>> randomFoods = [];
   bool isSearch = false;
+  bool isLoading = true;
   int? itemCart;
   void onSearch(bool isStatusShow) {
     setState(() {
@@ -44,11 +43,18 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
 
   @override
   void initState() {
-    _pagingController.addPageRequestListener(
-      (pageKey) => loadMoreRestaurant(pageKey),
-    );
     super.initState();
+    fetchRandomFoods();
+    onFetchsResturant();
     getTotalRestaurant();
+  }
+
+  fetchRandomFoods() async {
+    List<QueryDocumentSnapshot<FoodModel>> _randomFoods =
+        await FoodCollection.randomFood();
+    setState(() {
+      randomFoods = _randomFoods;
+    });
   }
 
   Future<void> getTotalRestaurant() async {
@@ -60,33 +66,23 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
     });
   }
 
-  Future<void> loadMoreRestaurant(int pageKey) async {
-    try {
-      QuerySnapshot _resultRestaurant =
-          await RestaurantCollection.restaurants(lastDocument);
-      final isLastPage = _resultRestaurant.docs.length < _pageSize;
-      if (isLastPage) {
-        _pagingController.appendLastPage(_resultRestaurant.docs);
-      } else {
-        final nextPageKey = pageKey + 1;
-        _pagingController.appendPage(_resultRestaurant.docs, nextPageKey);
-        lastDocument = _resultRestaurant.docs.last;
-      }
-    } catch (e) {
-      _pagingController.error = e;
-    }
+  onFetchsResturant() async {
+    List<QueryDocumentSnapshot<BusinessModel>> _randomRestaurants =
+        await RestaurantCollection.restaurants();
+    setState(() {
+      randomRestaurants = _randomRestaurants;
+      isLoading = false;
+    });
   }
 
   onRefresh() {
-    setState(() {
-      lastDocument = null;
-    });
-    _pagingController.refresh();
+    fetchRandomFoods();
+    onFetchsResturant();
+    getTotalRestaurant();
   }
 
   @override
   void dispose() {
-    _pagingController.dispose();
     SQLiteHelper().close();
     super.dispose();
   }
@@ -133,12 +129,15 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
           ? FutureBuilder(
               future:
                   RestaurantCollection.searchRestaurant(searchController.text),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              builder: (context,
+                  AsyncSnapshot<List<QueryDocumentSnapshot<BusinessModel>>>
+                      snapshot) {
                 if (snapshot.hasError) {
                   return const InternalError();
                 }
                 if (snapshot.connectionState == ConnectionState.done) {
-                  List<QueryDocumentSnapshot> restaurants = snapshot.data!.docs;
+                  List<QueryDocumentSnapshot<BusinessModel>> restaurants =
+                      snapshot.data!;
                   if (restaurants.isEmpty) {
                     return const Center(child: ShowDataEmpty());
                   }
@@ -157,104 +156,81 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
               })
           : RefreshIndicator(
               onRefresh: () => Future.sync(() => onRefresh()),
-              child:
-                  //  FutureBuilder(
-                  //   future: RestaurantCollection.restaurants(),
-                  //   builder: (context,
-                  //       AsyncSnapshot<List<QueryDocumentSnapshot<BusinessModel>>>
-                  //           snapshot) {
-                  //     if (snapshot.hasError) {
-                  //       return const InternalError();
-                  //     }
-                  //     if (snapshot.connectionState == ConnectionState.waiting) {
-                  //       return const PouringHourGlass();
-                  //     }
-                  //     // List<BusinessModel> restaurants = snapshot.data.;
-                  //     return ListView(
-                  //       children: [
-                  //         Column(
-                  //           children: [
-                  //             buildTitle('ผลลัพทธ์การค้นหา'),
-                  //           ],
-                  //         ),
-                  //         // buildListViewRestaurantAll(height, width, restaurants),
-                  //         ListView.builder(
-                  //             shrinkWrap: true,
-                  //             physics: const ScrollPhysics(),
-                  //             itemCount: snapshot.data!.length,
-                  //             itemBuilder: (itemBuilder, index) {
-                  //               return buildCardRestaurantAll(
-                  //                   height,
-                  //                   width,
-                  //                   snapshot.data![index].id,
-                  //                   snapshot.data![index].data().businessName,
-                  //                   snapshot.data![index].data().imageRef,
-                  //                   snapshot.data![index].data().point,
-                  //                   snapshot.data![index].data().ratingCount,
-                  //                   snapshot.data![index].data().statusOpen,
-                  //                   snapshot.data![index].data().address,
-                  //                   snapshot.data![index].data().phoneNumber,
-                  //                   snapshot.data![index].data().latitude,
-                  //                   snapshot.data![index].data().longitude);
-                  //             }),
-                  //       ],
-                  //     );
-                  //   },
-                  // )
-                  PagedListView<int, QueryDocumentSnapshot>(
-                pagingController: _pagingController,
-                builderDelegate:
-                    PagedChildBuilderDelegate<QueryDocumentSnapshot>(
-                  itemBuilder: (context, restaurants, index) {
-                    return Column(
-                      children: [
-                        Container(
-                          child: index == 0
-                              ? buildTitle('ร้านอาหารทั้งหมด')
-                              : null,
-                        ),
-                        buildCardRestaurantAll(
-                          height,
-                          width,
-                          restaurants.id,
-                          restaurants.get("businessName"),
-                          restaurants.get("imageRef"),
-                          restaurants.get("point"),
-                          restaurants.get("ratingCount"),
-                          restaurants.get("statusOpen"),
-                          restaurants.get("address"),
-                          restaurants.get("phoneNumber"),
-                          restaurants.get("latitude"),
-                          restaurants.get("longitude"),
-                        ),
-                      ],
-                    );
-                  },
-                  firstPageErrorIndicatorBuilder: (_) =>
-                      const BadRequestError(),
-                  noItemsFoundIndicatorBuilder: (ctx) => const ShowDataEmpty(),
-                  firstPageProgressIndicatorBuilder: (context) =>
-                      const PouringHourGlass(),
-                  noMoreItemsIndicatorBuilder: (context) => const Center(
-                    child: Text("ไม่มีข้อมูล"),
-                  ),
-                  newPageErrorIndicatorBuilder: (context) =>
-                      const BadRequestError(),
-                  newPageProgressIndicatorBuilder: (context) =>
-                      CircularProgressIndicator(
-                    color: MyConstant.colorStore,
-                  ),
-                ),
-              ),
+              child: isLoading
+                  ? const PouringHourGlass()
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          buildTitle("แนะนำเมนูอาหาร"),
+                          buildRecomendedFood(height, width),
+                          buildTitle("ร้านอาหารทั้งหมด"),
+                          buildListViewRestaurantAll(
+                            height,
+                            width,
+                            randomRestaurants,
+                          ),
+                        ],
+                      ),
+                    ),
             ),
     );
   }
 
-  ListView buildListViewRestaurantAll(
-      double height, double width, List<QueryDocumentSnapshot> restaurants) {
+  SizedBox buildRecomendedFood(double height, double width) {
+    return SizedBox(
+      height: height * 0.22,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        physics: const ScrollPhysics(),
+        itemCount: randomFoods.length,
+        itemBuilder: (itemBuilder, index) {
+          return InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (builder) => RestaurantDetail(
+                  restaurantId: randomFoods[index].data().restaurantId,
+                ),
+              ),
+            ),
+            child: Container(
+              margin: const EdgeInsets.all(6.0),
+              width: width * 0.34,
+              height: height * 0.2,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: height * 0.15,
+                    child: ShowImageNetwork(
+                      pathImage: randomFoods[index].data().imageRef,
+                      colorImageBlank: MyConstant.colorStore,
+                    ),
+                  ),
+                  Text(
+                    randomFoods[index].data().foodName,
+                    maxLines: 2,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  ListView buildListViewRestaurantAll(double height, double width,
+      List<QueryDocumentSnapshot<BusinessModel>> restaurants) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const ScrollPhysics(),
       itemCount: restaurants.length,
       itemBuilder: (BuildContext context, int index) {
         return buildCardRestaurantAll(

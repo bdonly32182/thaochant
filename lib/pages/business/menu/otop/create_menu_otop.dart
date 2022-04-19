@@ -243,7 +243,6 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 20),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             keyboardType: TextInputType.phone,
             initialValue: productOtop.price.toString(),
@@ -287,7 +286,6 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
   //       Container(
   //         margin: const EdgeInsets.only(top: 20),
   //         width: width * .7,
-  //         height: 60,
   //         child: TextFormField(
   //           initialValue: productOtop.weight.toString(),
   //           keyboardType: TextInputType.phone,
@@ -331,7 +329,6 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
   //       Container(
   //         margin: const EdgeInsets.only(top: 20),
   //         width: width * .7,
-  //         height: 60,
   //         child: TextFormField(
   //           initialValue: productOtop.width.toString(),
   //           keyboardType: TextInputType.phone,
@@ -375,7 +372,6 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
   //       Container(
   //         margin: const EdgeInsets.only(top: 20),
   //         width: width * .7,
-  //         height: 60,
   //         child: TextFormField(
   //           initialValue: productOtop.height.toString(),
   //           keyboardType: TextInputType.phone,
@@ -419,7 +415,6 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
   //       Container(
   //         margin: const EdgeInsets.only(top: 20),
   //         width: width * .7,
-  //         height: 60,
   //         child: TextFormField(
   //           initialValue: productOtop.long.toString(),
   //           keyboardType: TextInputType.phone,
@@ -510,7 +505,6 @@ class _CreateMenuOtopState extends State<CreateMenuOtop> {
         Container(
           margin: const EdgeInsets.only(top: 30),
           width: width * .7,
-          height: 60,
           child: TextFormField(
             initialValue: productOtop.productName,
             validator: (value) {

@@ -24,7 +24,6 @@ class _CreateGuideState extends State<CreateGuide> {
 
   bool eyesPassword = true;
   bool eyesConfirm = true;
-  bool isPartner = false;
   final _formKey = GlobalKey<FormState>();
   final UserModel _user = UserModel(
     email: '',
@@ -91,7 +90,7 @@ class _CreateGuideState extends State<CreateGuide> {
           },
         );
         Map<String, dynamic> response =
-            await AuthMethods.register(_user, isPartner, profileImage);
+            await AuthMethods.register(_user, profileImage);
         Navigator.pop(dialogContext);
         showDialog(
           context: context,
@@ -106,7 +105,6 @@ class _CreateGuideState extends State<CreateGuide> {
           confirmPassController.clear();
           eyesPassword = true;
           eyesConfirm = true;
-          isPartner = false;
         });
       } else {
         showDialog(
