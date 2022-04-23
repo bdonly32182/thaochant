@@ -284,6 +284,7 @@ class _HomeBuyerState extends State<HomeBuyer> {
         child: Stack(
           children: [
             SizedBox(
+              width: width * 1,
               height: double.maxFinite,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),

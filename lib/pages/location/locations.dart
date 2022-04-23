@@ -64,7 +64,7 @@ class _LocationsState extends State<Locations> {
                 children: [
                   Container(
                     margin: const EdgeInsets.all(15),
-                    height: size.height * .74,
+                    height: size.height * 1,
                     width: size.width * 1,
                     child: GridView.count(
                       crossAxisCount: 2,
