@@ -6,7 +6,9 @@ import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/fetch/show_data_empty.dart';
+import 'package:chanthaburi_app/widgets/image_blank.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
+import 'package:chanthaburi_app/widgets/warning_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -22,11 +24,12 @@ class _MenuListState extends State<MenuList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyConstant.backgroudApp, 
+      backgroundColor: MyConstant.backgroudApp,
       body: SingleChildScrollView(
         child: Column(
           children: [
             buildRowCreateAndEdit(context),
+            const WaringImage(),
             StreamBuilder(
               stream: CategoryCollection.streamCategorys(widget.businessId),
               builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -159,9 +162,8 @@ class _MenuListState extends State<MenuList> {
               context,
               MaterialPageRoute(
                 builder: (builder) => CategoryList(
-                  businessId: widget.businessId,
-                  typeBusiness: MyConstant.foodCollection
-                ),
+                    businessId: widget.businessId,
+                    typeBusiness: MyConstant.foodCollection),
               ),
             );
           },

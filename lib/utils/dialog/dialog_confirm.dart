@@ -30,7 +30,219 @@ dialogConfirm(
               ElevatedButton(
                 onPressed: () {
                   onOk(context);
-                  // Navigator.pop(context);
+                },
+                child: Text(
+                  'ยืนยัน',
+                  style: TextStyle(
+                    color: MyConstant.themeApp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  shadowColor: MyConstant.backgroudApp,
+                  side: BorderSide(
+                    color: MyConstant.themeApp,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'ยกเลิก',
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  shadowColor: MyConstant.backgroudApp,
+                  side: BorderSide(
+                    color: Colors.red.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    ),
+  );
+}
+
+dialogDeleteBusiness(
+    BuildContext context, String title, String message, Function onDeleteBusiness,String type) {
+  showDialog(
+    context: context,
+    builder: (context) => SimpleDialog(
+      title: ListTile(
+        leading: ShowImage(
+          pathImage: MyConstant.notifyImage,
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 18),
+        ),
+        subtitle: Text(
+          message,
+          style: const TextStyle(fontSize: 14),
+        ),
+      ),
+      children: <Widget>[
+        Container(
+          margin: const EdgeInsets.only(top: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  onDeleteBusiness(context,type);
+                },
+                child: Text(
+                  'ยืนยัน',
+                  style: TextStyle(
+                    color: MyConstant.themeApp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  shadowColor: MyConstant.backgroudApp,
+                  side: BorderSide(
+                    color: MyConstant.themeApp,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'ยกเลิก',
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  shadowColor: MyConstant.backgroudApp,
+                  side: BorderSide(
+                    color: Colors.red.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    ),
+  );
+}
+
+dialogDeleteEvent(
+  BuildContext context,
+  String docId,
+  String imageURL,
+  Function onOk,
+) {
+  showDialog(
+    context: context,
+    builder: (context) => SimpleDialog(
+      title: ListTile(
+        leading: ShowImage(
+          pathImage: MyConstant.notifyImage,
+        ),
+        title: const Text(
+          "แจ้งเตือน",
+          style: TextStyle(fontSize: 18),
+        ),
+        subtitle: const Text(
+          "คุณแน่ใจที่จะลบกิจกรรมนี้ใช่หรือไม่",
+          style: TextStyle(fontSize: 14),
+        ),
+      ),
+      children: <Widget>[
+        Container(
+          margin: const EdgeInsets.only(top: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  onOk(context, docId, imageURL);
+                },
+                child: Text(
+                  'ยืนยัน',
+                  style: TextStyle(
+                    color: MyConstant.themeApp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  shadowColor: MyConstant.backgroudApp,
+                  side: BorderSide(
+                    color: MyConstant.themeApp,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'ยกเลิก',
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  shadowColor: MyConstant.backgroudApp,
+                  side: BorderSide(
+                    color: Colors.red.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    ),
+  );
+}
+
+dialogDeleteQuestion(
+  BuildContext context,
+  String docId,
+  String title,
+  bool status,
+  Function onOk,
+) {
+  showDialog(
+    context: context,
+    builder: (context) => SimpleDialog(
+      title: ListTile(
+        leading: ShowImage(
+          pathImage: MyConstant.notifyImage,
+        ),
+        title: const Text(
+          "แจ้งเตือน",
+          style: TextStyle(fontSize: 18),
+        ),
+        subtitle: Text(
+          title,
+          style: const TextStyle(fontSize: 14),
+        ),
+      ),
+      children: <Widget>[
+        Container(
+          margin: const EdgeInsets.only(top: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  onOk(context, docId,status);
                 },
                 child: Text(
                   'ยืนยัน',

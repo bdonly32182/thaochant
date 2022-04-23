@@ -3,6 +3,8 @@ import 'package:chanthaburi_app/pages/guide/guide_list.dart';
 import 'package:chanthaburi_app/pages/home/admin/component/menu_card.dart';
 import 'package:chanthaburi_app/pages/location/locations.dart';
 import 'package:chanthaburi_app/pages/package_toure/package_tours.dart';
+import 'package:chanthaburi_app/pages/popular/business_popular.dart';
+import 'package:chanthaburi_app/pages/question/home_questoin.dart';
 import 'package:chanthaburi_app/pages/userlist/buyer_list.dart';
 import 'package:chanthaburi_app/pages/userlist/partner.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -50,6 +52,16 @@ class _HomeAdminState extends State<HomeAdmin> {
       "pathImage": MyConstant.notifyImage,
       "goWidget": EventList(),
     },
+    {
+      "title": 'แบบสอบถาม',
+      "pathImage": MyConstant.questionImage,
+      "goWidget": HomeQuestion(),
+    },
+    {
+      "title": 'กิจการยอดนิยม',
+      "pathImage": MyConstant.partnerImage,
+      "goWidget": BusinessPopular(),
+    },
   ];
   @override
   Widget build(BuildContext context) {
@@ -60,9 +72,7 @@ class _HomeAdminState extends State<HomeAdmin> {
       body: SingleChildScrollView(
         child: SizedBox(
           height: height * 1,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),

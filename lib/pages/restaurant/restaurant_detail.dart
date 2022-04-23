@@ -137,7 +137,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                   ),
                 ],
               ),
-              onPressed: status == 0
+              onPressed: status == 0 || foods.isEmpty
                   ? null
                   : () {
                       Navigator.push(

@@ -14,6 +14,7 @@ import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class EditBusiness extends StatefulWidget {
@@ -37,6 +38,11 @@ class _EditBusinessState extends State<EditBusiness> {
   final _formKey = GlobalKey<FormState>();
   File? imageSelected;
   File? qrcodeImage;
+  MaskTextInputFormatter phoneMask = MaskTextInputFormatter(
+    mask: '###-###-####',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   @override
   void initState() {
@@ -191,7 +197,7 @@ class _EditBusinessState extends State<EditBusiness> {
     }
   }
 
-  onDeleteBusiness(BuildContext context, String typeBusiness) async {
+  onDeleteBusiness(BuildContext buildContext, String typeBusiness) async {
     Map<String, dynamic>? response;
     if (typeBusiness == MyConstant.foodCollection) {
       response = await RestaurantCollection.deleteRestaurant(
@@ -205,6 +211,7 @@ class _EditBusinessState extends State<EditBusiness> {
       response = await ResortCollection.deleteResort(
           widget.businessId, _businessModel!.imageRef);
     }
+    Navigator.pop(buildContext);
     Navigator.pop(context);
     Navigator.pop(context);
     showDialog(
@@ -246,7 +253,14 @@ class _EditBusinessState extends State<EditBusiness> {
         actions: [
           IconButton(
             onPressed: () {
-              onDeleteBusiness(context, widget.typeBusiness);
+              // onDeleteBusiness(context, widget.typeBusiness);
+              dialogDeleteBusiness(
+                context,
+                "แจ้งเตือน",
+                "คุณแน่ใจแล้วที่จะลบธุรกิจนี้ใช่หรือไม่",
+                onDeleteBusiness,
+                widget.typeBusiness,
+              );
             },
             icon: const Icon(
               Icons.delete,
@@ -818,6 +832,7 @@ class _EditBusinessState extends State<EditBusiness> {
           margin: const EdgeInsets.only(top: 20),
           width: width * .8,
           child: TextFormField(
+            inputFormatters: [phoneMask],
             initialValue: _businessModel!.phoneNumber,
             keyboardType: TextInputType.phone,
             validator: (value) {

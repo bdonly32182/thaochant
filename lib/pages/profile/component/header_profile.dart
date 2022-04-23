@@ -19,30 +19,48 @@ class HeaderProfile extends StatelessWidget {
           margin: const EdgeInsets.only(top: 20.0),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(100),
-            child: Image.network(
-              profileRef,
-              fit: BoxFit.fitWidth,
-              width: width * 0.26,
-              height: 110.0,
-              errorBuilder: (BuildContext buildImageError, object, stackthree) {
-                return Container(
-                  width: width * 0.26,
-                  height: 110.0,
-                  child: ShowImage(
-                    pathImage: MyConstant.iconUser,
+            child: profileRef.isNotEmpty
+                ? Image.network(
+                    profileRef,
+                    fit: BoxFit.cover,
+                    width: width * 0.26,
+                    height: 110.0,
+                    errorBuilder:
+                        (BuildContext buildImageError, object, stackthree) {
+                      return Container(
+                        width: width * 0.26,
+                        height: 110.0,
+                        child: ShowImage(
+                          pathImage: MyConstant.iconUser,
+                        ),
+                        decoration: const BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 2,
+                              offset: Offset(0, 02),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                : Container(
+                    width: width * 0.26,
+                    height: 110.0,
+                    child: ShowImage(
+                      pathImage: MyConstant.iconUser,
+                    ),
+                    decoration: const BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          blurRadius: 2,
+                          offset: Offset(0, 02),
+                        ),
+                      ],
+                    ),
                   ),
-                  decoration: const BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 2,
-                        offset: Offset(0, 02),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
           ),
         )
       ],

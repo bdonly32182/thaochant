@@ -43,7 +43,11 @@ Future<Null> main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   String? role = await ShareRefferrence.getRole();
-  print('###role : $role');
+  int ? timeQuestion = await ShareRefferrence.getTimeQuestion();
+  if (timeQuestion == null) {
+    int dateTime = DateTime.now().millisecondsSinceEpoch;
+    await ShareRefferrence.setTimeQuestion(dateTime);
+  }
   if (role?.isEmpty ?? true) {
     initialRoute = MyConstant.routeAuthen;
     runApp(MyApp());

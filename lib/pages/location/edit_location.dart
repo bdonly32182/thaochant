@@ -148,6 +148,7 @@ class _EditLocationState extends State<EditLocation> {
   onDelete(BuildContext contextConfirm) async {
     Map<String, dynamic> response = await LocationCollection.deleteLocation(
         widget.locationId, _locationModel!.imageList, _locationModel!.videoRef);
+    Navigator.pop(contextConfirm);
     Navigator.pop(context);
     Navigator.pop(context);
     showDialog(
@@ -189,10 +190,11 @@ class _EditLocationState extends State<EditLocation> {
           IconButton(
             onPressed: () {
               dialogConfirm(
-                  context,
-                  "ลบแหล่งท่องเที่ยว",
-                  "ยืนยันที่จะลบแหล่งท่องเที่ยวใช้หรือไม่(อาจจะใช้เวลานานนิดหน่อย)",
-                  onDelete);
+                context,
+                "ลบแหล่งท่องเที่ยว",
+                "ยืนยันที่จะลบแหล่งท่องเที่ยวใช่หรือไม่(อาจจะใช้เวลานานนิดหน่อย)",
+                onDelete,
+              );
             },
             icon: const Icon(
               Icons.delete,

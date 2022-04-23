@@ -135,7 +135,7 @@ class _OtopDetailState extends State<OtopDetail> {
                   ),
                 ],
               ),
-              onPressed: status == 0
+              onPressed: status == 0 || foods.isEmpty
                   ? null
                   : () {
                       Navigator.push(

@@ -13,6 +13,7 @@ import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +32,11 @@ class _CreateShippingAddressState extends State<CreateShippingAddress> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  MaskTextInputFormatter phoneMask = MaskTextInputFormatter(
+    mask: '###-###-####',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
   double? latitude, longitude;
   @override
   void initState() {
@@ -282,6 +288,7 @@ class _CreateShippingAddressState extends State<CreateShippingAddress> {
     return Container(
       margin: const EdgeInsets.all(10.0),
       child: TextFormField(
+        inputFormatters: labelText == "เบอร์โทรศัพท์" ? [phoneMask] : [],
         controller: textController,
         validator: (text) {
           if (text!.isEmpty) {

@@ -168,9 +168,9 @@ class ResortCollection {
         String referenceImage = StorageFirebase.getReference(imageRef);
         StorageFirebase.deleteFile(referenceImage);
       }
-      return {"status": "200", "message": "ลบข้อมูลสินค้าเรียบร้อย"};
+      return {"status": "200", "message": "ลบข้อมูลบ้านพักเรียบร้อย"};
     } catch (e) {
-      return {"status": "400", "message": "ลบข้อมูลสินค้าล้มเหลว"};
+      return {"status": "400", "message": "ลบข้อมูลบ้านพักล้มเหลว"};
     }
   }
 

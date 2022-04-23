@@ -31,6 +31,7 @@ class _CreateAccountState extends State<CreateAccount> {
     phoneNumber: '',
     role: 'buyer',
     profileRef: '',
+    tokenDevice: '',
   );
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();

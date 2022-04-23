@@ -40,7 +40,7 @@ class BookingCollection {
       String userId, List<String> status) {
     Stream<QuerySnapshot<BookingModel>> bookingUser = bookingCollection
         .where("userId", isEqualTo: userId)
-        .orderBy("dateCreate",descending: true)
+        .orderBy("dateCreate", descending: true)
         .withConverter<BookingModel>(
             fromFirestore: (snapshot, _) =>
                 BookingModel.fromMap(snapshot.data()!),
@@ -50,10 +50,7 @@ class BookingCollection {
   }
 
   static Stream<QuerySnapshot<BookingModel>> orderByResort(
-      String resortId,
-      List<String> status,
-      int orderStart,
-      int endOrderDate) {
+      String resortId, List<String> status, int orderStart, int endOrderDate) {
     Stream<QuerySnapshot<BookingModel>> _orders = bookingCollection
         .where("resortId", isEqualTo: resortId)
         .where("status", whereIn: status)
@@ -66,6 +63,22 @@ class BookingCollection {
             toFirestore: (model, _) => model.toMap())
         .snapshots();
     return _orders;
+  }
+
+  static Future<int> ordersOfMonth(String resortId, List<String> status,
+      int orderStart, int endOrderDate) async {
+    QuerySnapshot<BookingModel> _orders = await bookingCollection
+        .where("resortId", isEqualTo: resortId)
+        .where("status", whereIn: status)
+        .orderBy("dateCreate")
+        .startAt([orderStart])
+        .endAt([endOrderDate])
+        .withConverter<BookingModel>(
+            fromFirestore: (snapshot, _) =>
+                BookingModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+    return _orders.size;
   }
 
   static Future<Map<String, dynamic>> changeStatus(

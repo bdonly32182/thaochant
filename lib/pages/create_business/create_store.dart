@@ -19,6 +19,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CreateStore extends StatefulWidget {
@@ -70,6 +71,11 @@ class _CreateStoreState extends State<CreateStore> {
     'เบเกอรี่',
     'เครื่องดื่ม',
   ];
+  MaskTextInputFormatter phoneMask = MaskTextInputFormatter(
+    mask: '###-###-####',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
   @override
   void initState() {
     super.initState();
@@ -223,6 +229,11 @@ class _CreateStoreState extends State<CreateStore> {
       _valuePolicyName!.removeAt(index);
       _valuePolicyDescription!.removeAt(index);
     });
+  }
+
+  void onCreateNotQrcode(BuildContext buildContext) {
+    Navigator.pop(buildContext);
+    _onSubmit(widget.typeBusiness);
   }
 
   void _onSubmit(String typeBusiness) async {
@@ -624,7 +635,18 @@ class _CreateStoreState extends State<CreateStore> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        onPressed: () => _onSubmit(widget.typeBusiness),
+        onPressed: () {
+          if (qrcodeImage != null) {
+            _onSubmit(widget.typeBusiness);
+          } else {
+            dialogConfirm(
+              context,
+              "แจ้งเตือน",
+              "คุณแน่ใจว่าบัญชีของคุณเป็นบัญชีพร้อมเพย์ใช่หรือไม่",
+              onCreateNotQrcode,
+            );
+          }
+        },
         style: ElevatedButton.styleFrom(
           primary: MyConstant.colorStore,
           shape: RoundedRectangleBorder(
@@ -907,6 +929,7 @@ class _CreateStoreState extends State<CreateStore> {
           margin: const EdgeInsets.only(top: 20),
           width: width * .8,
           child: TextFormField(
+            inputFormatters: [phoneMask],
             keyboardType: TextInputType.phone,
             validator: (value) {
               if (value!.isEmpty) return 'กรุณากรอกเบอร์โทรศัพท์';

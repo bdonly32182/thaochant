@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:chanthaburi_app/models/user/partner.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sharePreferrence/share_referrence.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:path/path.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -24,6 +27,36 @@ class UserCollection {
     String uid = await ShareRefferrence.getUserId();
     DocumentSnapshot _user = await _userCollection.doc(uid).get();
     return _user;
+  }
+
+  static Future<Map<String, dynamic>> changeProfile(
+    String docId,
+    String fullName,
+    String phone,
+    String profileRef,
+    File? changeProfile,
+  ) async {
+    try {
+      String? newProfileRef;
+      if (changeProfile != null) {
+        if (profileRef.isNotEmpty) {
+          String imageURL = StorageFirebase.getReference(profileRef);
+          StorageFirebase.deleteFile(imageURL);
+        }
+        String fileName = basename(changeProfile.path);
+        newProfileRef = await StorageFirebase.uploadImage(
+            "images/register/$fileName", changeProfile);
+      }
+      await _userCollection.doc(docId).update({
+        "fullName": fullName,
+        "phoneNumber": phone,
+        "profileRef": changeProfile != null ? newProfileRef : profileRef,
+      });
+
+      return {"status": "200", "message": "แก้ไขข้อมูลเรียบร้อย"};
+    } catch (e) {
+      return {"status": "400", "message": "แก้ไขข้อมูลล้มเหลว"};
+    }
   }
 
   static Future<DocumentSnapshot<Object?>> userById(String userId) async {

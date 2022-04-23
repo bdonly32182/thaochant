@@ -39,6 +39,7 @@ class _RegisterPartnerState extends State<RegisterPartner> {
     lng: 0,
     address: '',
     isAccept: false,
+    tokenDevice: '',
   );
   File? profileImage;
   File? verifyImage;

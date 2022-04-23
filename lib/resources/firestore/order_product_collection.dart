@@ -17,7 +17,7 @@ class OrderProductCollection {
   static Stream<QuerySnapshot<OrderModel>> orderByUserId(String userId) {
     Stream<QuerySnapshot<OrderModel>> _order = orderProductCollection
         .where("userId", isEqualTo: userId)
-        .orderBy("dateCreate",descending: true)
+        .orderBy("dateCreate", descending: true)
         .withConverter<OrderModel>(
             fromFirestore: (snapshot, _) =>
                 OrderModel.fromMap(snapshot.data()!),
@@ -26,8 +26,8 @@ class OrderProductCollection {
     return _order;
   }
 
-  static Stream<QuerySnapshot<OrderModel>> orderByOtopId(String otopId,
-      List<String> status, int orderDate, int endOrderDate) {
+  static Stream<QuerySnapshot<OrderModel>> orderByOtopId(
+      String otopId, List<String> status, int orderDate, int endOrderDate) {
     Stream<QuerySnapshot<OrderModel>> _orders = orderProductCollection
         .where("businessId", isEqualTo: otopId)
         .where("status", whereIn: status)
@@ -41,7 +41,23 @@ class OrderProductCollection {
         .snapshots();
     return _orders;
   }
-  
+
+  static Future<int> ordersOfMonth(String otopId, List<String> status,
+      int orderDate, int endOrderDate) async {
+    QuerySnapshot<OrderModel> _orders = await orderProductCollection
+        .where("businessId", isEqualTo: otopId)
+        .where("status", whereIn: status)
+        .orderBy("dateCreate")
+        .startAt([orderDate])
+        .endAt([endOrderDate])
+        .withConverter<OrderModel>(
+            fromFirestore: (snapshot, _) =>
+                OrderModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+    return _orders.size;
+  }
+
   static Future<Map<String, dynamic>> createOrder(
       OrderModel order, File imagePayment) async {
     try {

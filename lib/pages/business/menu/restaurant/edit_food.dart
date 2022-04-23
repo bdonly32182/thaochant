@@ -134,20 +134,19 @@ class _EditFoodState extends State<EditFood> {
     }
   }
 
-  onDeleteFood(BuildContext context) async {
-    late BuildContext dialogContext;
+  onDeleteFood(BuildContext buildContext) async {
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext showContext) {
-        dialogContext = context;
         return const PouringHourGlass();
       },
     );
     Map<String, dynamic> response =
         await FoodCollection.deleteFood(widget.foodId, _foodModel.imageRef);
 
-    Navigator.pop(dialogContext);
+    Navigator.pop(buildContext);
+    Navigator.pop(context);
     Navigator.pop(context);
     showDialog(
       context: context,
@@ -166,7 +165,12 @@ class _EditFoodState extends State<EditFood> {
         actions: [
           IconButton(
             onPressed: () {
-              onDeleteFood(context);
+              dialogConfirm(
+                context,
+                "แจ้งเตือน",
+                "คุณแน่ใจแล้วที่จะลบเมนูอาหารนี้ใช่หรือไม่",
+                onDeleteFood,
+              );
             },
             icon: const Icon(
               Icons.delete,

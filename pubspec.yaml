@@ -53,7 +53,7 @@ dependencies:
   flutter_automation: ^2.0.0
   syncfusion_flutter_pdfviewer: ^19.4.56-beta
   maps_launcher: ^2.0.1
-
+  awesome_select: ^5.2.0
 
 flutter_icons:
   android: true

@@ -46,6 +46,26 @@ class OrderFoodCollection {
     return _orders;
   }
 
+  static Future<int> ordersOfMonth(
+    String restaurantId,
+    List<String> status,
+    int orderStart,
+    int endOrderDate,
+  ) async {
+    QuerySnapshot<OrderModel> _orders = await orderFoodCollection
+        .where("businessId", isEqualTo: restaurantId)
+        .where("status", whereIn: status)
+        .orderBy("dateCreate")
+        .startAt([orderStart])
+        .endAt([endOrderDate])
+        .withConverter<OrderModel>(
+            fromFirestore: (snapshot, _) =>
+                OrderModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+    return _orders.size;
+  }
+
   static Future<Map<String, dynamic>> createOrder(
       OrderModel order, File imagePayment) async {
     try {

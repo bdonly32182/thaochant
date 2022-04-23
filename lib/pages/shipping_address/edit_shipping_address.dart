@@ -3,6 +3,7 @@ import 'package:chanthaburi_app/models/shipping/shipping.dart';
 import 'package:chanthaburi_app/provider/address_provider.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/resources/firestore/shipping_address_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
 import 'package:chanthaburi_app/utils/map/google_map_fluter.dart';
 import 'package:chanthaburi_app/utils/map/show_map.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -10,6 +11,7 @@ import 'package:chanthaburi_app/utils/sqlite/sql_address.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 
 class EditShippingAddress extends StatefulWidget {
@@ -33,6 +35,11 @@ class _EditShippingAddressState extends State<EditShippingAddress> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  MaskTextInputFormatter phoneMask = MaskTextInputFormatter(
+    mask: '###-###-####',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
   double? latitude, longitude;
   @override
   void initState() {
@@ -66,15 +73,12 @@ class _EditShippingAddressState extends State<EditShippingAddress> {
     }
   }
 
-  onDeleteAddress() async {
-    late BuildContext dialogContext;
-
+  onDeleteAddress(BuildContext buildContext) async {
     if (!widget.isCurrent) {
       showDialog(
         barrierDismissible: false,
         context: context,
         builder: (BuildContext showContext) {
-          dialogContext = context;
           return const PouringHourGlass();
         },
       );
@@ -82,8 +86,10 @@ class _EditShippingAddressState extends State<EditShippingAddress> {
           await ShippingAddressCollection.deleteAddress(
         widget.docId,
       );
-      Navigator.pop(dialogContext);
-      Navigator.pop(context);
+      Navigator.pop(buildContext); // close alert
+      Navigator.pop(context); // close show dialog
+      Navigator.pop(context); // pop to address
+      Navigator.pop(context); // close bottomsheet
       showDialog(
         context: context,
         builder: (BuildContext showContext) =>
@@ -206,7 +212,12 @@ class _EditShippingAddressState extends State<EditShippingAddress> {
                         'ลบที่อยู่',
                         style: TextStyle(fontSize: 18, color: Colors.red),
                       ),
-                      onPressed: onDeleteAddress,
+                      onPressed: () => dialogConfirm(
+                        context,
+                        "แจ้งเตือน",
+                        "คุณแน่ใจแล้วที่จะลบที่อยู่รายการนี้ใช่หรือไม่",
+                        onDeleteAddress,
+                      ),
                       style: ElevatedButton.styleFrom(primary: Colors.white),
                     ),
                   ),
@@ -219,8 +230,8 @@ class _EditShippingAddressState extends State<EditShippingAddress> {
                         style: TextStyle(fontSize: 18),
                       ),
                       onPressed: onUpdateAddress,
-                      style:
-                          ElevatedButton.styleFrom(primary: MyConstant.themeApp),
+                      style: ElevatedButton.styleFrom(
+                          primary: MyConstant.themeApp),
                     ),
                   ),
                 ],
@@ -285,7 +296,7 @@ class _EditShippingAddressState extends State<EditShippingAddress> {
       child: TextFormField(
         controller: _addressController,
         maxLines: 3,
-        validator: (text){
+        validator: (text) {
           if (text!.isEmpty) {
             return "กรุณากรอกรายละเอียดที่อยู่";
           }
@@ -315,8 +326,9 @@ class _EditShippingAddressState extends State<EditShippingAddress> {
     return Container(
       margin: const EdgeInsets.all(10.0),
       child: TextFormField(
+        inputFormatters: labelText == "เบอร์โทรศัพท์" ? [phoneMask] : [],
         controller: textController,
-        validator: (text){
+        validator: (text) {
           if (text!.isEmpty) {
             return "กรุณากรอก$labelText";
           }

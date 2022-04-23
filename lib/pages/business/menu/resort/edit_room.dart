@@ -178,20 +178,19 @@ class _EditRoomState extends State<EditRoom> {
     }
   }
 
-  _onDeleteRoom(BuildContext context) async {
-    late BuildContext dialogContext;
+  _onDeleteRoom(BuildContext buildContext) async {
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext showContext) {
-        dialogContext = context;
         return const PouringHourGlass();
       },
     );
     Map<String, dynamic> response = await RoomCollection.deleteRoom(
         widget.roomId, widget.imageCover, widget.listImageDetail);
 
-    Navigator.pop(dialogContext);
+    Navigator.pop(buildContext);
+    Navigator.pop(context);
     Navigator.pop(context);
     showDialog(
       context: context,
@@ -210,7 +209,12 @@ class _EditRoomState extends State<EditRoom> {
         actions: [
           IconButton(
             onPressed: () {
-              _onDeleteRoom(context);
+              dialogConfirm(
+                context,
+                "แจ้งเตือน",
+                "คุณแน่ใจแล้วที่จะลบรายการนี้ใช่หรือไม่",
+                _onDeleteRoom,
+              );
             },
             icon: const Icon(
               Icons.delete,

@@ -41,6 +41,8 @@ class MyConstant {
   static String bookingCollection = "bookingCollection";
   static String packageTourCollection = "packageTourCollection";
   static String orderTourCollection = "orderTourCollection";
+  static String eventCollection = "eventCollection";
+  static String questionCollection = "questionCollection";
 
   // image
   static String appLogo = 'images/logo.png';
@@ -68,6 +70,8 @@ class MyConstant {
   static String thaiFood = 'images/thai-food.jpeg';
   static String resortPicture = 'images/baanlek.jpeg';
   static String packagePicture = 'images/package.jpeg';
+  static String questionImage = 'images/question.png';
+  static String commingSoon = 'images/coming_soon.png';
 
   // color
   static Color backgroudApp =

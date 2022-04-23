@@ -7,6 +7,7 @@ import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/fetch/show_data_empty.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
+import 'package:chanthaburi_app/widgets/warning_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -32,6 +33,7 @@ class _MenuOtopsState extends State<MenuOtops> {
         child: Column(
           children: [
             buildRowCreateAndEdit(context),
+            const WaringImage(),
             StreamBuilder(
               stream: CategoryCollection.streamCategorys(widget.businessId),
               builder: (builder, AsyncSnapshot<QuerySnapshot> snapshot) {

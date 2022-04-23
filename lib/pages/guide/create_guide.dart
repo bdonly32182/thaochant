@@ -32,6 +32,7 @@ class _CreateGuideState extends State<CreateGuide> {
     phoneNumber: '',
     role: MyConstant.guideName,
     profileRef: '',
+    tokenDevice: '',
   );
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();

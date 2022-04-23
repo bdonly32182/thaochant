@@ -112,7 +112,10 @@ class _ShippingAddressState extends State<ShippingAddress> {
           itemBuilder: (BuildContext addressContext, int indexAddress) {
             bool isCurrent = address.isNotEmpty
                 ? address[0].lat == snapshot.data!.docs[indexAddress]["lat"] &&
-                    address[0].lng == snapshot.data!.docs[indexAddress]["lng"]
+                    address[0].lng ==
+                        snapshot.data!.docs[indexAddress]["lng"] &&
+                    address[0].fullName ==
+                        snapshot.data!.docs[indexAddress].data().fullName
                 : false;
             return InkWell(
               onTap: () {

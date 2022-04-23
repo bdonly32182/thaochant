@@ -141,20 +141,19 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
     }
   }
 
-  _onDeleteProduct(BuildContext context) async {
-    late BuildContext dialogContext;
+  _onDeleteProduct(BuildContext buildContext) async {
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext showContext) {
-        dialogContext = context;
         return const PouringHourGlass();
       },
     );
     Map<String, dynamic> response = await ProductOtopCollection.deleteProduct(
         widget.productId, productOtop.imageRef);
 
-    Navigator.pop(dialogContext);
+    Navigator.pop(buildContext);
+    Navigator.pop(context);
     Navigator.pop(context);
     showDialog(
       context: context,
@@ -173,7 +172,12 @@ class _EditMenuOtopState extends State<EditMenuOtop> {
         actions: [
           IconButton(
             onPressed: () {
-              _onDeleteProduct(context);
+              dialogConfirm(
+                context,
+                "แจ้งเตือน",
+                "คุณแน่ใจแล้วที่จะลบรายการนี้ใช่หรือไม่",
+                _onDeleteProduct,
+              );
             },
             icon: const Icon(
               Icons.delete,

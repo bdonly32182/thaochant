@@ -12,6 +12,7 @@ class PartnerModel {
   double lng;
   String address;
   bool isAccept;
+  String tokenDevice;
   PartnerModel({
     required this.fullName,
     required this.email,
@@ -24,6 +25,7 @@ class PartnerModel {
     required this.lng,
     required this.address,
     required this.isAccept,
+    required this.tokenDevice,
   });
   
 
@@ -39,6 +41,7 @@ class PartnerModel {
     double? lng,
     String? address,
     bool? isAccept,
+    String? tokenDevice,
   }) {
     return PartnerModel(
       fullName: fullName ?? this.fullName,
@@ -52,6 +55,7 @@ class PartnerModel {
       lng: lng ?? this.lng,
       address: address ?? this.address,
       isAccept: isAccept ?? this.isAccept,
+      tokenDevice: tokenDevice ?? this.tokenDevice,
     );
   }
 
@@ -68,6 +72,7 @@ class PartnerModel {
       'lng': lng,
       'address': address,
       'isAccept': isAccept,
+      'tokenDevice': tokenDevice,
     };
   }
 
@@ -84,6 +89,7 @@ class PartnerModel {
       lng: map['lng']?.toDouble() ?? 0.0,
       address: map['address'] ?? '',
       isAccept: map['isAccept'] ?? false,
+      tokenDevice: map['tokenDevice'] ?? '',
     );
   }
 
@@ -93,7 +99,7 @@ class PartnerModel {
 
   @override
   String toString() {
-    return 'PartnerModel(fullName: $fullName, email: $email, phoneNumber: $phoneNumber, password: $password, role: $role, profileRef: $profileRef, verifyRef: $verifyRef, lat: $lat, lng: $lng, address: $address, isAccept: $isAccept)';
+    return 'PartnerModel(fullName: $fullName, email: $email, phoneNumber: $phoneNumber, password: $password, role: $role, profileRef: $profileRef, verifyRef: $verifyRef, lat: $lat, lng: $lng, address: $address, isAccept: $isAccept, tokenDevice: $tokenDevice)';
   }
 
   @override
@@ -111,7 +117,8 @@ class PartnerModel {
       other.lat == lat &&
       other.lng == lng &&
       other.address == address &&
-      other.isAccept == isAccept;
+      other.isAccept == isAccept &&
+      other.tokenDevice == tokenDevice;
   }
 
   @override
@@ -126,6 +133,7 @@ class PartnerModel {
       lat.hashCode ^
       lng.hashCode ^
       address.hashCode ^
-      isAccept.hashCode;
+      isAccept.hashCode ^
+      tokenDevice.hashCode;
   }
 }
