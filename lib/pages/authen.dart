@@ -1,4 +1,5 @@
 import 'package:chanthaburi_app/resources/auth_method.dart';
+import 'package:chanthaburi_app/utils/map/disclosure_location.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
@@ -133,10 +134,45 @@ class _AuthenState extends State<Authen> {
                 buildButton(size),
                 buildCreateAccount(size),
                 buildRegisterPartner(size),
+                buildPolicyAccessed(size),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Container buildPolicyAccessed(double size) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      width: size * 0.5,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text("การเข้าถึงตำแหน่ง ? "),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (builder) => DisclosureLocation(
+                    goto: () => Navigator.pop(context),
+                    message:
+                        "แอพพลิเคชันนี้มีการขอเข้าถึงตำแหน่งปัจจุบันของท่าน เพื่อความสะดวก และสร้างความมั่นใจให้กับผู้ซื้อและผู้ขาย",
+                  ),
+                ),
+              );
+            },
+            child: Text(
+              ' คลิ๊ก',
+              style: TextStyle(
+                color: MyConstant.themeApp,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -151,7 +187,6 @@ class _AuthenState extends State<Authen> {
           const Text("เข้าร่วมกับเรา ? "),
           InkWell(
             onTap: () {
-              
               Navigator.push(
                 context,
                 MaterialPageRoute(
