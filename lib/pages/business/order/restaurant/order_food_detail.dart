@@ -26,6 +26,7 @@ class _OrderFoodDetailState extends State<OrderFoodDetail> {
     MyConstant.acceptOrder,
     MyConstant.payed,
     MyConstant.rejected,
+    MyConstant.prepaidStatus,
   ].map<DropdownMenuItem<String>>((String value) {
     return DropdownMenuItem<String>(
       value: value,
@@ -264,16 +265,21 @@ class _OrderFoodDetailState extends State<OrderFoodDetail> {
                     Row(
                       children: [
                         Text("x ${products[index].amount}"),
-                        Container(
-                          margin: const EdgeInsets.only(left: 12, top: 10),
+                        SizedBox(
                           width: width * 0.6,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                products[index].productName,
-                                softWrap: true,
-                                maxLines: 2,
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 12.0,
+                                  top: 12.0,
+                                ),
+                                child: Text(
+                                  products[index].productName,
+                                  softWrap: true,
+                                  maxLines: 2,
+                                ),
                               ),
                               Text("- ${products[index].addtionMessage}")
                             ],

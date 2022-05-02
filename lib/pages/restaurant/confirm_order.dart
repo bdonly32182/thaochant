@@ -2,8 +2,6 @@ import 'package:chanthaburi_app/models/shipping/shipping.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/restaurant/checkout.dart';
 import 'package:chanthaburi_app/pages/shipping_address/address_info.dart';
-import 'package:chanthaburi_app/pages/shipping_address/create_shipping_address.dart';
-import 'package:chanthaburi_app/pages/shipping_address/shipping_adress.dart';
 import 'package:chanthaburi_app/provider/address_provider.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';

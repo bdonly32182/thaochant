@@ -16,9 +16,9 @@ class ShareRefferrence {
     return userId;
   }
 
-  static Future<int ?> getTimeQuestion() async {
+  static Future<int?> getTimeQuestion() async {
     final SharedPreferences _referrence = await referrences;
-    int ? nextTime = _referrence.getInt("timeQuestion");
+    int? nextTime = _referrence.getInt("timeQuestion");
     return nextTime;
   }
 

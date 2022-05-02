@@ -23,6 +23,7 @@ class _BookingDetailState extends State<BookingDetail> {
     MyConstant.acceptOrder,
     MyConstant.payed,
     MyConstant.rejected,
+    MyConstant.prepaidStatus,
   ].map<DropdownMenuItem<String>>((String value) {
     return DropdownMenuItem<String>(
       value: value,

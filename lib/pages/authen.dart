@@ -5,6 +5,8 @@ import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:chanthaburi_app/widgets/partner_policy.dart';
 import 'package:chanthaburi_app/widgets/show_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +23,21 @@ class _AuthenState extends State<Authen> {
   final TextEditingController _passwordController = TextEditingController();
   bool eyesPassword = true;
   bool isLoading = false;
+  setupMessaging() async {
+    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+    String?  token = await firebaseMessaging.getToken();
+    print(token);
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print('event === ${event.notification}');
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    setupMessaging();
+    super.initState();
+  }
 
   @override
   void dispose() {

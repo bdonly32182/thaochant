@@ -1,5 +1,6 @@
 import 'package:chanthaburi_app/models/shipping/shipping.dart';
 import 'package:chanthaburi_app/pages/package_toure/checkout_tour.dart';
+import 'package:chanthaburi_app/pages/shipping_address/address_info.dart';
 import 'package:chanthaburi_app/pages/shipping_address/create_shipping_address.dart';
 import 'package:chanthaburi_app/pages/shipping_address/shipping_adress.dart';
 import 'package:chanthaburi_app/provider/address_provider.dart';
@@ -102,7 +103,11 @@ class _BookingTourState extends State<BookingTour> {
                     Widget? child) {
                   return Column(
                     children: [
-                      buildAddressInfo(width, height, addressProvider.address),
+                      // buildAddressInfo(width, height, addressProvider.address),
+                      AddressInfo(
+                        address: addressProvider.address,
+                        userId: userId,
+                      ),
                       buildTabCheckout(
                           height, widget.packageName, addressProvider.address),
                     ],
@@ -453,7 +458,7 @@ class _BookingTourState extends State<BookingTour> {
               style: TextStyle(fontSize: 16, color: MyConstant.themeApp),
             ),
             onPressed: () {
-              if (totalPrice != 0) {
+              if (totalPrice != 0 && address.isNotEmpty) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -472,7 +477,7 @@ class _BookingTourState extends State<BookingTour> {
                 );
               } else {
                 dialogAlert(context, "แจ้งเตือน",
-                    "กรุณาเลือกผู้เข้าร่วมอย่างน้อย 1 คน");
+                    "กรุณาเลือกผู้เข้าร่วมอย่างน้อย 1 คน และ ข้อมูลติดต่อ");
               }
             },
             style: ElevatedButton.styleFrom(primary: Colors.white),

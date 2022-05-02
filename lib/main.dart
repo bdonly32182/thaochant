@@ -38,7 +38,7 @@ final Map<String, Widget> splashWidget = {
 
 String? initialRoute;
 
-Future<Null> main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);

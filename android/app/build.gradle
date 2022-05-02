@@ -54,9 +54,8 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
         applicationId "com.teddydev.chanthaburi_app"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
-        // multiDexEnabled true
+        versionCode 3
+        versionName "1.0.3"
     }
 
     signingConfigs {
