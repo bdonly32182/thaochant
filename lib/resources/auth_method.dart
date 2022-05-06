@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:chanthaburi_app/models/resort/participant.dart';
 import 'package:chanthaburi_app/models/user/partner.dart';
 import 'package:chanthaburi_app/models/user/user.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
@@ -38,6 +37,7 @@ class AuthMethods {
         "phoneNumber": _user.phoneNumber,
         "profileRef": _user.profileRef,
         "role": _user.role,
+        "tokenDevice": _user.tokenDevice
       });
       return {"status": "200", "message": "สร้างบัญชีผู้ใช้งานเรียบร้อย"};
     } on FirebaseAuthException catch (e) {
@@ -46,7 +46,7 @@ class AuthMethods {
   }
 
   static Future<Map<String, dynamic>> registerPartner(
-      PartnerModel partner, File? imageRef,File? verifyImage) async {
+      PartnerModel partner, File? imageRef, File? verifyImage) async {
     try {
       if (imageRef != null) {
         String fileName = basename(imageRef.path);
@@ -88,6 +88,8 @@ class AuthMethods {
   }
 
   static Future<void> logout() async {
+    String userId = await ShareRefferrence.getUserId();
+    await _userCollection.doc(userId).update({"tokenDevice": ""});
     await _firebaseAuth.signOut();
     ShareRefferrence.setReferrence("", "");
   }
@@ -97,5 +99,14 @@ class AuthMethods {
       return "";
     }
     return _firebaseAuth.currentUser!.uid;
+  }
+
+  static Future<void> userUpdateToken(String token, String userId) async {
+    try {
+      DocumentSnapshot user = await _userCollection.doc(userId).get();
+      if (user.get("tokenDevice") == "") {
+        await _userCollection.doc(userId).update({"tokenDevice": token});
+      }
+    } catch (e) {}
   }
 }

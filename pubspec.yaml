@@ -55,7 +55,9 @@ dependencies:
   maps_launcher: ^2.0.1
   awesome_select: ^5.2.0
   flutter_local_notifications: ^9.4.1
-  firebase_messaging: ^11.2.7
+  firebase_messaging: ^11.2.0
+  timezone: ^0.8.0
+  flutter_native_timezone: ^2.0.0
 
 flutter_icons:
   android: true

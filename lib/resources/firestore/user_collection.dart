@@ -167,7 +167,8 @@ class UserCollection {
         "fullName": partner.fullName,
         "phoneNumber": partner.phoneNumber,
         "role": partner.role,
-        "profileRef": partner.profileRef
+        "profileRef": partner.profileRef,
+        "tokenDevice": partner.tokenDevice,
       });
       await _approvePartner.doc(docId).update({
         "isAccept": true,

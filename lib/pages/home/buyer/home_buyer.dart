@@ -52,8 +52,6 @@ class _HomeBuyerState extends State<HomeBuyer> {
 
   onCheckTimeQuestion() async {
     int? nextTimeQuestion = await ShareRefferrence.getTimeQuestion();
-    print(nextTimeQuestion);
-    print(dateTimeNow);
     if (nextTimeQuestion != null && nextTimeQuestion <= dateTimeNow) {
       setState(() {
         fillQuestion = true;
