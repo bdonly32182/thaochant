@@ -140,18 +140,18 @@ class _SettingBusinessState extends State<SettingBusiness> {
                         if (widget.typeBusiness == MyConstant.foodCollection &&
                             _businessModel.statusOpen != index) {
                           await RestaurantCollection.changeStatus(
-                              widget.businessId, index);
+                              widget.businessId, index!);
                         }
                         if (widget.typeBusiness ==
                                 MyConstant.productOtopCollection &&
                             _businessModel.statusOpen != index) {
                           await OtopCollection.changeStatus(
-                              widget.businessId, index);
+                              widget.businessId, index!);
                         }
                         if (widget.typeBusiness == MyConstant.roomCollection &&
                             _businessModel.statusOpen != index) {
                           ResortCollection.changeStatus(
-                              widget.businessId, index);
+                              widget.businessId, index!);
                         }
                       },
                     ),

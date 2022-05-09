@@ -106,7 +106,7 @@ class _CardMenuOtopState extends State<CardMenuOtop> {
                     onToggle: (index) {
                       if (widget.status != index) {
                         ProductOtopCollection.changeStatusProduct(
-                            widget.productId, index);
+                            widget.productId, index!);
                       }
                     },
                   ),

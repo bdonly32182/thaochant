@@ -255,7 +255,7 @@ class _EditPackageTourState extends State<EditPackageTour> {
                               radiusStyle: true,
                               onToggle: (index) {
                                 TourCollection.updateStatus(
-                                    widget.tourId, index);
+                                    widget.tourId, index!);
                               },
                             ),
                           ],

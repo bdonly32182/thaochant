@@ -121,7 +121,7 @@ class _PackageDetailState extends State<PackageDetail> {
               radiusStyle: true,
               onToggle: (index) {
                 if (status != index) {
-                  TourCollection.updateStatus(docId, index);
+                  TourCollection.updateStatus(docId, index!);
                 }
               },
             ),

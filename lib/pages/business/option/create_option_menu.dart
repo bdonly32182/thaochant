@@ -144,7 +144,7 @@ class _CreateOptionMenuState extends State<CreateOptionMenu> {
                         radiusStyle: true,
                         onToggle: (index) {
                           setState(() {
-                            toggleStatus = index;
+                            toggleStatus = index!;
                           });
                         },
                       ),

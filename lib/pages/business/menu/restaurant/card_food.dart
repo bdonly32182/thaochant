@@ -121,7 +121,7 @@ class _CardFoodState extends State<CardFood> {
                     radiusStyle: true,
                     onToggle: (index) {
                       if (widget.status != index) {
-                        FoodCollection.changeStatusFood(widget.foodId, index);
+                        FoodCollection.changeStatusFood(widget.foodId, index!);
                       }
                     },
                   ),
