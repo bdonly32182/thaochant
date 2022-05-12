@@ -24,7 +24,8 @@ class FirebaseMessagingService {
 
   getDeviceFirebaseToken() async {
     String? token = await FirebaseMessaging.instance.getToken();
-    if (token != null) {
+    String userId = await ShareRefferrence.getUserId();
+    if (token != null && userId.isNotEmpty) {
       String userId = await ShareRefferrence.getUserId();
       await AuthMethods.userUpdateToken(token, userId);
     }

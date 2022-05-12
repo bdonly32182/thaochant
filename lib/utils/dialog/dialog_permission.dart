@@ -25,8 +25,8 @@ alertService(BuildContext context, String title, String message) async {
       actions: [
         TextButton(
           onPressed: () async {
-            openAppSettings();
             Navigator.pop(context);
+            openAppSettings();
           },
           child: const Text('OK'),
         ),
