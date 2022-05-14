@@ -152,7 +152,7 @@ class _RegisterPartnerState extends State<RegisterPartner> {
   void createPartner() async {
     late BuildContext dialogContext;
     if (_formKey.currentState!.validate()) {
-      if (verifyImage != null && profileImage != null) {
+      if (profileImage != null) {
         _formKey.currentState!.save();
         {
           showDialog(
@@ -183,8 +183,7 @@ class _RegisterPartnerState extends State<RegisterPartner> {
           });
         }
       } else {
-        dialogAlert(context, "แจ้งเตือน",
-            "แนบรูปบัตรประชาชนเพื่อยืนยันตัวตนและรูปถ่ายของท่าน");
+        dialogAlert(context, "แจ้งเตือน", "แนบรูปถ่ายของท่าน");
       }
     } else {
       dialogAlert(context, "แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบ");
@@ -341,51 +340,53 @@ class _RegisterPartnerState extends State<RegisterPartner> {
   Row buildVerifyImage(double width) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        InkWell(
-          onTap: () => dialogCamera(
-              context, getVerifyImage, takePhotoVerify, MyConstant.themeApp),
-          child: Container(
-            width: width * .7,
-            height: 160,
-            margin: const EdgeInsets.only(top: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (verifyImage == null)
-                  const Icon(
-                    Icons.add_a_photo_rounded,
-                    size: 40,
-                    color: Color.fromRGBO(41, 187, 137, 0.5),
+      children: Platform.isIOS
+          ? []
+          : [
+              InkWell(
+                onTap: () => dialogCamera(context, getVerifyImage,
+                    takePhotoVerify, MyConstant.themeApp),
+                child: Container(
+                  width: width * .7,
+                  height: 160,
+                  margin: const EdgeInsets.only(top: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (verifyImage == null)
+                        const Icon(
+                          Icons.add_a_photo_rounded,
+                          size: 40,
+                          color: Color.fromRGBO(41, 187, 137, 0.5),
+                        ),
+                      const Text(
+                        'แนบรูปบัตรประชาชน',
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
-                const Text(
-                  'แนบรูปบัตรประชาชน',
-                  style: TextStyle(
-                    color: Colors.grey,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: const [
+                      BoxShadow(
+                        blurRadius: 5,
+                        color: Colors.black54,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
+                    image: verifyImage != null
+                        ? DecorationImage(
+                            image: Image.file(verifyImage!).image,
+                            fit: BoxFit.cover,
+                          )
+                        : null,
                   ),
                 ),
-              ],
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  blurRadius: 5,
-                  color: Colors.black54,
-                  offset: Offset(0, 1),
-                ),
-              ],
-              image: verifyImage != null
-                  ? DecorationImage(
-                      image: Image.file(verifyImage!).image,
-                      fit: BoxFit.cover,
-                    )
-                  : null,
-            ),
-          ),
-        ),
-      ],
+              ),
+            ],
     );
   }
 

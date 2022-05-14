@@ -20,7 +20,7 @@ class EventCollection {
     try {
       String fileName = basename(eventRef.path);
       String imageURL =
-          await StorageFirebase.uploadImage("images/food/$fileName", eventRef);
+          await StorageFirebase.uploadImage("images/event/$fileName", eventRef);
       await eventCollection.add({"eventURL": imageURL});
       return {"status": "200", "message": "สร้างกิจกรรมเรียบร้อย"};
     } catch (e) {

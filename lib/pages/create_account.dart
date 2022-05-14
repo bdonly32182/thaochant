@@ -368,46 +368,49 @@ class _CreateAccountState extends State<CreateAccount> {
   Row buildPhone(double width) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 20),
-          width: width * 0.7,
-          child: TextFormField(
-            inputFormatters: [phoneMask],
-            onSaved: (String? phoneNumber) => _user.phoneNumber = phoneNumber!,
-            validator: (value) {
-              if (value!.isEmpty) return 'กรุณากรอกเบอร์โทรศัพท์';
-              return null;
-            },
-            decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                labelText: 'เบอร์โทรศัพท์ :',
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                prefixIcon: Icon(
-                  Icons.phone,
-                  color: MyConstant.themeApp,
+      children: Platform.isIOS
+          ? []
+          : [
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                width: width * 0.7,
+                child: TextFormField(
+                  inputFormatters: [phoneMask],
+                  onSaved: (String? phoneNumber) =>
+                      _user.phoneNumber = phoneNumber!,
+                  validator: (value) {
+                    if (value!.isEmpty) return 'กรุณากรอกเบอร์โทรศัพท์';
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      labelText: 'เบอร์โทรศัพท์ :',
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                      prefixIcon: Icon(
+                        Icons.phone,
+                        color: MyConstant.themeApp,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(10),
+                      )),
+                  style: TextStyle(
+                      color: MyConstant.themeApp, fontWeight: FontWeight.w700),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.circular(10),
-                )),
-            style: TextStyle(
-                color: MyConstant.themeApp, fontWeight: FontWeight.w700),
-          ),
-          decoration: const BoxDecoration(boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 15,
-              offset: Offset(0, 0.2),
-            ),
-          ]),
-        )
-      ],
+                decoration: const BoxDecoration(boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 15,
+                    offset: Offset(0, 0.2),
+                  ),
+                ]),
+              )
+            ],
     );
   }
 

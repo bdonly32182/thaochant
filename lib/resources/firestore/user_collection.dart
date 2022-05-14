@@ -170,9 +170,14 @@ class UserCollection {
         "profileRef": partner.profileRef,
         "tokenDevice": partner.tokenDevice,
       });
+      if (partner.verifyRef.isNotEmpty) {
+        String referenceImage = StorageFirebase.getReference(partner.verifyRef);
+        StorageFirebase.deleteFile(referenceImage);
+      }
       await _approvePartner.doc(docId).update({
         "isAccept": true,
         "password": "**secret***",
+        "verifyRef":""
       });
       return {"status": "200", "message": "อนุมัติเรียบร้อย"};
     } on FirebaseException catch (e) {
