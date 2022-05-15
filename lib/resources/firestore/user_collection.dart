@@ -26,7 +26,7 @@ class UserCollection {
   static Future<DocumentSnapshot<Object?>> profile() async {
     String uid = await ShareRefferrence.getUserId();
     DocumentSnapshot _user = await _userCollection.doc(uid).get();
-    return _user;
+      return _user;
   }
 
   static Future<Map<String, dynamic>> changeProfile(
@@ -174,11 +174,8 @@ class UserCollection {
         String referenceImage = StorageFirebase.getReference(partner.verifyRef);
         StorageFirebase.deleteFile(referenceImage);
       }
-      await _approvePartner.doc(docId).update({
-        "isAccept": true,
-        "password": "**secret***",
-        "verifyRef":""
-      });
+      await _approvePartner.doc(docId).update(
+          {"isAccept": true, "password": "**secret***", "verifyRef": ""});
       return {"status": "200", "message": "อนุมัติเรียบร้อย"};
     } on FirebaseException catch (e) {
       return {"status": "400", "message": e.message};

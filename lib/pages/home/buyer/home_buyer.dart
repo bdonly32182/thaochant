@@ -225,7 +225,7 @@ class _HomeBuyerState extends State<HomeBuyer> {
   Container buildEventEmpty(double width, double height) {
     return Container(
       margin: const EdgeInsets.only(left: 10),
-      width: width * 0.9,
+      width: width * 0.93,
       height: height * 0.2,
       child: Container(
           child: Column(

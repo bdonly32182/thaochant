@@ -1,8 +1,10 @@
 import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/resort/room.dart';
 import 'package:chanthaburi_app/pages/resort/booking_resort.dart';
+import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/resources/firestore/booking_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/room_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_login.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/image_blank.dart';
@@ -42,7 +44,6 @@ class _RoomCategoryState extends State<RoomCategory> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    print(widget.policyName);
     return StreamBuilder(
       stream: RoomCollection.rooms(widget.resortId, widget.categoryId),
       builder: (context, AsyncSnapshot<QuerySnapshot<RoomModel>> snapshot) {
@@ -129,6 +130,11 @@ class _RoomCategoryState extends State<RoomCategory> {
                 onPressed: leftRoom == 0
                     ? null
                     : () {
+                        String userId = AuthMethods.currentUser();
+                        if (userId.isEmpty) {
+                          dialogLogin(context);
+                          return;
+                        }
                         Navigator.push(
                           context,
                           MaterialPageRoute(

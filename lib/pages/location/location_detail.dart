@@ -10,6 +10,8 @@ import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:chanthaburi_app/resources/auth_method.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_login.dart';
 
 class DetailLocation extends StatefulWidget {
   String locationId;
@@ -85,6 +87,11 @@ class _DetailLocationState extends State<DetailLocation> {
             : [
                 IconButton(
                   onPressed: () {
+                    String userId = AuthMethods.currentUser();
+                    if (userId.isEmpty) {
+                      dialogLogin(context);
+                      return;
+                    }
                     Navigator.push(
                       context,
                       MaterialPageRoute(

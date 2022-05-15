@@ -1,8 +1,10 @@
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/restaurant/add_to_cart.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
+import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/resources/firestore/food_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_login.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -68,36 +70,41 @@ class _FoodState extends State<Food> {
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (_, index) {
                 return InkWell(
-                  onTap: widget.status == 0
-                      ? () => dialogAlert(
-                          context, "ประกาศ", "ร้านยังไม่เปิดให้บริการชั่วคราว")
-                      : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => AddToCart(
-                                foodId: snapshot.data!.docs[index].id,
-                                price: snapshot.data!.docs[index]["price"],
-                                foodImage: snapshot.data!.docs[index]
-                                    ["imageRef"],
-                                foodName: snapshot.data!.docs[index]
-                                    ["foodName"],
-                                description: snapshot.data!.docs[index]
-                                    ["description"],
-                                restaurantId: snapshot.data!.docs[index]
-                                    ["restaurantId"],
-                                restaurantName: widget.restaurantName,
-                                foods: widget.foods
-                                    .where(
-                                      (element) =>
-                                          element.productId ==
-                                          snapshot.data!.docs[index].id,
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                          );
-                        },
+                  onTap: () {
+                    String userId = AuthMethods.currentUser();
+                    if (widget.status == 0) {
+                      dialogAlert(
+                          context, "ประกาศ", "ร้านยังไม่เปิดให้บริการชั่วคราว");
+                      return;
+                    }
+                    if (userId.isEmpty) {
+                      dialogLogin(context);
+                      return;
+                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AddToCart(
+                          foodId: snapshot.data!.docs[index].id,
+                          price: snapshot.data!.docs[index]["price"],
+                          foodImage: snapshot.data!.docs[index]["imageRef"],
+                          foodName: snapshot.data!.docs[index]["foodName"],
+                          description: snapshot.data!.docs[index]
+                              ["description"],
+                          restaurantId: snapshot.data!.docs[index]
+                              ["restaurantId"],
+                          restaurantName: widget.restaurantName,
+                          foods: widget.foods
+                              .where(
+                                (element) =>
+                                    element.productId ==
+                                    snapshot.data!.docs[index].id,
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    );
+                  },
                   child: Card(
                     child: Row(
                       children: [

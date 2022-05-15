@@ -33,7 +33,7 @@ class Routes {
     if (role == "guide") {
       return '/guideService';
     }
-    return '/authen';
+    return '/buyerService';
   }
 
   static GlobalKey<NavigatorState>? navigatorKey = GlobalKey<NavigatorState>();

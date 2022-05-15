@@ -62,12 +62,9 @@ class _ResortDetailState extends State<ResortDetail> {
     );
   }
 
-  Container buildDetailResort(
-      double width, double height, BusinessModel resort) {
-    return Container(
+  Card buildDetailResort(double width, double height, BusinessModel resort) {
+    return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      width: width * 1,
-      height: height * 0.32,
       child: Column(
         children: [
           SizedBox(
@@ -111,10 +108,10 @@ class _ResortDetailState extends State<ResortDetail> {
           )
         ],
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
+      // decoration: BoxDecoration(
+      //   color: Colors.white,
+      //   borderRadius: BorderRadius.circular(10),
+      // ),
     );
   }
 }

@@ -1,9 +1,6 @@
-import 'package:chanthaburi_app/pages/profile/skeleton/skeleton_image_profile.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
-import 'package:chanthaburi_app/resources/firebase_storage.dart';
 import 'package:chanthaburi_app/widgets/show_image.dart';
 import 'package:flutter/material.dart';
-import 'package:skeleton_loader/skeleton_loader.dart';
 
 class HeaderProfile extends StatelessWidget {
   String profileRef;
@@ -38,7 +35,7 @@ class HeaderProfile extends StatelessWidget {
                             BoxShadow(
                               color: Colors.grey,
                               blurRadius: 2,
-                              offset: Offset(0, 02),
+                              offset: Offset(0, 0.2),
                             ),
                           ],
                         ),
@@ -56,7 +53,7 @@ class HeaderProfile extends StatelessWidget {
                         BoxShadow(
                           color: Colors.grey,
                           blurRadius: 2,
-                          offset: Offset(0, 02),
+                          offset: Offset(0, 0.2),
                         ),
                       ],
                     ),

@@ -83,23 +83,20 @@ class _ShoppingResortState extends State<ShoppingResort> {
                   ),
                 );
               },
-              child: SizedBox(
-                height: height * 0.26,
-                child: Column(
-                  children: [
-                    buildImageCard(width, height, resorts[index].data()),
-                    buildResortName(resorts[index].data()),
-                    buildResortLocation(resorts[index].data()),
-                    const SizedBox(
-                      height: 10,
-                      child: Divider(
-                        color: Colors.grey,
-                        thickness: 0.05,
-                      ),
+              child: Column(
+                children: [
+                  buildImageCard(width, height, resorts[index].data()),
+                  buildResortName(resorts[index].data()),
+                  buildResortLocation(resorts[index].data()),
+                  const SizedBox(
+                    height: 10,
+                    child: Divider(
+                      color: Colors.grey,
+                      thickness: 0.05,
                     ),
-                    buildFooter(resorts[index].data())
-                  ],
-                ),
+                  ),
+                  buildFooter(resorts[index].data())
+                ],
               ),
             ),
           );

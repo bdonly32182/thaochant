@@ -72,6 +72,9 @@ class _TourismListState extends State<TourismList> {
                             ConnectionState.waiting) {
                           return const Text("loading ...");
                         }
+                        if (snapshot.hasError) {
+                          return const InternalError();
+                        }
                         return Card(
                           child: SizedBox(
                             height: height * 0.14,

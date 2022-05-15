@@ -3,8 +3,10 @@ import 'package:chanthaburi_app/models/packagetour/package_tour.dart';
 import 'package:chanthaburi_app/pages/package_toure/booking_tour.dart';
 import 'package:chanthaburi_app/pages/package_toure/preview_pdf.dart';
 import 'package:chanthaburi_app/pages/review/write_review.dart';
+import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/resources/firestore/tour_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_login.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:flutter/material.dart';
@@ -183,6 +185,11 @@ class _PackageDetailState extends State<PackageDetail> {
             style: TextStyle(fontSize: 16, color: MyConstant.themeApp),
           ),
           onPressed: () {
+            String userId = AuthMethods.currentUser();
+            if (userId.isEmpty) {
+              dialogLogin(context);
+              return;
+            }
             Navigator.push(
               context,
               MaterialPageRoute(

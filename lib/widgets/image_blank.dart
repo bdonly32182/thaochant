@@ -16,9 +16,12 @@ class ImageBlank extends StatelessWidget {
             Icon(
               Icons.image,
               color: imageColor,
-              size: 60,
+              size: 50,
             ),
-            const Text("ไม่มีรูปภาพ"),
+            const Text(
+              "ไม่มีรูปภาพ",
+              style: TextStyle(fontSize: 12),
+            ),
           ],
         ),
       ),

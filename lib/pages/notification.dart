@@ -7,7 +7,6 @@ import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:chanthaburi_app/widgets/show_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_file.dart';
 
 class NotificationRecipient extends StatefulWidget {
   String recipientId;

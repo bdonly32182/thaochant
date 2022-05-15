@@ -27,7 +27,6 @@ class CategoryResort extends StatefulWidget {
 class _CategoryResortState extends State<CategoryResort> {
   @override
   Widget build(BuildContext context) {
-    print(widget.resort.policyName);
     return StreamBuilder(
       stream: CategoryCollection.streamCategorys(widget.resortId),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
