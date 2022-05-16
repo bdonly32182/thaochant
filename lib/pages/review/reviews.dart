@@ -32,7 +32,9 @@ class _ReviewsState extends State<Reviews> {
             itemCount: widget.listReviews.length,
             itemBuilder: (BuildContext context, int index) {
               return FutureBuilder(
-                  future: UserCollection.profile(),
+                  future: UserCollection.userById(
+                    widget.listReviews[index]["userId"],
+                  ),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       return Card(
