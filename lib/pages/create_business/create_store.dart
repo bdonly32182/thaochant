@@ -55,6 +55,7 @@ class _CreateStoreState extends State<CreateStore> {
     sellerId: '',
     statusOpen: 1,
     startPrice: 0.0,
+    typePayment: 'พร้อมเพย์',
   );
   final _formKey = GlobalKey<FormState>();
   double? latitude, longitude;
@@ -71,6 +72,33 @@ class _CreateStoreState extends State<CreateStore> {
     'เบเกอรี่',
     'เครื่องดื่ม',
   ];
+  String typePayment = "พร้อมเพย์";
+  List<DropdownMenuItem<String>> itemsTypePayment = [
+    'พร้อมเพย์',
+    'ธนาคารไทยพานิชย์',
+    'ธนาคารกสิกรไทย',
+    'ธนาคารกรุงไทย',
+    'ธนาคารกรุงเทพ',
+    'ธนาคารทหารไทยธนชาต',
+    'ธนาคารออมสิน',
+    'ธนาคารกรุงศรี',
+    'ธนาคารธ.ก.ส.'
+  ].map<DropdownMenuItem<String>>((String value) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        child: Text(
+          value,
+          style: TextStyle(
+            color: MyConstant.colorStore,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }).toList();
   MaskTextInputFormatter phoneMask = MaskTextInputFormatter(
     mask: '###-###-####',
     filter: {"#": RegExp(r'[0-9]')},
@@ -320,10 +348,10 @@ class _CreateStoreState extends State<CreateStore> {
               child: Column(
                 children: [
                   inputName(width),
-                  const SizedBox(height: 20),
                   dropdownSeller(width),
                   inputPhone(width),
                   inputLink(width),
+                  inputTypePayment(width),
                   inputPrompPay(width),
                   inputAddress(width),
                   inputStartPrice(width),
@@ -349,8 +377,45 @@ class _CreateStoreState extends State<CreateStore> {
     );
   }
 
+  Container inputTypePayment(double width) {
+    return Container(
+      margin: const EdgeInsets.only(top: 20),
+      width: width * 0.8,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton(
+            style: TextStyle(color: MyConstant.colorStore),
+            value: typePayment,
+            items: itemsTypePayment,
+            onChanged: (String? value) {
+              if (value != null) {
+                setState(() {
+                  typePayment = value;
+                });
+                _businessModel.typePayment = value;
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   Container dropdownSeller(double width) {
     return Container(
+      margin: const EdgeInsets.only(top: 20),
       width: width * 0.8,
       child: widget.sellerId == null ? buildDropdownSearch() : null,
       decoration: const BoxDecoration(
@@ -980,7 +1045,6 @@ class _CreateStoreState extends State<CreateStore> {
           margin: const EdgeInsets.only(top: 20),
           width: width * .8,
           child: TextFormField(
-            keyboardType: TextInputType.phone,
             onSaved: (link) => _businessModel.link = link ?? '',
             decoration: InputDecoration(
                 fillColor: Colors.white,

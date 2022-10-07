@@ -19,6 +19,7 @@ class BusinessModel {
   String link;
   String imageRef;
   double startPrice;
+  String typePayment;
   BusinessModel({
     required this.businessName,
     required this.sellerId,
@@ -36,8 +37,8 @@ class BusinessModel {
     required this.link,
     required this.imageRef,
     required this.startPrice,
+    required this.typePayment,
   });
-  
 
   BusinessModel copyWith({
     String? businessName,
@@ -56,6 +57,7 @@ class BusinessModel {
     String? link,
     String? imageRef,
     double? startPrice,
+    String? typePayment,
   }) {
     return BusinessModel(
       businessName: businessName ?? this.businessName,
@@ -74,6 +76,7 @@ class BusinessModel {
       link: link ?? this.link,
       imageRef: imageRef ?? this.imageRef,
       startPrice: startPrice ?? this.startPrice,
+      typePayment: typePayment ?? this.typePayment,
     );
   }
 
@@ -95,6 +98,7 @@ class BusinessModel {
       'link': link,
       'imageRef': imageRef,
       'startPrice': startPrice,
+      "typePayment": typePayment,
     };
   }
 
@@ -116,12 +120,14 @@ class BusinessModel {
       link: map['link'] ?? '',
       imageRef: map['imageRef'] ?? '',
       startPrice: map['startPrice']?.toDouble() ?? 0.0,
+      typePayment: map['typePayment'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory BusinessModel.fromJson(String source) => BusinessModel.fromMap(json.decode(source));
+  factory BusinessModel.fromJson(String source) =>
+      BusinessModel.fromMap(json.decode(source));
 
   @override
   String toString() {
@@ -131,43 +137,43 @@ class BusinessModel {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is BusinessModel &&
-      other.businessName == businessName &&
-      other.sellerId == sellerId &&
-      other.address == address &&
-      other.latitude == latitude &&
-      other.longitude == longitude &&
-      other.statusOpen == statusOpen &&
-      other.ratingCount == ratingCount &&
-      other.point == point &&
-      listEquals(other.policyName, policyName) &&
-      listEquals(other.policyDescription, policyDescription) &&
-      other.paymentNumber == paymentNumber &&
-      other.qrcodeRef == qrcodeRef &&
-      other.phoneNumber == phoneNumber &&
-      other.link == link &&
-      other.imageRef == imageRef &&
-      other.startPrice == startPrice;
+        other.businessName == businessName &&
+        other.sellerId == sellerId &&
+        other.address == address &&
+        other.latitude == latitude &&
+        other.longitude == longitude &&
+        other.statusOpen == statusOpen &&
+        other.ratingCount == ratingCount &&
+        other.point == point &&
+        listEquals(other.policyName, policyName) &&
+        listEquals(other.policyDescription, policyDescription) &&
+        other.paymentNumber == paymentNumber &&
+        other.qrcodeRef == qrcodeRef &&
+        other.phoneNumber == phoneNumber &&
+        other.link == link &&
+        other.imageRef == imageRef &&
+        other.startPrice == startPrice;
   }
 
   @override
   int get hashCode {
     return businessName.hashCode ^
-      sellerId.hashCode ^
-      address.hashCode ^
-      latitude.hashCode ^
-      longitude.hashCode ^
-      statusOpen.hashCode ^
-      ratingCount.hashCode ^
-      point.hashCode ^
-      policyName.hashCode ^
-      policyDescription.hashCode ^
-      paymentNumber.hashCode ^
-      qrcodeRef.hashCode ^
-      phoneNumber.hashCode ^
-      link.hashCode ^
-      imageRef.hashCode ^
-      startPrice.hashCode;
+        sellerId.hashCode ^
+        address.hashCode ^
+        latitude.hashCode ^
+        longitude.hashCode ^
+        statusOpen.hashCode ^
+        ratingCount.hashCode ^
+        point.hashCode ^
+        policyName.hashCode ^
+        policyDescription.hashCode ^
+        paymentNumber.hashCode ^
+        qrcodeRef.hashCode ^
+        phoneNumber.hashCode ^
+        link.hashCode ^
+        imageRef.hashCode ^
+        startPrice.hashCode;
   }
 }

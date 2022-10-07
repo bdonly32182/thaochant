@@ -167,15 +167,18 @@ class RestaurantCollection {
   static Future<Map<String, dynamic>> deleteRestaurant(
       String docId, String imageRef) async {
     try {
-      await restaurant.doc(docId).delete();
-      QuerySnapshot _foods = await FoodCollection.foodsInRestarurant(docId);
-      for (QueryDocumentSnapshot food in _foods.docs) {
-        await FoodCollection.deleteFood(food.id, food.get('imageRef'));
+      if (docId.isNotEmpty) {
+        await restaurant.doc(docId).delete();
+        QuerySnapshot _foods = await FoodCollection.foodsInRestarurant(docId);
+        for (QueryDocumentSnapshot food in _foods.docs) {
+          await FoodCollection.deleteFood(food.id, food.get('imageRef'));
+        }
+        if (imageRef.isNotEmpty) {
+          String referenceImage = StorageFirebase.getReference(imageRef);
+          StorageFirebase.deleteFile(referenceImage);
+        }
       }
-      if (imageRef.isNotEmpty) {
-        String referenceImage = StorageFirebase.getReference(imageRef);
-        StorageFirebase.deleteFile(referenceImage);
-      }
+
       return {"status": "200", "message": "ลบข้อมูลร้านอาหารเรียบร้อย"};
     } catch (e) {
       return {"status": "400", "message": "ลบข้อมูลร้านอาหารล้มเหลว"};

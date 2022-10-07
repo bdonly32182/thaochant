@@ -72,6 +72,7 @@ class MyConstant {
   static String packagePicture = 'images/package.jpeg';
   static String questionImage = 'images/question.png';
   static String commingSoon = 'images/coming_soon.png';
+  static String resetPasswordImage = 'images/reset_password.png';
 
   // color
   static Color backgroudApp =

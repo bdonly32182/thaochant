@@ -142,16 +142,18 @@ class OtopCollection {
   static Future<Map<String, dynamic>> deleteOtop(
       String docId, String imageRef) async {
     try {
-      await otopCollection.doc(docId).delete();
-      QuerySnapshot _products =
-          await ProductOtopCollection.productsInOtop(docId);
-      for (QueryDocumentSnapshot product in _products.docs) {
-        await ProductOtopCollection.deleteProduct(
-            product.id, product.get('imageRef'));
-      }
-      if (imageRef.isNotEmpty) {
-        String referenceImage = StorageFirebase.getReference(imageRef);
-        StorageFirebase.deleteFile(referenceImage);
+      if (docId.isNotEmpty) {
+        await otopCollection.doc(docId).delete();
+        QuerySnapshot _products =
+            await ProductOtopCollection.productsInOtop(docId);
+        for (QueryDocumentSnapshot product in _products.docs) {
+          await ProductOtopCollection.deleteProduct(
+              product.id, product.get('imageRef'));
+        }
+        if (imageRef.isNotEmpty) {
+          String referenceImage = StorageFirebase.getReference(imageRef);
+          StorageFirebase.deleteFile(referenceImage);
+        }
       }
       return {"status": "200", "message": "ลบข้อมูลร้านค้าเรียบร้อย"};
     } catch (e) {

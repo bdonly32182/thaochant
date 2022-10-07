@@ -39,6 +39,7 @@ class _SettingBusinessState extends State<SettingBusiness> {
     sellerId: '',
     statusOpen: 1,
     startPrice: 0,
+    typePayment: '',
   );
 
   @override

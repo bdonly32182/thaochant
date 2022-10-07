@@ -1,3 +1,4 @@
+import 'package:chanthaburi_app/pages/forgot_password.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/utils/map/disclosure_location.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
@@ -132,10 +133,30 @@ class _AuthenState extends State<Authen> {
                     buildPassword(size),
                   ],
                 ),
+
                 buildButton(size),
                 buildCreateAccount(size),
                 buildRegisterPartner(size),
-                buildPolicyAccessed(size),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("ลืมรหัสผ่าน ? "),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) => const ForgotPasswordPage(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "รีเซ็ทรหัสผ่าน ",
+                        style: TextStyle(color: MyConstant.themeApp),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

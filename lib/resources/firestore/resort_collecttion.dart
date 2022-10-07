@@ -158,16 +158,19 @@ class ResortCollection {
   static Future<Map<String, dynamic>> deleteResort(
       String docId, String imageRef) async {
     try {
-      await _resort.doc(docId).delete();
-      QuerySnapshot _rooms = await RoomCollection.deleteRoomInResort(docId);
-      for (QueryDocumentSnapshot room in _rooms.docs) {
-        await RoomCollection.deleteRoom(
-            room.id, room.get('imageCover'), room.get('listImageDetail'));
+      if (docId.isNotEmpty) {
+        await _resort.doc(docId).delete();
+        QuerySnapshot _rooms = await RoomCollection.deleteRoomInResort(docId);
+        for (QueryDocumentSnapshot room in _rooms.docs) {
+          await RoomCollection.deleteRoom(
+              room.id, room.get('imageCover'), room.get('listImageDetail'));
+        }
+        if (imageRef.isNotEmpty) {
+          String referenceImage = StorageFirebase.getReference(imageRef);
+          StorageFirebase.deleteFile(referenceImage);
+        }
       }
-      if (imageRef.isNotEmpty) {
-        String referenceImage = StorageFirebase.getReference(imageRef);
-        StorageFirebase.deleteFile(referenceImage);
-      }
+
       return {"status": "200", "message": "ลบข้อมูลบ้านพักเรียบร้อย"};
     } catch (e) {
       return {"status": "400", "message": "ลบข้อมูลบ้านพักล้มเหลว"};

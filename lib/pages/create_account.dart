@@ -353,14 +353,16 @@ class _CreateAccountState extends State<CreateAccount> {
             style: TextStyle(
                 color: MyConstant.themeApp, fontWeight: FontWeight.w700),
           ),
-          decoration: const BoxDecoration(boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 15,
-              offset: Offset(0.2, 0.2),
-            ),
-          ]),
-        )
+          decoration: const BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 15,
+                offset: Offset(0.2, 0.2),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

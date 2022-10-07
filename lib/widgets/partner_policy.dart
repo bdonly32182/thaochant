@@ -80,18 +80,7 @@ class _PartnerPolicyState extends State<PartnerPolicy> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (builder) => DisclosureLocation(
-                              message:
-                                  "ขอเข้าถึงตำแหน่งของท่าน เพื่อให้แอดมินไปหาท่านเพื่อระบุตัวตนก่อนยืนยันเป็นพาร์ทเนอร์กับทางเรา และสร้างความมั่นใจให้กับลูกค้า",
-                              goto: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (builder) => RegisterPartner()),
-                                );
-                              },
-                            ),
-                          ),
+                              builder: (builder) => RegisterPartner()),
                         );
                       },
                       child: const Text("ยอมรับ"),
