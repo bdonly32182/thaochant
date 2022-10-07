@@ -19,26 +19,30 @@ class RestaurantCollection {
   static Future<List<QueryDocumentSnapshot<BusinessModel>>>
       restaurants() async {
     List<QueryDocumentSnapshot<BusinessModel>> randomRestaurant = [];
-    List<int> checkList = []; // เพราะว่า  withConverter<BusinessModel> ไม่สามารถเช็คได้เลยสร้างมาแค่เช็คอินเด็กพอ
+    List<int> checkList =
+        []; // เพราะว่า  withConverter<BusinessModel> ไม่สามารถเช็คได้เลยสร้างมาแค่เช็คอินเด็กพอ
     QuerySnapshot<BusinessModel> _restuarants = await restaurant
         .withConverter<BusinessModel>(
             fromFirestore: (_firestore, _) =>
                 BusinessModel.fromMap(_firestore.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
-    final random = Random();
-    int indexRandom = random.nextInt(_restuarants.docs.length);
-    int totalInList = 0;
-    int totalInQuery = _restuarants.docs.length;
-    while (totalInList < totalInQuery) {
-      if (checkList.contains(indexRandom)) {
-        indexRandom = random.nextInt(_restuarants.docs.length);
-      } else {
-        checkList.add(indexRandom);
-        randomRestaurant.add(_restuarants.docs[indexRandom]);
-        totalInList = randomRestaurant.length;
+    if (_restuarants.docs.isNotEmpty) {
+      final random = Random();
+      int indexRandom = random.nextInt(_restuarants.docs.length);
+      int totalInList = 0;
+      int totalInQuery = _restuarants.docs.length;
+      while (totalInList < totalInQuery) {
+        if (checkList.contains(indexRandom)) {
+          indexRandom = random.nextInt(_restuarants.docs.length);
+        } else {
+          checkList.add(indexRandom);
+          randomRestaurant.add(_restuarants.docs[indexRandom]);
+          totalInList = randomRestaurant.length;
+        }
       }
     }
+
     return randomRestaurant;
   }
 

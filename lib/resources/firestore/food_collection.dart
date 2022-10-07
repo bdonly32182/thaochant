@@ -132,19 +132,22 @@ class FoodCollection {
                 FoodModel.fromMap(_firestore.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
-    final random = Random();
-    int indexRandom = random.nextInt(_foods.docs.length);
-    int totalInList = 0;
-    int totalInQuery = _foods.docs.length > 10 ? 10 : _foods.docs.length;
-    while (totalInList < totalInQuery) {
-      if (checkList.contains(indexRandom)) {
-        indexRandom = random.nextInt(_foods.docs.length);
-      } else {
-        checkList.add(indexRandom);
-        randomFoods.add(_foods.docs[indexRandom]);
-        totalInList = randomFoods.length;
+    if (_foods.docs.isNotEmpty) {
+      final random = Random();
+      int indexRandom = random.nextInt(_foods.docs.length);
+      int totalInList = 0;
+      int totalInQuery = _foods.docs.length > 10 ? 10 : _foods.docs.length;
+      while (totalInList < totalInQuery) {
+        if (checkList.contains(indexRandom)) {
+          indexRandom = random.nextInt(_foods.docs.length);
+        } else {
+          checkList.add(indexRandom);
+          randomFoods.add(_foods.docs[indexRandom]);
+          totalInList = randomFoods.length;
+        }
       }
     }
+
     return randomFoods;
   }
 }

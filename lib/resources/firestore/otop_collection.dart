@@ -25,19 +25,22 @@ class OtopCollection {
                 BusinessModel.fromMap(_firestore.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
-    final random = Random();
-    int indexRandom = random.nextInt(_otops.docs.length);
-    int totalInList = 0;
-    int totalInQuery = _otops.docs.length;
-    while (totalInList < totalInQuery) {
-      if (checkList.contains(indexRandom)) {
-        indexRandom = random.nextInt(_otops.docs.length);
-      } else {
-        checkList.add(indexRandom);
-        randomOtops.add(_otops.docs[indexRandom]);
-        totalInList = randomOtops.length;
+    if (_otops.docs.isNotEmpty) {
+      final random = Random();
+      int indexRandom = random.nextInt(_otops.docs.length);
+      int totalInList = 0;
+      int totalInQuery = _otops.docs.length;
+      while (totalInList < totalInQuery) {
+        if (checkList.contains(indexRandom)) {
+          indexRandom = random.nextInt(_otops.docs.length);
+        } else {
+          checkList.add(indexRandom);
+          randomOtops.add(_otops.docs[indexRandom]);
+          totalInList = randomOtops.length;
+        }
       }
     }
+
     return randomOtops;
   }
 

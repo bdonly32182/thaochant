@@ -146,19 +146,23 @@ class ProductOtopCollection {
                 ProductOtopModel.fromMap(_firestore.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
-    final random = Random();
-    int indexRandom = random.nextInt(_products.docs.length);
-    int totalInList = 0;
-    int totalInQuery = _products.docs.length > 10 ? 10 : _products.docs.length;
-    while (totalInList < totalInQuery) {
-      if (checkList.contains(indexRandom)) {
-        indexRandom = random.nextInt(_products.docs.length);
-      } else {
-        checkList.add(indexRandom);
-        randomProducts.add(_products.docs[indexRandom]);
-        totalInList = randomProducts.length;
+    if (_products.docs.isNotEmpty) {
+      final random = Random();
+      int indexRandom = random.nextInt(_products.docs.length);
+      int totalInList = 0;
+      int totalInQuery =
+          _products.docs.length > 10 ? 10 : _products.docs.length;
+      while (totalInList < totalInQuery) {
+        if (checkList.contains(indexRandom)) {
+          indexRandom = random.nextInt(_products.docs.length);
+        } else {
+          checkList.add(indexRandom);
+          randomProducts.add(_products.docs[indexRandom]);
+          totalInList = randomProducts.length;
+        }
       }
     }
+
     return randomProducts;
   }
 }
