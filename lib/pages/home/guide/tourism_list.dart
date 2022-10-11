@@ -67,7 +67,7 @@ class _TourismListState extends State<TourismList> {
                   return FutureBuilder(
                       future: UserCollection.profile(),
                       builder: (context,
-                          AsyncSnapshot<DocumentSnapshot<Object?>> snapUser) {
+                          AsyncSnapshot<DocumentSnapshot<Object?>?> snapUser) {
                         if (snapUser.connectionState ==
                             ConnectionState.waiting) {
                           return const Text("loading ...");

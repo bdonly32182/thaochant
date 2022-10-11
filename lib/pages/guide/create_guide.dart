@@ -33,6 +33,8 @@ class _CreateGuideState extends State<CreateGuide> {
     role: MyConstant.guideName,
     profileRef: '',
     tokenDevice: '',
+    gender: '',
+    rangeAge: '',
   );
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();

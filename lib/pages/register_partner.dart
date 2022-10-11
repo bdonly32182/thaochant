@@ -40,6 +40,8 @@ class _RegisterPartnerState extends State<RegisterPartner> {
     address: '',
     isAccept: false,
     tokenDevice: '',
+    rangeAge: 'อายุ 20 - 40 ปี',
+    gender: 'เพศชาย',
   );
   File? profileImage;
   File? verifyImage;
@@ -50,6 +52,48 @@ class _RegisterPartnerState extends State<RegisterPartner> {
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
+  String rangAgeInit = "อายุ 20 - 40 ปี";
+  List<DropdownMenuItem<String>> selectRangeAge = [
+    'อายุน้อยกว่า 20 ปี',
+    'อายุ 20 - 40 ปี',
+    'อายุมากกว่า 40 ปี',
+  ].map<DropdownMenuItem<String>>((String value) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        child: Text(
+          value,
+          style: TextStyle(
+            color: MyConstant.themeApp,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }).toList();
+  String genderInit = "เพศชาย";
+  List<DropdownMenuItem<String>> selectGender = [
+    'เพศชาย',
+    'เพศหญิง',
+    'เพศทางเลือก',
+  ].map<DropdownMenuItem<String>>((String value) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        child: Text(
+          value,
+          style: TextStyle(
+            color: MyConstant.themeApp,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }).toList();
   bool eyesPassword = true;
   bool eyesConfirm = true;
   @override
@@ -221,20 +265,88 @@ class _RegisterPartnerState extends State<RegisterPartner> {
             child: Form(
               key: _formKey,
               child: SingleChildScrollView(
-                child: Column(children: [
-                  buildNameRoute(width),
-                  buildRowImage(width),
-                  buildEmail(width),
-                  buildPassword(width),
-                  buildConfirmPassword(width),
-                  buildName(width),
-                  buildAddress(width),
-                  buildPhone(width),
-                  buildVerifyImage(width),
-                  buildShowmap(width, height, context),
-                  buildButton(width),
-                  buildLogin(width),
-                ]),
+                child: Column(
+                  children: [
+                    buildNameRoute(width),
+                    buildRowImage(width),
+                    buildEmail(width),
+                    buildPassword(width),
+                    buildConfirmPassword(width),
+                    buildName(width),
+                    Container(
+                      margin: const EdgeInsets.only(top: 20),
+                      width: width * 0.7,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            style: TextStyle(color: MyConstant.colorStore),
+                            value: rangAgeInit,
+                            items: selectRangeAge,
+                            onChanged: (String? value) {
+                              if (value != null) {
+                                setState(() {
+                                  rangAgeInit = value;
+                                });
+                                _partnerModel.rangeAge = value;
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 20),
+                      width: width * 0.7,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            style: TextStyle(color: MyConstant.colorStore),
+                            value: genderInit,
+                            items: selectGender,
+                            onChanged: (String? value) {
+                              if (value != null) {
+                                setState(() {
+                                  genderInit = value;
+                                });
+                                _partnerModel.gender = value;
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    buildAddress(width),
+                    buildPhone(width),
+                    buildVerifyImage(width),
+                    buildShowmap(width, height, context),
+                    buildButton(width),
+                    buildLogin(width),
+                  ],
+                ),
               ),
             )),
       ),

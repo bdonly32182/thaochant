@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chanthaburi_app/pages/profile/component/content_profile.dart';
 import 'package:chanthaburi_app/pages/profile/component/footer_logout.dart';
 import 'package:chanthaburi_app/pages/profile/component/header_profile.dart';
@@ -32,35 +34,7 @@ class _ProfileState extends State<Profile> {
         ),
         backgroundColor: MyConstant.backgroudApp,
         body: userId.isEmpty
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 30),
-                      width: width * 0.26,
-                      child: ElevatedButton(
-                        child: Row(
-                          children: [
-                            Text(
-                              "เข้าสู่ระบบ",
-                              style: TextStyle(color: widget.theme),
-                            ),
-                          ],
-                        ),
-                        onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                            context, '/authen', (route) => false),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.white,
-                          side: BorderSide(
-                            color: widget.theme,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )
+            ? login(width, context)
             : FutureBuilder<DocumentSnapshot?>(
                 future: UserCollection.profile(),
                 builder: (BuildContext profileBuilder,
@@ -73,7 +47,9 @@ class _ProfileState extends State<Profile> {
                       !snapshortProfile.data!.exists) {
                     return const ShowDataEmpty();
                   }
-
+                  if (snapshortProfile.data == null) {
+                    return login(width,context);
+                  }
                   if (snapshortProfile.connectionState ==
                       ConnectionState.done) {
                     Map<String, dynamic> data =
@@ -131,5 +107,37 @@ class _ProfileState extends State<Profile> {
                   return const PouringHourGlass();
                 },
               ));
+  }
+
+  Column login(double width, BuildContext context) {
+    return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 30),
+                    width: width * 0.26,
+                    child: ElevatedButton(
+                      child: Row(
+                        children: [
+                          Text(
+                            "เข้าสู่ระบบ",
+                            style: TextStyle(color: widget.theme),
+                          ),
+                        ],
+                      ),
+                      onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                          context, '/authen', (route) => false),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                        side: BorderSide(
+                          color: widget.theme,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
   }
 }

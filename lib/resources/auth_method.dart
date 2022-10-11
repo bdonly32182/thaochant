@@ -37,7 +37,9 @@ class AuthMethods {
         "phoneNumber": _user.phoneNumber,
         "profileRef": _user.profileRef,
         "role": _user.role,
-        "tokenDevice": _user.tokenDevice
+        "tokenDevice": _user.tokenDevice,
+        "rangeAge":_user.rangeAge,
+        "gender":_user.gender,
       });
       return {"status": "200", "message": "สร้างบัญชีผู้ใช้งานเรียบร้อย"};
     } on FirebaseAuthException catch (e) {
@@ -95,6 +97,7 @@ class AuthMethods {
   }
 
   static String currentUser() {
+    print(_firebaseAuth.currentUser!.uid);
     if (_firebaseAuth.currentUser == null) {
       return "";
     }

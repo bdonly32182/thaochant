@@ -23,10 +23,11 @@ final CollectionReference _resort =
 
 class UserCollection {
   static DocumentSnapshot? lastBuyerDocument;
-  static Future<DocumentSnapshot<Object?>> profile() async {
+  static Future<DocumentSnapshot<Object?>?> profile() async {
     String uid = await ShareRefferrence.getUserId();
+    if (uid.isEmpty) return null;
     DocumentSnapshot _user = await _userCollection.doc(uid).get();
-      return _user;
+    return _user;
   }
 
   static Future<Map<String, dynamic>> changeProfile(
@@ -169,6 +170,8 @@ class UserCollection {
         "role": partner.role,
         "profileRef": partner.profileRef,
         "tokenDevice": partner.tokenDevice,
+        "rangeAge": partner.rangeAge,
+        "gender": partner.gender,
       });
       if (partner.verifyRef.isNotEmpty) {
         String referenceImage = StorageFirebase.getReference(partner.verifyRef);

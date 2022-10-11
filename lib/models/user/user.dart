@@ -6,7 +6,8 @@ class UserModel {
   String? role;
   String? profileRef;
   String tokenDevice;
-
+  String rangeAge;
+  String gender;
   UserModel({
     this.fullName,
     this.email,
@@ -15,6 +16,8 @@ class UserModel {
     this.role,
     this.profileRef,
     required this.tokenDevice,
+    required this.rangeAge,
+    required this.gender,
   });
 
 }
