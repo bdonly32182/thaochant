@@ -102,4 +102,18 @@ class OrderProductCollection {
       "reviewed": true,
     });
   }
+
+  static Future<QuerySnapshot<OrderModel>> orderProducts(
+      int orderStart, int endOrderDate) async {
+    QuerySnapshot<OrderModel> _orders = await orderProductCollection
+        .orderBy("dateCreate")
+        .startAt([orderStart])
+        .endAt([endOrderDate])
+        .withConverter<OrderModel>(
+            fromFirestore: (snapshot, _) =>
+                OrderModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+    return _orders;
+  }
 }

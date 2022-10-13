@@ -43,6 +43,33 @@ class _EditBusinessState extends State<EditBusiness> {
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
+  // String typePayment = "พร้อมเพย์";
+  List<DropdownMenuItem<String>> itemsTypePayment = [
+    'พร้อมเพย์',
+    'ธนาคารไทยพานิชย์',
+    'ธนาคารกสิกรไทย',
+    'ธนาคารกรุงไทย',
+    'ธนาคารกรุงเทพ',
+    'ธนาคารทหารไทยธนชาต',
+    'ธนาคารออมสิน',
+    'ธนาคารกรุงศรี',
+    'ธนาคารธ.ก.ส.'
+  ].map<DropdownMenuItem<String>>((String value) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        child: Text(
+          value,
+          style: TextStyle(
+            color: MyConstant.colorStore,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }).toList();
 
   @override
   void initState() {
@@ -253,7 +280,6 @@ class _EditBusinessState extends State<EditBusiness> {
         actions: [
           IconButton(
             onPressed: () {
-              // onDeleteBusiness(context, widget.typeBusiness);
               dialogDeleteBusiness(
                 context,
                 "แจ้งเตือน",
@@ -281,6 +307,7 @@ class _EditBusinessState extends State<EditBusiness> {
                   const SizedBox(height: 20),
                   inputPhone(width),
                   inputLink(width),
+                  inputTypePayment(width),
                   inputPrompPay(width),
                   inputAddress(width),
                   inputStartPrice(width),
@@ -300,6 +327,39 @@ class _EditBusinessState extends State<EditBusiness> {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container inputTypePayment(double width) {
+    return Container(
+      margin: const EdgeInsets.only(top: 20),
+      width: width * 0.8,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton(
+            style: TextStyle(color: MyConstant.colorStore),
+            value: _businessModel!.typePayment,
+            items: itemsTypePayment,
+            onChanged: (String? value) {
+              if (value != null) {
+                _businessModel!.typePayment = value;
+              }
+            },
           ),
         ),
       ),

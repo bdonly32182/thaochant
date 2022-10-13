@@ -97,7 +97,6 @@ class AuthMethods {
   }
 
   static String currentUser() {
-    print(_firebaseAuth.currentUser!.uid);
     if (_firebaseAuth.currentUser == null) {
       return "";
     }

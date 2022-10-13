@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chanthaburi_app/models/booking/booking.dart';
+import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/shipping/shipping.dart';
 import 'package:chanthaburi_app/provider/participant_provider.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
@@ -150,7 +151,8 @@ class _CheckoutBookingState extends State<CheckoutBooking> {
         backgroundColor: MyConstant.backgroudApp,
         body: FutureBuilder(
             future: ResortCollection.resortById(widget.businessId),
-            builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            builder: (context,
+                AsyncSnapshot<DocumentSnapshot<BusinessModel>> snapshot) {
               if (snapshot.hasError) {
                 return const InternalError();
               }
@@ -193,6 +195,7 @@ class _CheckoutBookingState extends State<CheckoutBooking> {
                                           snapshotUser.data!.get("fullName"),
                                         );
                                       }),
+                                  buildTypePayment(width, snapshot),
                                   buildPromptpay(width,
                                       snapshot.data!.get("paymentNumber")),
                                   buildText(
@@ -200,11 +203,6 @@ class _CheckoutBookingState extends State<CheckoutBooking> {
                                     'ราคาที่ต้องชำระ:',
                                     "${widget.prepaidPrice} ฿",
                                   ),
-                                  // buildText(
-                                  //   width,
-                                  //   'ราคาทั้งหมด:',
-                                  //   "${widget.totalPrice} ฿",
-                                  // ),
                                   buildText(
                                     width,
                                     'วันที่ชำระ:',
@@ -235,6 +233,28 @@ class _CheckoutBookingState extends State<CheckoutBooking> {
               );
             }),
       ),
+    );
+  }
+
+  Row buildTypePayment(
+      double width, AsyncSnapshot<DocumentSnapshot<BusinessModel>> snapshot) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 8.0, left: 8.0),
+          width: width * 0.26,
+          child: Text(
+            'ธนาคาร/พร้อมเพย์: ',
+            style: TextStyle(color: Colors.yellow[800]),
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 8.0, left: 8.0),
+          width: width * 0.4,
+          child: Text(snapshot.data!.data()!.typePayment),
+        ),
+      ],
     );
   }
 

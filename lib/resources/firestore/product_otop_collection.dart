@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:chanthaburi_app/models/order/order.dart';
 import 'package:chanthaburi_app/models/otop/product.dart';
+import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
+import 'package:chanthaburi_app/resources/firestore/order_product_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
@@ -136,7 +139,7 @@ class ProductOtopCollection {
   }
 
   static Future<List<QueryDocumentSnapshot<ProductOtopModel>>>
-      randomProducts() async {
+      randomProducts(int orderStart, int endOrderDate) async {
     List<QueryDocumentSnapshot<ProductOtopModel>> randomProducts = [];
     List<int> checkList = [];
     QuerySnapshot<ProductOtopModel> _products = await productOtopCollection
@@ -146,18 +149,34 @@ class ProductOtopCollection {
                 ProductOtopModel.fromMap(_firestore.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
+    List<QueryDocumentSnapshot<ProductOtopModel>>  recommandProduct = [];
     if (_products.docs.isNotEmpty) {
+      QuerySnapshot<OrderModel> orderProducts = await OrderProductCollection.orderProducts(orderStart, endOrderDate);
+      for (int i = 0; i < _products.docs.length; i++) {
+        for (int index = 0; index < orderProducts.docs.length; index++) {
+          OrderModel orderProduct = orderProducts.docs[index].data();
+          List<ProductCartModel> productInOrders = orderProduct.product.where((element) => element.productId == _products.docs[i].id).toList();
+          List<QueryDocumentSnapshot<ProductOtopModel>> filterRecommendProduct = recommandProduct.where((element) => element.id == _products.docs[i].id).toList();
+          if (productInOrders.length < 5 && filterRecommendProduct.isEmpty) {
+            recommandProduct.add(_products.docs[i]);
+          }
+        }
+      }
+      
+    }
+    
+    if (recommandProduct.isNotEmpty) {
       final random = Random();
-      int indexRandom = random.nextInt(_products.docs.length);
+      int indexRandom = random.nextInt(recommandProduct.length);
       int totalInList = 0;
       int totalInQuery =
-          _products.docs.length > 10 ? 10 : _products.docs.length;
+          recommandProduct.length > 10 ? 10 : recommandProduct.length;
       while (totalInList < totalInQuery) {
         if (checkList.contains(indexRandom)) {
-          indexRandom = random.nextInt(_products.docs.length);
+          indexRandom = random.nextInt(recommandProduct.length);
         } else {
           checkList.add(indexRandom);
-          randomProducts.add(_products.docs[indexRandom]);
+          randomProducts.add(recommandProduct[indexRandom]);
           totalInList = randomProducts.length;
         }
       }

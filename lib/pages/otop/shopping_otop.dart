@@ -50,10 +50,15 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
   }
 
   fetchRandomProducts() async {
-    List<QueryDocumentSnapshot<ProductOtopModel>> _randomFoods =
-        await ProductOtopCollection.randomProducts();
+    DateTime endDateTime = DateTime.now();
+    DateTime startDateTime = DateTime(endDateTime.year, endDateTime.month - 1);
+    List<QueryDocumentSnapshot<ProductOtopModel>> _randomProduct =
+        await ProductOtopCollection.randomProducts(
+      startDateTime.millisecondsSinceEpoch,
+      endDateTime.millisecondsSinceEpoch,
+    );
     setState(() {
-      randomProducts = _randomFoods;
+      randomProducts = _randomProduct;
     });
   }
 

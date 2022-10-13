@@ -50,8 +50,13 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
   }
 
   fetchRandomFoods() async {
+    DateTime endDateTime = DateTime.now();
+    DateTime startDateTime = DateTime(endDateTime.year, endDateTime.month - 1);
     List<QueryDocumentSnapshot<FoodModel>> _randomFoods =
-        await FoodCollection.randomFood();
+        await FoodCollection.randomFood(
+      startDateTime.millisecondsSinceEpoch,
+      endDateTime.millisecondsSinceEpoch,
+    );
     setState(() {
       randomFoods = _randomFoods;
     });

@@ -104,8 +104,11 @@ class RestaurantCollection {
     return _myRestaurants;
   }
 
-  static Future<DocumentSnapshot> restaurantById(String restaurantId) async {
-    DocumentSnapshot _restaurant = await restaurant.doc(restaurantId).get();
+  static Future<DocumentSnapshot<BusinessModel>> restaurantById(String restaurantId) async {
+    DocumentSnapshot<BusinessModel> _restaurant = await restaurant.doc(restaurantId).withConverter<BusinessModel>(
+            fromFirestore: (snapshot, _) =>
+                BusinessModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap()).get();
     return _restaurant;
   }
 

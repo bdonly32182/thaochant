@@ -120,7 +120,7 @@ class BusinessModel {
       link: map['link'] ?? '',
       imageRef: map['imageRef'] ?? '',
       startPrice: map['startPrice']?.toDouble() ?? 0.0,
-      typePayment: map['typePayment'] ?? '',
+      typePayment: map['typePayment'] ?? 'พร้อมเพย์',
     );
   }
 

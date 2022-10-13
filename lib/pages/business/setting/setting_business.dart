@@ -50,22 +50,22 @@ class _SettingBusinessState extends State<SettingBusiness> {
 
   onFetchBusiness() async {
     if (widget.typeBusiness == MyConstant.foodCollection) {
-      DocumentSnapshot _restaurant =
+      DocumentSnapshot<BusinessModel> _restaurant =
           await RestaurantCollection.restaurantById(widget.businessId);
       onSetBusiness(_restaurant);
     }
     if (widget.typeBusiness == MyConstant.productOtopCollection) {
-      DocumentSnapshot _otop = await OtopCollection.otopById(widget.businessId);
+      DocumentSnapshot<BusinessModel> _otop = await OtopCollection.otopById(widget.businessId);
       onSetBusiness(_otop);
     }
     if (widget.typeBusiness == MyConstant.roomCollection) {
-      DocumentSnapshot _resort =
+      DocumentSnapshot<BusinessModel> _resort =
           await ResortCollection.resortById(widget.businessId);
       onSetBusiness(_resort);
     }
   }
 
-  onSetBusiness(DocumentSnapshot business) {
+  onSetBusiness(DocumentSnapshot<BusinessModel> business) {
     setState(() {
       _businessModel.address = business.get('address');
       _businessModel.businessName = business.get('businessName');
@@ -80,6 +80,7 @@ class _SettingBusinessState extends State<SettingBusiness> {
       _businessModel.paymentNumber = business.get('paymentNumber');
       _businessModel.statusOpen = business.get('statusOpen');
       _businessModel.qrcodeRef = business.get("qrcodeRef");
+      _businessModel.typePayment = business.data()!.typePayment ;
       if (widget.typeBusiness == MyConstant.roomCollection) {
         _businessModel.startPrice = business.get('startPrice') ?? 0.0;
       }

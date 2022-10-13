@@ -3,9 +3,13 @@ import 'dart:math';
 
 import 'package:chanthaburi_app/models/restaurant/food.dart';
 import 'package:chanthaburi_app/resources/firebase_storage.dart';
+import 'package:chanthaburi_app/resources/firestore/order_food_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
+
+import '../../models/order/order.dart';
+import '../../models/sqlite/order_product.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -122,7 +126,8 @@ class FoodCollection {
     return _foods.size;
   }
 
-  static Future<List<QueryDocumentSnapshot<FoodModel>>> randomFood() async {
+  static Future<List<QueryDocumentSnapshot<FoodModel>>> randomFood(
+      int orderStart, int endOrderDate) async {
     List<QueryDocumentSnapshot<FoodModel>> randomFoods = [];
     List<int> checkList = [];
     QuerySnapshot<FoodModel> _foods = await foodCollection
@@ -132,17 +137,43 @@ class FoodCollection {
                 FoodModel.fromMap(_firestore.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
+    List<QueryDocumentSnapshot<FoodModel>> recommandFood = [];
+
     if (_foods.docs.isNotEmpty) {
+      QuerySnapshot<OrderModel> orderOfFoods =
+          await OrderFoodCollection.orderFoods(
+        orderStart,
+        endOrderDate,
+      );
+      for (int i = 0; i < _foods.docs.length; i++) {
+        for (int orderIndex = 0;
+            orderIndex < orderOfFoods.docs.length;
+            orderIndex++) {
+          OrderModel orderFoodModel = orderOfFoods.docs[orderIndex].data();
+          List<ProductCartModel> foodInOrders = orderFoodModel.product
+              .where(
+                  (foodInOrder) => foodInOrder.productId == _foods.docs[i].id)
+              .toList();
+          List<QueryDocumentSnapshot<FoodModel>> filterRecommend = recommandFood
+              .where((element) => element.id == _foods.docs[i].id)
+              .toList();
+          if (foodInOrders.length < 5 && filterRecommend.isEmpty) {
+            recommandFood.add(_foods.docs[i]);
+          }
+        }
+      }
+    }
+    if (recommandFood.isNotEmpty) {
       final random = Random();
-      int indexRandom = random.nextInt(_foods.docs.length);
+      int indexRandom = random.nextInt(recommandFood.length);
       int totalInList = 0;
-      int totalInQuery = _foods.docs.length > 10 ? 10 : _foods.docs.length;
+      int totalInQuery = recommandFood.length > 10 ? 10 : recommandFood.length;
       while (totalInList < totalInQuery) {
         if (checkList.contains(indexRandom)) {
-          indexRandom = random.nextInt(_foods.docs.length);
+          indexRandom = random.nextInt(recommandFood.length);
         } else {
           checkList.add(indexRandom);
-          randomFoods.add(_foods.docs[indexRandom]);
+          randomFoods.add(recommandFood[indexRandom]);
           totalInList = randomFoods.length;
         }
       }
