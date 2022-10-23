@@ -1,9 +1,13 @@
+import 'dart:developer';
+
+import 'package:chanthaburi_app/models/history/history.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/detail_business/detail_business.dart';
 import 'package:chanthaburi_app/pages/otop/category_otop.dart';
 import 'package:chanthaburi_app/pages/otop/confirm_order_product.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
+import 'package:chanthaburi_app/resources/firestore/history_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sqlite/sql_otop.dart';
@@ -23,18 +27,56 @@ class OtopDetail extends StatefulWidget {
   State<OtopDetail> createState() => _OtopDetailState();
 }
 
-class _OtopDetailState extends State<OtopDetail> {
+class _OtopDetailState extends State<OtopDetail> with WidgetsBindingObserver {
+  HistoryBusinessModel historyBusinessModel = HistoryBusinessModel(
+    userId: AuthMethods.currentUser(),
+    businessId: '',
+    timeIn: DateTime.now(),
+    timeOut: DateTime.now(),
+    totalTime: 0,
+    typeBusiness: MyConstant.typeRestaurant,
+  );
   @override
   void initState() {
     super.initState();
-    fetchsFood();
+    WidgetsBinding.instance?.addObserver(this);
+    fetchsProduct();
   }
 
-  fetchsFood() async {
+  fetchsProduct() async {
     List<ProductCartModel> foods = await SQLiteOtop()
         .productByRestaurant(widget.otopId, AuthMethods.currentUser());
     var productProvider = Provider.of<ProductProvider>(context, listen: false);
     productProvider.fetchsProduct(foods);
+  }
+
+  setHistory(String businessId, DateTime dateTimeOut) async {
+    try {
+      // แสดงว่า เคยเพิ่มไปแล้ว เพราะ didChangeAppLifecycleState มันทำหลายรอบ เลยต้องดักไว้
+      if (historyBusinessModel.businessId.isEmpty) {
+        int totalTime =
+            dateTimeOut.difference(historyBusinessModel.timeIn).inSeconds;
+        historyBusinessModel.businessId = businessId;
+        historyBusinessModel.totalTime = totalTime;
+        await HistoryCollection().saveHistoryOtop(historyBusinessModel);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused) {
+      setHistory(widget.otopId, DateTime.now());
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    setHistory(widget.otopId, DateTime.now());
   }
 
   @override

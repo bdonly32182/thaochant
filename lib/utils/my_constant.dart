@@ -43,6 +43,12 @@ class MyConstant {
   static String orderTourCollection = "orderTourCollection";
   static String eventCollection = "eventCollection";
   static String questionCollection = "questionCollection";
+  static String historyClickRestaurantCollection = "historyClickRestaurantCollection";
+  static String historyClickOtopCollection = "historyClickOtopCollection";
+
+  // type business
+  static String typeRestaurant = "restaurant";
+  static String typeOtop = "otop";
 
   // image
   static String appLogo = 'images/logo.png';
@@ -73,6 +79,8 @@ class MyConstant {
   static String questionImage = 'images/question.png';
   static String commingSoon = 'images/coming_soon.png';
   static String resetPasswordImage = 'images/reset_password.png';
+  static String shimMarker = 'images/shim.png';
+  static String shopMarker = 'images/shop_marker.png';
 
   // color
   static Color backgroudApp =

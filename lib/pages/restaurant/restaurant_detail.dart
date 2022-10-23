@@ -1,9 +1,13 @@
+import 'dart:developer';
+
+import 'package:chanthaburi_app/models/history/history.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/detail_business/detail_business.dart';
 import 'package:chanthaburi_app/pages/restaurant/confirm_order.dart';
 import 'package:chanthaburi_app/pages/restaurant/component/category_restaurant.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
 import 'package:chanthaburi_app/resources/auth_method.dart';
+import 'package:chanthaburi_app/resources/firestore/history_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sqlite/cart_restaurant.dart';
@@ -26,10 +30,20 @@ class RestaurantDetail extends StatefulWidget {
   State<RestaurantDetail> createState() => _RestaurantDetailState();
 }
 
-class _RestaurantDetailState extends State<RestaurantDetail> {
+class _RestaurantDetailState extends State<RestaurantDetail>
+    with WidgetsBindingObserver {
+  HistoryBusinessModel historyBusinessModel = HistoryBusinessModel(
+    userId: AuthMethods.currentUser(),
+    businessId: '',
+    timeIn: DateTime.now(),
+    timeOut: DateTime.now(),
+    totalTime: 0,
+    typeBusiness: MyConstant.typeRestaurant,
+  );
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
     fetchsFood();
   }
 
@@ -38,6 +52,36 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
         .foodsByRestaurant(widget.restaurantId, AuthMethods.currentUser());
     var productProvider = Provider.of<ProductProvider>(context, listen: false);
     productProvider.fetchsProduct(foods);
+  }
+
+  setHistory(String businessId, DateTime dateTimeOut) async {
+    try {
+      // แสดงว่า เคยเพิ่มไปแล้ว เพราะ didChangeAppLifecycleState มันทำหลายรอบ เลยต้องดักไว้
+      if (historyBusinessModel.businessId.isEmpty) {
+        int totalTime =
+            dateTimeOut.difference(historyBusinessModel.timeIn).inSeconds;
+        historyBusinessModel.businessId = businessId;
+        historyBusinessModel.totalTime = totalTime;
+        await HistoryCollection().saveHistoryRestaurant(historyBusinessModel);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // ios can't save data while clear app
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused) {
+      setHistory(widget.restaurantId, DateTime.now());
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    setHistory(widget.restaurantId, DateTime.now());
   }
 
   @override

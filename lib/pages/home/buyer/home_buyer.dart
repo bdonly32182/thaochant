@@ -1,5 +1,6 @@
 import 'package:chanthaburi_app/models/question/answer.dart';
 import 'package:chanthaburi_app/models/question/question.dart';
+import 'package:chanthaburi_app/pages/introduce_chan/tab_introduce.dart';
 import 'package:chanthaburi_app/pages/location/locations.dart';
 import 'package:chanthaburi_app/pages/otop/home_otop.dart';
 import 'package:chanthaburi_app/pages/package_toure/buyer_home_tour.dart';
@@ -47,6 +48,16 @@ class _HomeBuyerState extends State<HomeBuyer> {
       "title": 'แหล่งท่องเที่ยว',
       "pathImage": MyConstant.locationPicture,
       "goWidget": Locations(isAdmin: false),
+    },
+    {
+      "title": 'แพ็คเกจท่องเที่ยว',
+      "pathImage": MyConstant.packagePicture,
+      "goWidget": BuyerHomeTour(),
+    },
+    {
+      "title": 'แนะนำการท่องเที่ยว',
+      "pathImage": MyConstant.locationPicture,
+      "goWidget": TabIntroduce(),
     },
   ];
 
@@ -140,7 +151,7 @@ class _HomeBuyerState extends State<HomeBuyer> {
                 children: [
                   Container(
                     margin: const EdgeInsets.all(8),
-                    height: height * 0.36,
+                    height: height * 0.55,
                     width: width * 1,
                     child: GridView.count(
                       crossAxisCount: 2,
@@ -160,14 +171,6 @@ class _HomeBuyerState extends State<HomeBuyer> {
                         ),
                       ),
                     ),
-                  ),
-                  menuCardPackageTour(
-                    context,
-                    width,
-                    height,
-                    BuyerHomeTour(),
-                    MyConstant.packagePicture,
-                    'แพ็คเกจท่องเที่ยว',
                   ),
                   const Padding(
                     padding: EdgeInsets.all(10.0),
@@ -298,59 +301,7 @@ class _HomeBuyerState extends State<HomeBuyer> {
               child: Center(
                 child: Text(
                   title!,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          color: Colors.grey,
-                          offset: Offset(0, 2.2),
-                          blurRadius: 6,
-                        )
-                      ]),
-                ),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.black45,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Card menuCardPackageTour(BuildContext context, double width, double height,
-      Widget gotoWidget, String imageUrl, String? title) {
-    return Card(
-      margin: const EdgeInsets.only(
-        left: 10,
-        right: 10,
-      ),
-      child: InkWell(
-        onTap: () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => gotoWidget)),
-        child: Stack(
-          children: [
-            SizedBox(
-              width: width * 1,
-              height: height * 0.2,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  imageUrl,
-                  fit: BoxFit.fill,
-                ),
-              ),
-            ),
-            Container(
-              width: width * 1,
-              height: height * 0.2,
-              child: Center(
-                child: Text(
-                  title!,
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 25,
