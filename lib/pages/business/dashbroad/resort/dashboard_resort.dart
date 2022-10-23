@@ -1,12 +1,10 @@
 import 'package:chanthaburi_app/models/booking/booking.dart';
-import 'package:chanthaburi_app/models/order/order.dart';
 import 'package:chanthaburi_app/resources/firestore/booking_collection.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DashboardResort extends StatefulWidget {

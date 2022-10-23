@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:chanthaburi_app/models/business/business.dart';
+import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
 import 'package:chanthaburi_app/models/otop/product.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/otop/cart_otop.dart';
@@ -19,6 +20,7 @@ import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 
 class ShoppingOtop extends StatefulWidget {
   ShoppingOtop({Key? key}) : super(key: key);
@@ -249,6 +251,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
           otops[index]["phoneNumber"],
           otops[index]["latitude"],
           otops[index]["longitude"],
+          otops[index].data().times,
         );
       },
     );
@@ -266,7 +269,30 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
       String address,
       String phoneNumber,
       double lat,
-      lng) {
+      lng,List<TimeTurnOnOfModel> times,) {
+        bool? isClose;
+    DateTime dateNow = DateTime.now();
+    String currentDay = DateFormat('EEEE').format(dateNow);
+    String? dayThai = MyConstant.dayThailand[currentDay];
+    List<TimeTurnOnOfModel> timeCurrent = times
+        .where(
+          (element) => element.day == dayThai,
+        )
+        .toList();
+    if (timeCurrent.isNotEmpty) {
+      List<String> splitTime = timeCurrent[0].timeOf.split(':');
+      DateTime dateTime = DateTime(
+        dateNow.year,
+        dateNow.month,
+        dateNow.day,
+        int.parse(splitTime[0]),
+        int.parse(splitTime[1]),
+      );
+
+      isClose = dateNow.compareTo(dateTime) == 1;
+    } else {
+      isClose = statusOpen == 0;
+    }
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.all(10),
@@ -275,7 +301,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
       ),
       child: InkWell(
         onTap: () {
-          if (statusOpen == 0) {
+          if (isClose!) {
             dialogAlert(context, "แจ้งเตือน", "ไม่เปิดทำการ ณ ขณะนี้");
           } else {
             Navigator.push(
@@ -305,7 +331,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
                       height: double.maxFinite,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: statusOpen == 0
+                        children: isClose
                             ? const [
                                 Text(
                                   "ร้านปิดอยู่",
@@ -318,7 +344,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
                             : [],
                       ),
                       decoration: BoxDecoration(
-                        color: statusOpen == 0
+                        color: isClose
                             ? Colors.black54
                             : Colors.transparent,
                       ),

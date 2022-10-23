@@ -104,11 +104,15 @@ class RestaurantCollection {
     return _myRestaurants;
   }
 
-  static Future<DocumentSnapshot<BusinessModel>> restaurantById(String restaurantId) async {
-    DocumentSnapshot<BusinessModel> _restaurant = await restaurant.doc(restaurantId).withConverter<BusinessModel>(
+  static Future<DocumentSnapshot<BusinessModel>> restaurantById(
+      String restaurantId) async {
+    DocumentSnapshot<BusinessModel> _restaurant = await restaurant
+        .doc(restaurantId)
+        .withConverter<BusinessModel>(
             fromFirestore: (snapshot, _) =>
                 BusinessModel.fromMap(snapshot.data()!),
-            toFirestore: (model, _) => model.toMap()).get();
+            toFirestore: (model, _) => model.toMap())
+        .get();
     return _restaurant;
   }
 
@@ -192,5 +196,16 @@ class RestaurantCollection {
     try {
       await restaurant.doc(docId).update({"statusOpen": status});
     } catch (e) {}
+  }
+
+  static Future<Map<String, dynamic>> changeTimeRestaurant(
+      List<Map<String, dynamic>> times, String businessId) async {
+    try {
+      await restaurant.doc(businessId).update({"times": times});
+
+      return {"status": "200", "message": "บันทึกเวลาเรียบร้อย"};
+    } catch (e) {
+      return {"status": "400", "message": "บันทึกเวลาล้มเหลว"};
+    }
   }
 }

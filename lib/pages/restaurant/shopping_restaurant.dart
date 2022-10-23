@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:badges/badges.dart';
 import 'package:chanthaburi_app/models/business/business.dart';
+import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
 import 'package:chanthaburi_app/models/restaurant/food.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/restaurant/cart_restaurant.dart';
@@ -19,6 +22,7 @@ import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 
 class ShoppingRestaurant extends StatefulWidget {
   ShoppingRestaurant({Key? key}) : super(key: key);
@@ -251,24 +255,50 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
           restaurants[index]["phoneNumber"],
           restaurants[index]["latitude"],
           restaurants[index]["longitude"],
+          restaurants[index].data().times,
         );
       },
     );
   }
 
   Card buildCardRestaurantAll(
-      double height,
-      double width,
-      String restaurantId,
-      String restaurantName,
-      String imageRef,
-      num point,
-      num ratingCount,
-      int statusOpen,
-      String address,
-      String phoneNumber,
-      double lat,
-      lng) {
+    double height,
+    double width,
+    String restaurantId,
+    String restaurantName,
+    String imageRef,
+    num point,
+    num ratingCount,
+    int statusOpen,
+    String address,
+    String phoneNumber,
+    double lat,
+    lng,
+    List<TimeTurnOnOfModel> times,
+  ) {
+    bool? isClose;
+    DateTime dateNow = DateTime.now();
+    String currentDay = DateFormat('EEEE').format(dateNow);
+    String? dayThai = MyConstant.dayThailand[currentDay];
+    List<TimeTurnOnOfModel> timeCurrent = times
+        .where(
+          (element) => element.day == dayThai,
+        )
+        .toList();
+    if (timeCurrent.isNotEmpty) {
+      List<String> splitTime = timeCurrent[0].timeOf.split(':');
+      DateTime dateTime = DateTime(
+        dateNow.year,
+        dateNow.month,
+        dateNow.day,
+        int.parse(splitTime[0]),
+        int.parse(splitTime[1]),
+      );
+
+      isClose = dateNow.compareTo(dateTime) == 1;
+    } else {
+      isClose = statusOpen == 0;
+    }
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.all(10),
@@ -277,18 +307,18 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
       ),
       child: InkWell(
         onTap: () {
-          if (statusOpen == 0) {
+          if (isClose!) {
             dialogAlert(context, "แจ้งเตือน", "ไม่เปิดทำการ ณ ขณะนี้");
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RestaurantDetail(
-                  restaurantId: restaurantId,
-                ),
-              ),
-            );
+            return;
           }
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RestaurantDetail(
+                restaurantId: restaurantId,
+              ),
+            ),
+          );
         },
         child: SizedBox(
           height: height * .25,
@@ -309,7 +339,7 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
                       height: double.maxFinite,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: statusOpen == 0
+                        children: isClose
                             ? const [
                                 Text(
                                   "ร้านปิดอยู่",
@@ -322,9 +352,7 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
                             : [],
                       ),
                       decoration: BoxDecoration(
-                        color: statusOpen == 0
-                            ? Colors.black54
-                            : Colors.transparent,
+                        color: isClose ? Colors.black54 : Colors.transparent,
                       ),
                     )
                   ],

@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
+import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
 
 class BusinessModel {
   String businessName;
@@ -20,6 +18,7 @@ class BusinessModel {
   String imageRef;
   double startPrice;
   String typePayment;
+  List<TimeTurnOnOfModel> times;
   BusinessModel({
     required this.businessName,
     required this.sellerId,
@@ -38,6 +37,7 @@ class BusinessModel {
     required this.imageRef,
     required this.startPrice,
     required this.typePayment,
+    required this.times,
   });
 
   BusinessModel copyWith({
@@ -58,6 +58,7 @@ class BusinessModel {
     String? imageRef,
     double? startPrice,
     String? typePayment,
+    List<TimeTurnOnOfModel>? times,
   }) {
     return BusinessModel(
       businessName: businessName ?? this.businessName,
@@ -77,6 +78,7 @@ class BusinessModel {
       imageRef: imageRef ?? this.imageRef,
       startPrice: startPrice ?? this.startPrice,
       typePayment: typePayment ?? this.typePayment,
+      times: times ?? this.times,
     );
   }
 
@@ -98,7 +100,8 @@ class BusinessModel {
       'link': link,
       'imageRef': imageRef,
       'startPrice': startPrice,
-      "typePayment": typePayment,
+      'typePayment': typePayment,
+      'times': times.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -121,59 +124,9 @@ class BusinessModel {
       imageRef: map['imageRef'] ?? '',
       startPrice: map['startPrice']?.toDouble() ?? 0.0,
       typePayment: map['typePayment'] ?? 'พร้อมเพย์',
+      times: List<TimeTurnOnOfModel>.from(
+        map['times']?.map((x) => TimeTurnOnOfModel.fromMap(x)) ?? [],
+      ),
     );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory BusinessModel.fromJson(String source) =>
-      BusinessModel.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'BusinessModel(businessName: $businessName, sellerId: $sellerId, address: $address, latitude: $latitude, longitude: $longitude, statusOpen: $statusOpen, ratingCount: $ratingCount, point: $point, policyName: $policyName, policyDescription: $policyDescription, paymentNumber: $paymentNumber, qrcodeRef: $qrcodeRef, phoneNumber: $phoneNumber, link: $link, imageRef: $imageRef, startPrice: $startPrice)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is BusinessModel &&
-        other.businessName == businessName &&
-        other.sellerId == sellerId &&
-        other.address == address &&
-        other.latitude == latitude &&
-        other.longitude == longitude &&
-        other.statusOpen == statusOpen &&
-        other.ratingCount == ratingCount &&
-        other.point == point &&
-        listEquals(other.policyName, policyName) &&
-        listEquals(other.policyDescription, policyDescription) &&
-        other.paymentNumber == paymentNumber &&
-        other.qrcodeRef == qrcodeRef &&
-        other.phoneNumber == phoneNumber &&
-        other.link == link &&
-        other.imageRef == imageRef &&
-        other.startPrice == startPrice;
-  }
-
-  @override
-  int get hashCode {
-    return businessName.hashCode ^
-        sellerId.hashCode ^
-        address.hashCode ^
-        latitude.hashCode ^
-        longitude.hashCode ^
-        statusOpen.hashCode ^
-        ratingCount.hashCode ^
-        point.hashCode ^
-        policyName.hashCode ^
-        policyDescription.hashCode ^
-        paymentNumber.hashCode ^
-        qrcodeRef.hashCode ^
-        phoneNumber.hashCode ^
-        link.hashCode ^
-        imageRef.hashCode ^
-        startPrice.hashCode;
   }
 }

@@ -182,4 +182,15 @@ class ResortCollection {
       await _resort.doc(docId).update({"statusOpen": status});
     } catch (e) {}
   }
+
+  static Future<Map<String, dynamic>> changeTimeResort(
+      List<Map<String, dynamic>> times, String businessId) async {
+    try {
+      await _resort.doc(businessId).update({"times": times});
+
+      return {"status": "200", "message": "บันทึกเวลาเรียบร้อย"};
+    } catch (e) {
+      return {"status": "400", "message": "บันทึกเวลาล้มเหลว"};
+    }
+  }
 }

@@ -154,4 +154,13 @@ class MyConstant {
     'พฤศจิกายน',
     'ธันวาคม',
   ];
+  static Map<String, String> dayThailand = {
+    'Monday': "จ.",
+    'Tuesday': "อ.",
+    'Wednesday': "พ.",
+    'Thursday': "พฤ.",
+    'Friday': "ศ.",
+    'Saturday': "ส.",
+    'Sunday': "อา.",
+  };
 }

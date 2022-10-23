@@ -56,6 +56,7 @@ class _CreateStoreState extends State<CreateStore> {
     statusOpen: 1,
     startPrice: 0.0,
     typePayment: 'พร้อมเพย์',
+    times: [],
   );
   final _formKey = GlobalKey<FormState>();
   double? latitude, longitude;

@@ -1,4 +1,6 @@
 import 'package:chanthaburi_app/models/business/business.dart';
+import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
+import 'package:chanthaburi_app/pages/business/setting/setting_time.dart';
 import 'package:chanthaburi_app/pages/create_business/edit_business.dart';
 import 'package:chanthaburi_app/pages/profile/profile.dart';
 import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
@@ -10,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class SettingBusiness extends StatefulWidget {
-  String businessId, typeBusiness;
-  SettingBusiness({
+  final String businessId, typeBusiness;
+  const SettingBusiness({
     Key? key,
     required this.businessId,
     required this.typeBusiness,
@@ -40,6 +42,7 @@ class _SettingBusinessState extends State<SettingBusiness> {
     statusOpen: 1,
     startPrice: 0,
     typePayment: '',
+    times: [],
   );
 
   @override
@@ -55,7 +58,8 @@ class _SettingBusinessState extends State<SettingBusiness> {
       onSetBusiness(_restaurant);
     }
     if (widget.typeBusiness == MyConstant.productOtopCollection) {
-      DocumentSnapshot<BusinessModel> _otop = await OtopCollection.otopById(widget.businessId);
+      DocumentSnapshot<BusinessModel> _otop =
+          await OtopCollection.otopById(widget.businessId);
       onSetBusiness(_otop);
     }
     if (widget.typeBusiness == MyConstant.roomCollection) {
@@ -80,7 +84,8 @@ class _SettingBusinessState extends State<SettingBusiness> {
       _businessModel.paymentNumber = business.get('paymentNumber');
       _businessModel.statusOpen = business.get('statusOpen');
       _businessModel.qrcodeRef = business.get("qrcodeRef");
-      _businessModel.typePayment = business.data()!.typePayment ;
+      _businessModel.typePayment = business.data()!.typePayment;
+      _businessModel.times = business.data()!.times;
       if (widget.typeBusiness == MyConstant.roomCollection) {
         _businessModel.startPrice = business.get('startPrice') ?? 0.0;
       }
@@ -103,7 +108,12 @@ class _SettingBusinessState extends State<SettingBusiness> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: const EdgeInsets.all(10.0),
+              margin: const EdgeInsets.only(
+                left: 10,
+                right: 10,
+                top: 10,
+                bottom: 2,
+              ),
               width: size.width * 1,
               height: 60,
               child: Padding(
@@ -164,6 +174,11 @@ class _SettingBusinessState extends State<SettingBusiness> {
                 color: Colors.white,
               ),
             ),
+            buildSettingTime(
+              size,
+              _businessModel.times,
+              widget.businessId,
+            ),
             const Padding(
               padding: EdgeInsets.only(left: 16.0),
               child: Text(
@@ -178,6 +193,56 @@ class _SettingBusinessState extends State<SettingBusiness> {
             buildRowChangeBusiness(size, context),
           ],
         ),
+      ),
+    );
+  }
+
+  Container buildSettingTime(
+      Size size, List<TimeTurnOnOfModel> times, String businessId) {
+    return Container(
+      margin: const EdgeInsets.only(
+        left: 10,
+        right: 10,
+        bottom: 10,
+      ),
+      width: size.width * 1,
+      height: 60,
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (builder) => SettingTime(
+              times: times,
+              businessId: businessId,
+              typeBusiness: widget.typeBusiness,
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'เวลาให้บริการของธุรกิจ',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text('สามารถตั้งเวลาเปิด-ปิด ธุระกิจของท่านได้ที่นี่')
+                ],
+              ),
+              const Icon(Icons.arrow_forward_ios),
+            ],
+          ),
+        ),
+      ),
+      decoration: const BoxDecoration(
+        color: Colors.white,
       ),
     );
   }
