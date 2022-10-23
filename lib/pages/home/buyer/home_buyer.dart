@@ -72,7 +72,6 @@ class _HomeBuyerState extends State<HomeBuyer> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     onCheckTimeQuestion();
   }

@@ -27,14 +27,14 @@ class _SubmitFormState extends State<SubmitForm> {
   onChangeChoice(bool selected, AnswerModel choice,
       QueryDocumentSnapshot<QuestionModel> questionModel) {
     if (selected) {
-      for (ChoiceModel item in questionModel.data().choice) {
-        AnswerModel answerModel = AnswerModel.fromMap(
-            {"docId": questionModel.id, "choice": item.toMap()});
-        if (_selectAnswer.contains(answerModel)) {
-          _selectAnswer
-              .removeWhere((choiceRemove) => choiceRemove == answerModel);
-        }
-      }
+      // for (ChoiceModel item in questionModel.data().choice) {
+      //   AnswerModel answerModel = AnswerModel.fromMap(
+      //       {"docId": questionModel.id, "choice": item.toMap()});
+      //   if (_selectAnswer.contains(answerModel)) {
+      //     _selectAnswer
+      //         .removeWhere((choiceRemove) => choiceRemove == answerModel);
+      //   }
+      // }
       setState(() {
         _selectAnswer.add(choice);
       });
@@ -107,33 +107,34 @@ class _SubmitFormState extends State<SubmitForm> {
   ListView buildListQuestion(
       double width, List<QueryDocumentSnapshot<QuestionModel>> questions) {
     return ListView.builder(
-        shrinkWrap: true,
-        physics: const ScrollPhysics(),
-        itemCount: questions.length,
-        itemBuilder: (_, index) {
-          questions[index].data().choice.sort(
-                (a, b) => a.createAt.compareTo(b.createAt),
-              );
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.all(12),
-                child: Text(
-                  "${index + 1}.  ${questions[index].data().question}",
-                  softWrap: true,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
+      shrinkWrap: true,
+      physics: const ScrollPhysics(),
+      itemCount: questions.length,
+      itemBuilder: (_, index) {
+        questions[index].data().choice.sort(
+              (a, b) => a.createAt.compareTo(b.createAt),
+            );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.all(12),
+              child: Text(
+                "${index + 1}.  ${questions[index].data().question}",
+                softWrap: true,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
                 ),
               ),
-              buildChoice(questions, index, width),
-            ],
-          );
-        });
+            ),
+            buildChoice(questions, index, width),
+          ],
+        );
+      },
+    );
   }
 
   ListView buildChoice(List<QueryDocumentSnapshot<QuestionModel>> questions,
@@ -145,36 +146,37 @@ class _SubmitFormState extends State<SubmitForm> {
       physics: const ScrollPhysics(),
       itemCount: choices.length,
       itemBuilder: (itemBuilder, indexChoice) => Card(
-          margin: const EdgeInsets.only(
-            left: 18.0,
-            right: 18.0,
-            top: 10.0,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: CheckboxListTile(
-            activeColor: MyConstant.themeApp,
-            title: Text(choices[indexChoice].answer),
-            onChanged: (bool? selected) => onChangeChoice(
-              selected!,
-              AnswerModel.fromMap(
-                {
-                  "docId": questions[index].id,
-                  "choice": choices[indexChoice].toMap(),
-                },
-              ),
-              questions[index],
+        margin: const EdgeInsets.only(
+          left: 18.0,
+          right: 18.0,
+          top: 10.0,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: CheckboxListTile(
+          activeColor: MyConstant.themeApp,
+          title: Text(choices[indexChoice].answer),
+          onChanged: (bool? selected) => onChangeChoice(
+            selected!,
+            AnswerModel.fromMap(
+              {
+                "docId": questions[index].id,
+                "choice": choices[indexChoice].toMap(),
+              },
             ),
-            value: _selectAnswer.contains(
-              AnswerModel.fromMap(
-                {
-                  "docId": questions[index].id,
-                  "choice": choices[indexChoice].toMap(),
-                },
-              ),
+            questions[index],
+          ),
+          value: _selectAnswer.contains(
+            AnswerModel.fromMap(
+              {
+                "docId": questions[index].id,
+                "choice": choices[indexChoice].toMap(),
+              },
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
@@ -206,7 +208,12 @@ class _SubmitFormState extends State<SubmitForm> {
             child: const Text("ส่งคำตอบ"),
             onPressed: widget.questions.isNotEmpty
                 ? () {
-                    if (_selectAnswer.length == widget.questions.length) {
+                    List<String> totalDocId = [];
+                    for (var i = 0; i < _selectAnswer.length; i++) {
+                      totalDocId.add(_selectAnswer[i].docId);
+                    }
+                    int totalAnswer = totalDocId.toSet().toList().length;
+                    if (totalAnswer == widget.questions.length) {
                       widget.onSubmit(_selectAnswer);
                     } else {
                       dialogAlert(
