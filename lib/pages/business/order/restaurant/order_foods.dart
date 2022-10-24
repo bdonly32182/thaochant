@@ -57,10 +57,15 @@ class _OrderFoodsState extends State<OrderFoods> {
   void initState() {
     super.initState();
     setState(() {
-      dateCreate = DateTime(now.year,now.month,now.day).add(const Duration(hours: 0)).millisecondsSinceEpoch;
-      endDate =DateTime(now.year,now.month,now.day).add(const Duration(hours: 24)).millisecondsSinceEpoch;
+      dateCreate = DateTime(now.year, now.month, now.day)
+          .add(const Duration(hours: 0))
+          .millisecondsSinceEpoch;
+      endDate = DateTime(now.year, now.month, now.day)
+          .add(const Duration(hours: 24))
+          .millisecondsSinceEpoch;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -133,15 +138,18 @@ class _OrderFoodsState extends State<OrderFoods> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              OrderFoodDetail(order: orders[index],isOwner: true,),
+                          builder: (context) => OrderFoodDetail(
+                            order: orders[index],
+                            isOwner: true,
+                          ),
                         ),
                       );
                     },
-                    child: Container(
+                    child: Card(
                       margin: const EdgeInsets.all(10),
-                      width: width * .92,
-                      height: height * .2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: Row(
                         children: [
                           buildDetail(
@@ -157,19 +165,8 @@ class _OrderFoodsState extends State<OrderFoods> {
                               width, orders[index]["imagePayment"]),
                         ],
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black38,
-                            blurRadius: 20,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
-                        color: Colors.white,
-                      ),
                     ),
-                  )
+                  ),
                 ],
               );
             },
@@ -263,8 +260,8 @@ class _OrderFoodsState extends State<OrderFoods> {
     );
   }
 
-  SizedBox buildDetail(double width, int index, String fullName,
-      double totalPrice, int amountFoods, String status, int dateMilSec) {
+  SizedBox buildDetail(double width, int index, String fullName, num totalPrice,
+      int amountFoods, String status, int dateMilSec) {
     DateTime createOrder = DateTime.fromMillisecondsSinceEpoch(dateMilSec);
     return SizedBox(
       width: width * .64,

@@ -1,3 +1,4 @@
+import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/otop/product.dart';
 import 'package:chanthaburi_app/resources/firestore/category_collection.dart';
@@ -6,11 +7,20 @@ import 'package:chanthaburi_app/widgets/fetch/show_data_empty.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 class CategoryOtop extends StatefulWidget {
-  final String businessId,otopName;
-  List<ProductCartModel> products;
-  int status;
-  CategoryOtop({Key? key,required this.businessId,required this.products, required this.otopName,required this.status}) : super(key: key);
+  final String businessId, otopName;
+  final List<ProductCartModel> products;
+  final int status;
+  final List<TimeTurnOnOfModel> times;
+  const CategoryOtop({
+    Key? key,
+    required this.businessId,
+    required this.products,
+    required this.otopName,
+    required this.status,
+    required this.times,
+  }) : super(key: key);
 
   @override
   State<CategoryOtop> createState() => _CategoryOtopState();
@@ -41,6 +51,7 @@ class _CategoryOtopState extends State<CategoryOtop> {
                 otopName: widget.otopName,
                 products: widget.products,
                 status: widget.status,
+                times: widget.times,
               );
             },
           );

@@ -1,3 +1,4 @@
+import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/restaurant/add_to_cart.dart';
 import 'package:chanthaburi_app/provider/product_provider.dart';
@@ -9,13 +10,16 @@ import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Food extends StatefulWidget {
-  String businessId, categoryId, categoryName, restaurantName;
-  List<ProductCartModel> foods;
-  int status;
-  Food({
+
+  final String businessId, categoryId, categoryName, restaurantName;
+  final List<ProductCartModel> foods;
+  final int status;
+  final List<TimeTurnOnOfModel> times;
+  const Food({
     Key? key,
     required this.businessId,
     required this.categoryId,
@@ -23,6 +27,7 @@ class Food extends StatefulWidget {
     required this.restaurantName,
     required this.foods,
     required this.status,
+    required this.times,
   }) : super(key: key);
 
   @override
@@ -71,8 +76,31 @@ class _FoodState extends State<Food> {
               itemBuilder: (_, index) {
                 return InkWell(
                   onTap: () {
+                    bool? isClose;
+                    DateTime dateNow = DateTime.now();
+                    String currentDay = DateFormat('EEEE').format(dateNow);
+                    String? dayThai = MyConstant.dayThailand[currentDay];
+                    List<TimeTurnOnOfModel> timeCurrent = widget.times
+                        .where(
+                          (element) => element.day == dayThai,
+                        )
+                        .toList();
+                    if (timeCurrent.isNotEmpty) {
+                      List<String> splitTime = timeCurrent[0].timeOf.split(':');
+                      DateTime dateTime = DateTime(
+                        dateNow.year,
+                        dateNow.month,
+                        dateNow.day,
+                        int.parse(splitTime[0]),
+                        int.parse(splitTime[1]),
+                      );
+
+                      isClose = dateNow.compareTo(dateTime) == 1;
+                    } else {
+                      isClose = widget.status == 0;
+                    }
                     String userId = AuthMethods.currentUser();
-                    if (widget.status == 0) {
+                    if (isClose) {
                       dialogAlert(
                           context, "ประกาศ", "ร้านยังไม่เปิดให้บริการชั่วคราว");
                       return;

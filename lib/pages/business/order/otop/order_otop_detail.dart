@@ -1,6 +1,10 @@
 import 'package:chanthaburi_app/models/order/order.dart';
+import 'package:chanthaburi_app/models/otop/shipping_product.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
+import 'package:chanthaburi_app/pages/business/order/otop/create_shipping.dart';
+import 'package:chanthaburi_app/pages/business/order/otop/edit_shipping.dart';
 import 'package:chanthaburi_app/resources/firestore/order_product_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/shipping_product_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
@@ -8,10 +12,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class OrderProductDetail extends StatefulWidget {
-  QueryDocumentSnapshot<OrderModel> order;
-  bool isOwner;
-  OrderProductDetail({Key? key, required this.order, required this.isOwner})
-      : super(key: key);
+  final QueryDocumentSnapshot<OrderModel> order;
+  final bool isOwner;
+  const OrderProductDetail({
+    Key? key,
+    required this.order,
+    required this.isOwner,
+  }) : super(key: key);
 
   @override
   State<OrderProductDetail> createState() => _OrderProductDetailState();
@@ -89,11 +96,94 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
         title: const Text("รายละเอียดออร์เดอร์"),
         backgroundColor:
             widget.isOwner ? MyConstant.colorStore : MyConstant.themeApp,
+        actions: widget.isOwner
+            ? [
+                IconButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (builder) =>
+                          CreateShippingProduct(orderId: widget.order.id),
+                    ),
+                  ),
+                  icon: const Icon(Icons.delivery_dining_outlined),
+                ),
+              ]
+            : [],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Card(child: buildField("รหัสการสั่งซื้อ : ", widget.order.id)),
+            Card(
+              child: buildField("รหัสการสั่งซื้อ : ", widget.order.id),
+            ),
+            StreamBuilder<QuerySnapshot<ShippingProductModel>>(
+                stream:
+                    ShippingProductColletion.shippingByOrder(widget.order.id),
+                builder: (context,
+                    AsyncSnapshot<QuerySnapshot<ShippingProductModel>>
+                        shippingSnapshot) {
+                  if (shippingSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Text('loading ...');
+                  }
+                  if (shippingSnapshot.data!.docs.isEmpty) {
+                    return Card(
+                      child: buildField(
+                        "เลขพัสดุ : ",
+                        "ไม่ได้แนบข้อมูลการจัดส่งพัสดุ",
+                      ),
+                    );
+                  }
+
+                  ShippingProductModel shipping =
+                      shippingSnapshot.data!.docs.first.data();
+                  return Card(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: widget.isOwner
+                              ? [
+                                  SizedBox(
+                                    width: width * 0.8,
+                                    child: buildField(
+                                      "เลขพัสดุ : ",
+                                      shipping.shippingNo,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (builder) =>
+                                            EditShippingProduct(
+                                          shipping: shipping,
+                                          docId: shippingSnapshot
+                                              .data!.docs.first.id,
+                                        ),
+                                      ),
+                                    ),
+                                    icon: const Icon(Icons.edit),
+                                  ),
+                                ]
+                              : [
+                                  SizedBox(
+                                    width: width * 0.8,
+                                    child: buildField(
+                                      "เลขพัสดุ : ",
+                                      shipping.shippingNo,
+                                    ),
+                                  ),
+                                ],
+                        ),
+                        buildField(
+                          "สถานีขนส่ง : ",
+                          shipping.typeShipping,
+                        ),
+                      ],
+                    ),
+                  );
+                }),
             Card(
               child: cardDetail(
                 width,
@@ -189,7 +279,7 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
   }
 
   Container cardDetail(double width, String fullName, phoneNumber,
-      String address, double prepaidPrice) {
+      String address, num prepaidPrice) {
     return Container(
       width: double.maxFinite,
       child: Column(
@@ -199,6 +289,7 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
           buildField("เบอร์โทรติดต่อ :", phoneNumber),
           buildField("ที่อยู่ : ", address),
           buildField("ราคา : ", "฿ $prepaidPrice บาท"),
+          buildField("รหัสการจัดส่ง : ", "฿ $prepaidPrice บาท"),
         ],
       ),
       decoration: BoxDecoration(

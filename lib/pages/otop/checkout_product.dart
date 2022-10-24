@@ -230,10 +230,10 @@ class _CheckoutProductState extends State<CheckoutProduct> {
   Row buildTypePayment(
       double width, AsyncSnapshot<DocumentSnapshot<BusinessModel>> snapshot) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 8.0, left: 8.0),
+          margin: const EdgeInsets.only(top: 8.0),
           width: width * 0.26,
           child: Text(
             'ธนาคาร/พร้อมเพย์: ',
@@ -241,7 +241,7 @@ class _CheckoutProductState extends State<CheckoutProduct> {
           ),
         ),
         Container(
-          margin: const EdgeInsets.only(top: 8.0, left: 8.0),
+          margin: const EdgeInsets.only(top: 8.0),
           width: width * 0.4,
           child: Text(snapshot.data!.data()!.typePayment),
         ),
@@ -395,7 +395,7 @@ class _CheckoutProductState extends State<CheckoutProduct> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'By QR Mango',
+                    'By promptpay.io',
                     style: TextStyle(
                       color: MyConstant.themeApp,
                       fontSize: 14,
@@ -407,12 +407,11 @@ class _CheckoutProductState extends State<CheckoutProduct> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: width * 0.7,
+                    width: width * 0.5,
                     height: height * 0.3,
                     child: ShowImageNetwork(
                       colorImageBlank: MyConstant.themeApp,
-                      pathImage:
-                          'https://qrmango.com/promptpay/qr?pp_no=$promptPay&amount=$totalPrice',
+                      pathImage: 'https://promptpay.io/$promptPay/$totalPrice',
                     ),
                   ),
                 ],

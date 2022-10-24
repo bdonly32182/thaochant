@@ -161,7 +161,7 @@ class _BookingDetailState extends State<BookingDetail> {
   }
 
   Container cardDetail(double width, String fullName, phoneNumber,
-      String address, double prepaidPrice, int totalRoom, String roomId) {
+      String address, num prepaidPrice, int totalRoom, String roomId) {
     return Container(
       width: double.maxFinite,
       child: Column(

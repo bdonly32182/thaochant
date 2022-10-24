@@ -258,19 +258,21 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
   }
 
   Card buildCardOtopAll(
-      double height,
-      double width,
-      String otopId,
-      String restaurantName,
-      String imageRef,
-      num point,
-      num ratingCount,
-      int statusOpen,
-      String address,
-      String phoneNumber,
-      double lat,
-      lng,List<TimeTurnOnOfModel> times,) {
-        bool? isClose;
+    double height,
+    double width,
+    String otopId,
+    String restaurantName,
+    String imageRef,
+    num point,
+    num ratingCount,
+    int statusOpen,
+    String address,
+    String phoneNumber,
+    double lat,
+    lng,
+    List<TimeTurnOnOfModel> times,
+  ) {
+    bool? isClose;
     DateTime dateNow = DateTime.now();
     String currentDay = DateFormat('EEEE').format(dateNow);
     String? dayThai = MyConstant.dayThailand[currentDay];
@@ -344,9 +346,7 @@ class _ShoppingOtopState extends State<ShoppingOtop> {
                             : [],
                       ),
                       decoration: BoxDecoration(
-                        color: isClose
-                            ? Colors.black54
-                            : Colors.transparent,
+                        color: isClose ? Colors.black54 : Colors.transparent,
                       ),
                     )
                   ],

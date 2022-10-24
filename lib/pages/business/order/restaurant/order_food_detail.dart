@@ -159,7 +159,7 @@ class _OrderFoodDetailState extends State<OrderFoodDetail> {
   }
 
   Container cardDetail(double width, String fullName, phoneNumber,
-      String address, double prepaidPrice) {
+      String address, num prepaidPrice) {
     return Container(
       width: double.maxFinite,
       child: Column(

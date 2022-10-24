@@ -147,10 +147,11 @@ class _OrderProductsState extends State<OrderProducts> {
                         ),
                       );
                     },
-                    child: Container(
-                      margin: const EdgeInsets.all(10),
-                      width: width * .92,
-                      height: height * .2,
+                    child: Card(
+                      margin: const EdgeInsets.all(8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: Row(
                         children: [
                           buildDetail(
@@ -166,19 +167,8 @@ class _OrderProductsState extends State<OrderProducts> {
                               width, orders[index]["imagePayment"]),
                         ],
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black38,
-                            blurRadius: 20,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
-                        color: Colors.white,
-                      ),
                     ),
-                  )
+                  ),
                 ],
               );
             },
@@ -274,8 +264,8 @@ class _OrderProductsState extends State<OrderProducts> {
     );
   }
 
-  SizedBox buildDetail(double width, int index, String fullName,
-      double totalPrice, int amountFoods, String status, int dateMilSec) {
+  SizedBox buildDetail(double width, int index, String fullName, num totalPrice,
+      int amountFoods, String status, int dateMilSec) {
     DateTime createOrder = DateTime.fromMillisecondsSinceEpoch(dateMilSec);
     return SizedBox(
       width: width * .64,

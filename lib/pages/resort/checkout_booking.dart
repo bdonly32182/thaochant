@@ -404,7 +404,7 @@ class _CheckoutBookingState extends State<CheckoutBooking> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'By QR Mango',
+                      'By promptpay.io',
                       style: TextStyle(
                         color: MyConstant.themeApp,
                         fontSize: 14,
@@ -416,12 +416,12 @@ class _CheckoutBookingState extends State<CheckoutBooking> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: width * 0.7,
+                      width: width * 0.5,
                       height: height * 0.3,
                       child: ShowImageNetwork(
                         colorImageBlank: MyConstant.themeApp,
                         pathImage:
-                            'https://qrmango.com/promptpay/qr?pp_no=$promptPay&amount=$prepaidPrice',
+                            'https://promptpay.io/$promptPay/$prepaidPrice',
                       ),
                     ),
                   ],

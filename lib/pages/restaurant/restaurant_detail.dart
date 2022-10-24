@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:chanthaburi_app/models/business/business.dart';
+import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
 import 'package:chanthaburi_app/models/history/history.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/detail_business/detail_business.dart';
@@ -17,6 +19,7 @@ import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class RestaurantDetail extends StatefulWidget {
@@ -95,7 +98,8 @@ class _RestaurantDetailState extends State<RestaurantDetail>
             builder: (context, ProductProvider provider, snapshot) {
           return FutureBuilder(
               future: RestaurantCollection.restaurantById(widget.restaurantId),
-              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+              builder: (context,
+                  AsyncSnapshot<DocumentSnapshot<BusinessModel>> snapshot) {
                 if (snapshot.hasError) {
                   return const InternalError();
                 }
@@ -127,6 +131,7 @@ class _RestaurantDetailState extends State<RestaurantDetail>
                             restaurantName: snapshot.data!.get('businessName'),
                             foods: provider.products,
                             status: snapshot.data!.get("statusOpen"),
+                            times: snapshot.data!.data()!.times,
                           )
                         ],
                       ),
@@ -137,6 +142,7 @@ class _RestaurantDetailState extends State<RestaurantDetail>
                       provider.products,
                       snapshot.data!.get('businessName'),
                       snapshot.data!.get("statusOpen"),
+                      snapshot.data!.data()!.times,
                     ),
                   ],
                 );
@@ -146,13 +152,42 @@ class _RestaurantDetailState extends State<RestaurantDetail>
     );
   }
 
-  Container buildButtonCheckout(double height, double width,
-      List<ProductCartModel> foods, String restaurantName, int status) {
+  Container buildButtonCheckout(
+    double height,
+    double width,
+    List<ProductCartModel> foods,
+    String restaurantName,
+    int status,
+    List<TimeTurnOnOfModel> times,
+  ) {
     num totalAmountAll = 0;
     num totalPriceAll = 0;
     for (ProductCartModel food in foods) {
       totalPriceAll += food.totalPrice;
       totalAmountAll += food.amount;
+    }
+    bool? isClose;
+    DateTime dateNow = DateTime.now();
+    String currentDay = DateFormat('EEEE').format(dateNow);
+    String? dayThai = MyConstant.dayThailand[currentDay];
+    List<TimeTurnOnOfModel> timeCurrent = times
+        .where(
+          (element) => element.day == dayThai,
+        )
+        .toList();
+    if (timeCurrent.isNotEmpty) {
+      List<String> splitTime = timeCurrent[0].timeOf.split(':');
+      DateTime dateTime = DateTime(
+        dateNow.year,
+        dateNow.month,
+        dateNow.day,
+        int.parse(splitTime[0]),
+        int.parse(splitTime[1]),
+      );
+
+      isClose = dateNow.compareTo(dateTime) == 1;
+    } else {
+      isClose = status == 0;
     }
     return Container(
       width: double.maxFinite,
@@ -181,7 +216,7 @@ class _RestaurantDetailState extends State<RestaurantDetail>
                   ),
                 ],
               ),
-              onPressed: status == 0 || foods.isEmpty
+              onPressed: isClose || foods.isEmpty
                   ? null
                   : () {
                       Navigator.push(

@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:chanthaburi_app/models/business/business.dart';
+import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
 import 'package:chanthaburi_app/models/history/history.dart';
 import 'package:chanthaburi_app/models/sqlite/order_product.dart';
 import 'package:chanthaburi_app/pages/detail_business/detail_business.dart';
@@ -17,11 +19,12 @@ import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class OtopDetail extends StatefulWidget {
-  String otopId;
-  OtopDetail({Key? key, required this.otopId}) : super(key: key);
+  final String otopId;
+  const OtopDetail({Key? key, required this.otopId}) : super(key: key);
 
   @override
   State<OtopDetail> createState() => _OtopDetailState();
@@ -90,11 +93,12 @@ class _OtopDetailState extends State<OtopDetail> with WidgetsBindingObserver {
             builder: (context, ProductProvider provider, snapshot) {
           return FutureBuilder(
               future: OtopCollection.otopById(widget.otopId),
-              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasError) {
+              builder: (context,
+                  AsyncSnapshot<DocumentSnapshot<BusinessModel>> snapshotOtop) {
+                if (snapshotOtop.hasError) {
                   return const InternalError();
                 }
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                if (snapshotOtop.connectionState == ConnectionState.waiting) {
                   return const PouringHourGlass();
                 }
                 return Column(
@@ -102,27 +106,28 @@ class _OtopDetailState extends State<OtopDetail> with WidgetsBindingObserver {
                     Expanded(
                       child: ListView(
                         children: [
-                          buildImageOtop(
-                              width, height, snapshot.data!.get('imageRef')),
+                          buildImageOtop(width, height,
+                              snapshotOtop.data!.get('imageRef')),
                           buildDetail(
                             width,
                             height,
-                            snapshot.data!.get('businessName'),
-                            snapshot.data!.get('address'),
-                            snapshot.data!.get('phoneNumber'),
-                            snapshot.data!.get('latitude'),
-                            snapshot.data!.get('longitude'),
-                            snapshot.data!.get('point'),
-                            snapshot.data!.get('ratingCount'),
-                            snapshot.data!.get('policyDescription'),
-                            snapshot.data!.get('policyName'),
-                            snapshot.data!.get("imageRef"),
+                            snapshotOtop.data!.get('businessName'),
+                            snapshotOtop.data!.get('address'),
+                            snapshotOtop.data!.get('phoneNumber'),
+                            snapshotOtop.data!.get('latitude'),
+                            snapshotOtop.data!.get('longitude'),
+                            snapshotOtop.data!.get('point'),
+                            snapshotOtop.data!.get('ratingCount'),
+                            snapshotOtop.data!.get('policyDescription'),
+                            snapshotOtop.data!.get('policyName'),
+                            snapshotOtop.data!.get("imageRef"),
                           ),
                           CategoryOtop(
                             businessId: widget.otopId,
-                            otopName: snapshot.data!.get('businessName'),
+                            otopName: snapshotOtop.data!.get('businessName'),
                             products: provider.products,
-                            status: snapshot.data!.get("statusOpen"),
+                            status: snapshotOtop.data!.get("statusOpen"),
+                            times: snapshotOtop.data!.data()!.times,
                           )
                         ],
                       ),
@@ -131,8 +136,9 @@ class _OtopDetailState extends State<OtopDetail> with WidgetsBindingObserver {
                       height,
                       width,
                       provider.products,
-                      snapshot.data!.get('businessName'),
-                      snapshot.data!.get("statusOpen"),
+                      snapshotOtop.data!.get('businessName'),
+                      snapshotOtop.data!.get("statusOpen"),
+                      snapshotOtop.data!.data()!.times,
                     ),
                   ],
                 );
@@ -142,13 +148,42 @@ class _OtopDetailState extends State<OtopDetail> with WidgetsBindingObserver {
     );
   }
 
-  Container buildButtonCheckout(double height, double width,
-      List<ProductCartModel> foods, String restaurantName, int status) {
+  Container buildButtonCheckout(
+    double height,
+    double width,
+    List<ProductCartModel> foods,
+    String restaurantName,
+    int status,
+    List<TimeTurnOnOfModel> times,
+  ) {
     num totalAmountAll = 0;
     num totalPriceAll = 0;
     for (ProductCartModel food in foods) {
       totalPriceAll += food.totalPrice;
       totalAmountAll += food.amount;
+    }
+    bool? isClose;
+    DateTime dateNow = DateTime.now();
+    String currentDay = DateFormat('EEEE').format(dateNow);
+    String? dayThai = MyConstant.dayThailand[currentDay];
+    List<TimeTurnOnOfModel> timeCurrent = times
+        .where(
+          (element) => element.day == dayThai,
+        )
+        .toList();
+    if (timeCurrent.isNotEmpty) {
+      List<String> splitTime = timeCurrent[0].timeOf.split(':');
+      DateTime dateTime = DateTime(
+        dateNow.year,
+        dateNow.month,
+        dateNow.day,
+        int.parse(splitTime[0]),
+        int.parse(splitTime[1]),
+      );
+
+      isClose = dateNow.compareTo(dateTime) == 1;
+    } else {
+      isClose = status == 0;
     }
     return Container(
       width: double.maxFinite,
@@ -177,7 +212,7 @@ class _OtopDetailState extends State<OtopDetail> with WidgetsBindingObserver {
                   ),
                 ],
               ),
-              onPressed: status == 0 || foods.isEmpty
+              onPressed: isClose || foods.isEmpty
                   ? null
                   : () {
                       Navigator.push(
