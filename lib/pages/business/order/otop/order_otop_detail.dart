@@ -10,6 +10,7 @@ import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class OrderProductDetail extends StatefulWidget {
   final QueryDocumentSnapshot<OrderModel> order;
@@ -172,6 +173,20 @@ class _OrderProductDetailState extends State<OrderProductDetail> {
                                     child: buildField(
                                       "เลขพัสดุ : ",
                                       shipping.shippingNo,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      Clipboard.setData(
+                                        ClipboardData(
+                                          text: shipping.shippingNo,
+                                        ),
+                                      );
+                                      dialogAlert(context, "แจ้งเตือน",
+                                          "คัดลอกเรียบร้อย");
+                                    },
+                                    icon: const Icon(
+                                      Icons.copy,
                                     ),
                                   ),
                                 ],

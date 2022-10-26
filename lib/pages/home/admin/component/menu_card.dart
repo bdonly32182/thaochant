@@ -37,6 +37,7 @@ class MenuCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   title!,
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 25,

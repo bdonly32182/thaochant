@@ -1,6 +1,7 @@
 import 'package:chanthaburi_app/pages/events/events.dart';
 import 'package:chanthaburi_app/pages/guide/guide_list.dart';
 import 'package:chanthaburi_app/pages/home/admin/component/menu_card.dart';
+import 'package:chanthaburi_app/pages/introduce_chan/admin/program_list.dart';
 import 'package:chanthaburi_app/pages/location/locations.dart';
 import 'package:chanthaburi_app/pages/package_toure/package_tours.dart';
 import 'package:chanthaburi_app/pages/popular/business_popular.dart';
@@ -11,7 +12,7 @@ import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
 
 class HomeAdmin extends StatefulWidget {
-  HomeAdmin({Key? key}) : super(key: key);
+  const HomeAdmin({Key? key}) : super(key: key);
 
   @override
   _HomeAdminState createState() => _HomeAdminState();
@@ -42,10 +43,15 @@ class _HomeAdminState extends State<HomeAdmin> {
       "pathImage": MyConstant.locationImage,
       "goWidget": Locations(isAdmin: true),
     },
+    // {
+    //   "title": 'ไกด์นำเที่ยว',
+    //   "pathImage": MyConstant.guideImage,
+    //   "goWidget": GuideList(),
+    // },
     {
-      "title": 'ไกด์นำเที่ยว',
+      "title": 'โปรแกรมท่องเที่ยว',
       "pathImage": MyConstant.guideImage,
-      "goWidget": GuideList(),
+      "goWidget": const ProgramList(),
     },
     {
       "title": 'กิจกรรม',

@@ -1,5 +1,6 @@
 import 'package:chanthaburi_app/models/question/answer.dart';
 import 'package:chanthaburi_app/models/question/question.dart';
+import 'package:chanthaburi_app/pages/introduce_chan/map_shim_shop_shea.dart';
 import 'package:chanthaburi_app/pages/introduce_chan/tab_introduce.dart';
 import 'package:chanthaburi_app/pages/location/locations.dart';
 import 'package:chanthaburi_app/pages/otop/home_otop.dart';
@@ -57,7 +58,7 @@ class _HomeBuyerState extends State<HomeBuyer> {
     {
       "title": 'แนะนำการท่องเที่ยว',
       "pathImage": MyConstant.locationPicture,
-      "goWidget": TabIntroduce(),
+      "goWidget": const MapShimShopShea(),
     },
   ];
 

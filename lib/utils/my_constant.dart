@@ -46,6 +46,7 @@ class MyConstant {
   static String historyClickRestaurantCollection = "historyClickRestaurantCollection";
   static String historyClickOtopCollection = "historyClickOtopCollection";
   static String shippingProductCollection = "shippingProductCollection";
+  static String programTravelCollection = "programTravelCollection";
 
   // type business
   static String typeRestaurant = "restaurant";
