@@ -43,6 +43,7 @@ class _SettingBusinessState extends State<SettingBusiness> {
     startPrice: 0,
     typePayment: '',
     times: [],
+    visitType: '',
   );
 
   @override
@@ -71,21 +72,22 @@ class _SettingBusinessState extends State<SettingBusiness> {
 
   onSetBusiness(DocumentSnapshot<BusinessModel> business) {
     setState(() {
-      _businessModel.address = business.get('address');
-      _businessModel.businessName = business.get('businessName');
-      _businessModel.imageRef = business.get('imageRef');
-      _businessModel.latitude = business.get('latitude');
-      _businessModel.longitude = business.get('longitude');
-      _businessModel.link = business.get('link');
-      _businessModel.sellerId = business.get('sellerId');
-      _businessModel.phoneNumber = business.get('phoneNumber');
-      _businessModel.policyName = business.get('policyName');
-      _businessModel.policyDescription = business.get('policyDescription');
-      _businessModel.paymentNumber = business.get('paymentNumber');
-      _businessModel.statusOpen = business.get('statusOpen');
-      _businessModel.qrcodeRef = business.get("qrcodeRef");
+      _businessModel.address = business.data()!.address;
+      _businessModel.businessName = business.data()!.businessName;
+      _businessModel.imageRef = business.data()!.imageRef;
+      _businessModel.latitude = business.data()!.latitude;
+      _businessModel.longitude = business.data()!.longitude;
+      _businessModel.link = business.data()!.link;
+      _businessModel.sellerId = business.data()!.sellerId;
+      _businessModel.phoneNumber = business.data()!.phoneNumber;
+      _businessModel.policyName = business.data()!.policyName;
+      _businessModel.policyDescription = business.data()!.policyDescription;
+      _businessModel.paymentNumber = business.data()!.paymentNumber;
+      _businessModel.statusOpen = business.data()!.statusOpen;
+      _businessModel.qrcodeRef = business.data()!.qrcodeRef;
       _businessModel.typePayment = business.data()!.typePayment;
       _businessModel.times = business.data()!.times;
+      _businessModel.visitType = business.data()!.visitType;
       if (widget.typeBusiness == MyConstant.roomCollection) {
         _businessModel.startPrice = business.get('startPrice') ?? 0.0;
       }

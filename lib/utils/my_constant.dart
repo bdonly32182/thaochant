@@ -83,6 +83,7 @@ class MyConstant {
   static String resetPasswordImage = 'images/reset_password.png';
   static String shimMarker = 'images/shim.png';
   static String shopMarker = 'images/shop_marker.png';
+  static String sheaMarker = 'images/shea.png';
 
   // color
   static Color backgroudApp =

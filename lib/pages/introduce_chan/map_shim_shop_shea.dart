@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/program_travel/program_travel.dart';
-import 'package:chanthaburi_app/pages/introduce_chan/program_travel_detail.dart';
 import 'package:chanthaburi_app/pages/introduce_chan/tab_introduce.dart';
 import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/program_travel_collection.dart';
@@ -33,48 +31,57 @@ class _MapShimShopSheaState extends State<MapShimShopShea> {
         const ImageConfiguration(), MyConstant.shimMarker);
     BitmapDescriptor shopMarker = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(), MyConstant.shopMarker);
+    BitmapDescriptor sheaMarker = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), MyConstant.sheaMarker);
     List<QueryDocumentSnapshot<BusinessModel>> restaurants =
         await RestaurantCollection.restaurants();
     List<QueryDocumentSnapshot<BusinessModel>> otops =
         await OtopCollection.otops();
-    for (int i = 0; i < restaurants.length; i++) {
-      QueryDocumentSnapshot<BusinessModel> shim = restaurants[i];
+    List<QueryDocumentSnapshot<BusinessModel>> alls = [];
+    alls.addAll(restaurants);
+    alls.addAll(otops);
+    for (int i = 0; i < alls.length; i++) {
+      QueryDocumentSnapshot<BusinessModel> business = alls[i];
       setMarkers.add(
         Marker(
-          markerId: MarkerId(shim.id),
-          position: LatLng(shim.data().latitude, shim.data().longitude),
-          icon: shimMaker,
+          markerId: MarkerId(business.id),
+          position: LatLng(business.data().latitude, business.data().longitude),
+          icon: business.data().visitType == "ชิม"
+              ? shimMaker
+              : business.data().visitType == "ชิม"
+                  ? shopMarker
+                  : sheaMarker,
           infoWindow: InfoWindow(
-            title: shim.data().businessName,
-            snippet: shim.data().address,
+            title: business.data().businessName,
+            snippet: business.data().address,
             onTap: () => MapsLauncher.launchCoordinates(
-              shim.data().latitude,
-              shim.data().longitude,
-              shim.data().businessName,
+              business.data().latitude,
+              business.data().longitude,
+              business.data().businessName,
             ),
           ),
         ),
       );
     }
-    for (int i = 0; i < otops.length; i++) {
-      QueryDocumentSnapshot<BusinessModel> shop = otops[i];
-      setMarkers.add(
-        Marker(
-          markerId: MarkerId(shop.id),
-          position: LatLng(shop.data().latitude, shop.data().longitude),
-          icon: shopMarker,
-          infoWindow: InfoWindow(
-            title: shop.data().businessName,
-            snippet: shop.data().address,
-            onTap: () => MapsLauncher.launchCoordinates(
-              shop.data().latitude,
-              shop.data().longitude,
-              shop.data().businessName,
-            ),
-          ),
-        ),
-      );
-    }
+    // for (int i = 0; i < otops.length; i++) {
+    //   QueryDocumentSnapshot<BusinessModel> shop = otops[i];
+    //   setMarkers.add(
+    //     Marker(
+    //       markerId: MarkerId(shop.id),
+    //       position: LatLng(shop.data().latitude, shop.data().longitude),
+    //       icon: shopMarker,
+    //       infoWindow: InfoWindow(
+    //         title: shop.data().businessName,
+    //         snippet: shop.data().address,
+    //         onTap: () => MapsLauncher.launchCoordinates(
+    //           shop.data().latitude,
+    //           shop.data().longitude,
+    //           shop.data().businessName,
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    // }
     setState(() {
       markers = setMarkers;
     });

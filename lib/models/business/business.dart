@@ -19,6 +19,7 @@ class BusinessModel {
   double startPrice;
   String typePayment;
   List<TimeTurnOnOfModel> times;
+  String visitType; // shim shop shea
   BusinessModel({
     required this.businessName,
     required this.sellerId,
@@ -38,6 +39,7 @@ class BusinessModel {
     required this.startPrice,
     required this.typePayment,
     required this.times,
+    required this.visitType,
   });
 
   BusinessModel copyWith({
@@ -59,6 +61,7 @@ class BusinessModel {
     double? startPrice,
     String? typePayment,
     List<TimeTurnOnOfModel>? times,
+    String? visitType,
   }) {
     return BusinessModel(
       businessName: businessName ?? this.businessName,
@@ -79,6 +82,7 @@ class BusinessModel {
       startPrice: startPrice ?? this.startPrice,
       typePayment: typePayment ?? this.typePayment,
       times: times ?? this.times,
+      visitType: visitType ?? this.visitType,
     );
   }
 
@@ -102,6 +106,7 @@ class BusinessModel {
       'startPrice': startPrice,
       'typePayment': typePayment,
       'times': times.map((x) => x.toMap()).toList(),
+      'visitType': visitType,
     };
   }
 
@@ -127,6 +132,7 @@ class BusinessModel {
       times: List<TimeTurnOnOfModel>.from(
         map['times']?.map((x) => TimeTurnOnOfModel.fromMap(x)) ?? [],
       ),
+      visitType: map["visitType"] ?? "ชิม",
     );
   }
 }
