@@ -38,8 +38,8 @@ class AuthMethods {
         "profileRef": _user.profileRef,
         "role": _user.role,
         "tokenDevice": _user.tokenDevice,
-        "rangeAge":_user.rangeAge,
-        "gender":_user.gender,
+        "rangeAge": _user.rangeAge,
+        "gender": _user.gender,
       });
       return {"status": "200", "message": "สร้างบัญชีผู้ใช้งานเรียบร้อย"};
     } on FirebaseAuthException catch (e) {
@@ -115,5 +115,11 @@ class AuthMethods {
   static Future<void> resetPassword(String email) async {
     await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
-  
+
+  static Future<void> deleteAccount(String userDocId) async {
+    if (_firebaseAuth.currentUser != null && userDocId.isNotEmpty) {
+      await _userCollection.doc(userDocId).delete();
+      await _firebaseAuth.currentUser!.delete();
+    }
+  }
 }

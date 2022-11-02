@@ -6,6 +6,7 @@ import 'package:chanthaburi_app/pages/introduce_chan/tab_introduce.dart';
 import 'package:chanthaburi_app/resources/firestore/otop_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/program_travel_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/restaurant_collection.dart';
+import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
@@ -14,6 +15,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MapShimShopShea extends StatefulWidget {
   const MapShimShopShea({Key? key}) : super(key: key);
@@ -63,33 +65,26 @@ class _MapShimShopSheaState extends State<MapShimShopShea> {
         ),
       );
     }
-    // for (int i = 0; i < otops.length; i++) {
-    //   QueryDocumentSnapshot<BusinessModel> shop = otops[i];
-    //   setMarkers.add(
-    //     Marker(
-    //       markerId: MarkerId(shop.id),
-    //       position: LatLng(shop.data().latitude, shop.data().longitude),
-    //       icon: shopMarker,
-    //       infoWindow: InfoWindow(
-    //         title: shop.data().businessName,
-    //         snippet: shop.data().address,
-    //         onTap: () => MapsLauncher.launchCoordinates(
-    //           shop.data().latitude,
-    //           shop.data().longitude,
-    //           shop.data().businessName,
-    //         ),
-    //       ),
-    //     ),
-    //   );
-    // }
     setState(() {
       markers = setMarkers;
     });
   }
 
+  void checkPermission() async {
+    PermissionStatus locationStatus = await Permission.location.status;
+    if (locationStatus.isPermanentlyDenied || locationStatus.isDenied) {
+      alertService(
+        context,
+        'ไม่อนุญาติแชร์ Location',
+        'โปรดแชร์ Location',
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    checkPermission();
     fetchAndSetMarker();
   }
 
@@ -158,6 +153,7 @@ class _MapShimShopSheaState extends State<MapShimShopShea> {
               height: height * 0.5,
               width: width * 1,
               child: GoogleMap(
+                mapType: MapType.terrain,
                 onMapCreated: (GoogleMapController controller) async {
                   _controller.complete(controller);
                 },

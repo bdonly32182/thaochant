@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:chanthaburi_app/pages/profile/component/content_profile.dart';
 import 'package:chanthaburi_app/pages/profile/component/footer_logout.dart';
 import 'package:chanthaburi_app/pages/profile/component/header_profile.dart';
@@ -14,8 +12,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
-  Color theme;
-  Profile({Key? key, required this.theme}) : super(key: key);
+  final Color theme;
+  const Profile({Key? key, required this.theme}) : super(key: key);
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -23,6 +21,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String userId = AuthMethods.currentUser();
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -48,58 +47,60 @@ class _ProfileState extends State<Profile> {
                     return const ShowDataEmpty();
                   }
                   if (snapshortProfile.data == null) {
-                    return login(width,context);
+                    return login(width, context);
                   }
                   if (snapshortProfile.connectionState ==
                       ConnectionState.done) {
                     Map<String, dynamic> data =
                         snapshortProfile.data!.data() as Map<String, dynamic>;
-                    return SafeArea(
-                      child: Column(
-                        children: [
-                          HeaderProfile(
-                            profileRef: data["profileRef"],
-                          ),
-                          const SizedBox(
-                            height: 60,
-                          ),
-                          ContentProfile(text: data["fullName"]),
-                          ContentProfile(text: data["phoneNumber"]),
-                          ContentProfile(text: data["email"]),
-                          Container(
-                            margin: const EdgeInsets.only(top: 30),
-                            width: width * 0.4,
-                            child: ElevatedButton(
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "แก้ไขข้อมูลส่วนตัว",
-                                    style: TextStyle(color: widget.theme),
-                                  ),
-                                ],
-                              ),
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (builder) => EditProfile(
-                                    fullName: data["fullName"],
-                                    phoneNumber: data["phoneNumber"],
-                                    profileRef: data["profileRef"],
-                                    theme: widget.theme,
-                                    docId: snapshortProfile.data!.id,
+                    return SingleChildScrollView(
+                      child: SafeArea(
+                        child: Column(
+                          children: [
+                            HeaderProfile(
+                              profileRef: data["profileRef"],
+                            ),
+                            const SizedBox(
+                              height: 60,
+                            ),
+                            ContentProfile(text: data["fullName"]),
+                            ContentProfile(text: data["phoneNumber"]),
+                            ContentProfile(text: data["email"]),
+                            Container(
+                              margin: const EdgeInsets.only(top: 30),
+                              width: width * 0.4,
+                              child: ElevatedButton(
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "แก้ไขข้อมูลส่วนตัว",
+                                      style: TextStyle(color: widget.theme),
+                                    ),
+                                  ],
+                                ),
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (builder) => EditProfile(
+                                      fullName: data["fullName"],
+                                      phoneNumber: data["phoneNumber"],
+                                      profileRef: data["profileRef"],
+                                      theme: widget.theme,
+                                      docId: snapshortProfile.data!.id,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                side: BorderSide(
-                                  color: widget.theme,
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  side: BorderSide(
+                                    color: widget.theme,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          FooterLogout(theme: widget.theme),
-                        ],
+                            FooterLogout(theme: widget.theme),
+                          ],
+                        ),
                       ),
                     );
                   }
@@ -111,33 +112,33 @@ class _ProfileState extends State<Profile> {
 
   Column login(double width, BuildContext context) {
     return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 30),
-                    width: width * 0.26,
-                    child: ElevatedButton(
-                      child: Row(
-                        children: [
-                          Text(
-                            "เข้าสู่ระบบ",
-                            style: TextStyle(color: widget.theme),
-                          ),
-                        ],
-                      ),
-                      onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                          context, '/authen', (route) => false),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
-                        side: BorderSide(
-                          color: widget.theme,
-                        ),
-                      ),
-                    ),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Container(
+            margin: const EdgeInsets.only(top: 30),
+            width: width * 0.26,
+            child: ElevatedButton(
+              child: Row(
+                children: [
+                  Text(
+                    "เข้าสู่ระบบ",
+                    style: TextStyle(color: widget.theme),
                   ),
+                ],
+              ),
+              onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context, '/authen', (route) => false),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+                side: BorderSide(
+                  color: widget.theme,
                 ),
-              ],
-            );
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

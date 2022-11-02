@@ -56,8 +56,8 @@ class _HomeBuyerState extends State<HomeBuyer> {
       "goWidget": BuyerHomeTour(),
     },
     {
-      "title": 'แนะนำการท่องเที่ยว',
-      "pathImage": MyConstant.locationPicture,
+      "title": 'แนะนำโปรแกรมท่องเที่ยว',
+      "pathImage": MyConstant.introduceTravel,
       "goWidget": const MapShimShopShea(),
     },
   ];

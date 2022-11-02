@@ -76,12 +76,12 @@ class _MapProgramTravelState extends State<MapProgramTravel> {
               "${locationModel.dayId}-$i-${locationModel.lat}+${locationModel.lng}"),
           position: LatLng(locationModel.lat, locationModel.lng),
           infoWindow: InfoWindow(
-            title: locationModel.time,
-            // snippet: shim.data().address,
+            title: locationModel.locationName,
+            snippet: 'รอบ ${locationModel.time}',
             onTap: () => MapsLauncher.launchCoordinates(
               locationModel.lat,
               locationModel.lng,
-              locationModel.time,
+              locationModel.locationName,
             ),
           ),
         ),

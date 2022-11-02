@@ -1,13 +1,15 @@
 import 'dart:io';
 
+import 'package:chanthaburi_app/pages/authen.dart';
+import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/resources/firestore/user_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
 import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
+import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:chanthaburi_app/widgets/show_image.dart';
-import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -102,6 +104,31 @@ class _EditProfileState extends State<EditProfile> {
     Navigator.pop(context);
   }
 
+  onDeleteAccount(String docId) async {
+    try {
+      await AuthMethods.deleteAccount(docId);
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (BuildContext showContext) => const ResponseDialog(
+          response: {"status": "200", "message": "ลบบัญชีผู้ใช้งานเรียบร้อย"},
+        ),
+      );
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (builder) => const Authen()),
+          (route) => false);
+    } catch (e) {
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (BuildContext showContext) => const ResponseDialog(
+          response: {"status": "400", "message": "ลบบัญชีผู้ใช้งานล้มเหลว"},
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -139,7 +166,32 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       style: ElevatedButton.styleFrom(primary: widget.theme),
                     ),
-                  )
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    width: width * 0.4,
+                    child: ElevatedButton(
+                      child: Row(
+                        children: const [
+                          Text(
+                            "ลบบัญชีผู้ใช้งาน",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      onPressed: () => dialogDeleteAccount(
+                        context,
+                        widget.docId,
+                        onDeleteAccount,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.redAccent,
+                        side: const BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             )),

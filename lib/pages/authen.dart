@@ -6,12 +6,10 @@ import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/loading/response_dialog.dart';
 import 'package:chanthaburi_app/widgets/partner_policy.dart';
 import 'package:chanthaburi_app/widgets/show_image.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class Authen extends StatefulWidget {
-  Authen({Key? key}) : super(key: key);
+  const Authen({Key? key}) : super(key: key);
 
   @override
   _AuthenState createState() => _AuthenState();
