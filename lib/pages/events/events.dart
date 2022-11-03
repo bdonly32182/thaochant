@@ -1,52 +1,21 @@
-import 'dart:io';
-
+import 'package:chanthaburi_app/models/events/event_model.dart';
+import 'package:chanthaburi_app/pages/events/create_event.dart';
 import 'package:chanthaburi_app/resources/firestore/event_collection.dart';
-import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
-import 'package:chanthaburi_app/utils/dialog/dialog_confirm.dart';
-import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
-import 'package:chanthaburi_app/utils/imagePicture/picker_image.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/widgets/error/internal_error.dart';
 import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:chanthaburi_app/widgets/show_image_network.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class EventList extends StatefulWidget {
-  EventList({Key? key}) : super(key: key);
+  const EventList({Key? key}) : super(key: key);
 
   @override
   State<EventList> createState() => _EventListState();
 }
 
 class _EventListState extends State<EventList> {
-  getImage() async {
-    File? image = await PickerImage.getImage();
-    if (image != null) {
-      late BuildContext dialogContext;
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext showContext) {
-          dialogContext = context;
-          return const PouringHourGlass();
-        },
-      );
-      await EventCollection.createEvent(image);
-      Navigator.pop(dialogContext);
-    } else {
-      PermissionStatus photoStatus = await Permission.photos.status;
-      if (photoStatus.isPermanentlyDenied) {
-        alertService(
-          context,
-          'ไม่อนุญาติแชร์ Photo',
-          'โปรดแชร์ Photo',
-        );
-      }
-    }
-  }
-
   onDeleteEvent(
       BuildContext dialogContext, String docId, String imageURL) async {
     showDialog(
@@ -71,7 +40,7 @@ class _EventListState extends State<EventList> {
       ),
       body: StreamBuilder(
         stream: EventCollection.events(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        builder: (context, AsyncSnapshot<QuerySnapshot<EventModel>> snapshot) {
           if (snapshot.hasError) {
             return const InternalError();
           }
@@ -79,7 +48,7 @@ class _EventListState extends State<EventList> {
             return const PouringHourGlass();
           }
           if (snapshot.data!.docs.isEmpty) {
-            return buildAddEvent(width, snapshot.data!.docs.length);
+            return buildAddEvent(width);
           }
           return SingleChildScrollView(
             child: Column(
@@ -89,44 +58,57 @@ class _EventListState extends State<EventList> {
                   physics: const ScrollPhysics(),
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
-                    return Stack(
-                      alignment: AlignmentDirectional.topEnd,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.all(5),
-                          height: 160,
-                          width: width * 1,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: ShowImageNetwork(
-                              pathImage: snapshot.data!.docs[index]["eventURL"],
-                              colorImageBlank: MyConstant.themeApp,
-                            ),
+                    EventModel eventData = snapshot.data!.docs[index].data();
+                    String eventId = snapshot.data!.docs[index].id;
+                    return InkWell(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (builder) => CreateEvent(
+                            eventModelForEdit: eventData,
+                            eventId: eventId,
                           ),
                         ),
-                        Container(
-                          child: IconButton(
-                            onPressed: () => dialogDeleteEvent(
-                              context,
-                              snapshot.data!.docs[index].id,
-                              snapshot.data!.docs[index]["eventURL"],
-                              onDeleteEvent,
-                            ),
-                            icon: const Icon(
-                              Icons.delete_forever,
-                              color: Colors.red,
+                      ),
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomCenter,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(5),
+                            height: 160,
+                            width: width * 1,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: ShowImageNetwork(
+                                pathImage: eventData.url,
+                                colorImageBlank: MyConstant.themeApp,
+                              ),
                             ),
                           ),
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
+                          Container(
+                            alignment: Alignment.bottomLeft,
+                            margin: const EdgeInsets.all(5),
+                            width: width * 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                eventData.eventName,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     );
                   },
                 ),
-                buildAddEvent(width, snapshot.data!.docs.length),
+                buildAddEvent(width),
               ],
             ),
           );
@@ -135,20 +117,21 @@ class _EventListState extends State<EventList> {
     );
   }
 
-  InkWell buildAddEvent(double width, int totalEvent) {
+  InkWell buildAddEvent(double width) {
     return InkWell(
       onTap: () {
-        if (totalEvent < 6) {
-          getImage();
-        } else {
-          dialogAlert(context, "ประกาศ", "กิจกรรมเต็มแล้ว (6 กิจกรรม)");
-        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (builder) => const CreateEvent(),
+          ),
+        );
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            margin: const EdgeInsets.only(bottom: 25.0),
+            margin: const EdgeInsets.only(bottom: 25.0, top: 10),
             width: width * 0.6,
             height: 100,
             child: Column(

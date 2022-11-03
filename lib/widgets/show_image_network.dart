@@ -3,11 +3,15 @@ import 'package:chanthaburi_app/widgets/image_blank.dart';
 import 'package:flutter/material.dart';
 
 class ShowImageNetwork extends StatelessWidget {
-  String pathImage;
-  Color colorImageBlank;
-  ShowImageNetwork(
-      {Key? key, required this.pathImage, required this.colorImageBlank})
-      : super(key: key);
+  final String pathImage;
+  final Color colorImageBlank;
+  final BoxFit? boxFit;
+  const ShowImageNetwork({
+    Key? key,
+    required this.pathImage,
+    required this.colorImageBlank,
+    this.boxFit,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +20,7 @@ class ShowImageNetwork extends StatelessWidget {
     return pathImage.isNotEmpty
         ? Image.network(
             pathImage,
-            fit: BoxFit.fitWidth,
+            fit: boxFit ?? BoxFit.fitWidth,
             width: width * 0.99,
             loadingBuilder: (BuildContext context, Widget child,
                 ImageChunkEvent? loadingProgess) {

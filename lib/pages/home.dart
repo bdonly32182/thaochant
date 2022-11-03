@@ -12,7 +12,7 @@ import 'package:chanthaburi_app/pages/services/guide_service.dart';
 import 'package:chanthaburi_app/pages/services/seller_service.dart';
 
 class HomeApp extends StatefulWidget {
-  HomeApp({Key? key}) : super(key: key);
+  const HomeApp({Key? key}) : super(key: key);
 
   @override
   State<HomeApp> createState() => _HomeAppState();
@@ -22,7 +22,7 @@ class _HomeAppState extends State<HomeApp> {
   bool isShow = false;
   String? role;
   final Map<String, Widget> splashWidget = {
-    '/authen': Authen(),
+    '/authen': const Authen(),
     '/createAccount': CreateAccount(),
     '/adminService': AdminService(),
     '/sellerService': SellerService(),
@@ -51,7 +51,7 @@ class _HomeAppState extends State<HomeApp> {
       splashTransition: SplashTransition.scaleTransition,
       splashIconSize: 600,
       duration: 600,
-      nextScreen: splashWidget[Routes.initialRoute(role ?? '')] ?? Authen(),
+      nextScreen: splashWidget[Routes.initialRoute(role ?? '')] ?? const Authen(),
     );
   }
 }
