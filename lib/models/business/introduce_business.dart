@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class IntroduceBusinessModel {
+class IntroduceProductModel {
   String name;
   int sequence;
   double lat;
@@ -8,7 +8,7 @@ class IntroduceBusinessModel {
   String businessId;
   int totalSelected;
   String typeBusiness;
-  IntroduceBusinessModel({
+  IntroduceProductModel({
     required this.name,
     required this.sequence,
     required this.lat,
@@ -18,7 +18,7 @@ class IntroduceBusinessModel {
     required this.typeBusiness,
   });
 
-  IntroduceBusinessModel copyWith({
+  IntroduceProductModel copyWith({
     String? name,
     int? sequence,
     double? lat,
@@ -27,7 +27,7 @@ class IntroduceBusinessModel {
     int? totalSelected,
     String? typeBusiness,
   }) {
-    return IntroduceBusinessModel(
+    return IntroduceProductModel(
       name: name ?? this.name,
       sequence: sequence ?? this.sequence,
       lat: lat ?? this.lat,
@@ -50,8 +50,8 @@ class IntroduceBusinessModel {
     };
   }
 
-  factory IntroduceBusinessModel.fromMap(Map<String, dynamic> map) {
-    return IntroduceBusinessModel(
+  factory IntroduceProductModel.fromMap(Map<String, dynamic> map) {
+    return IntroduceProductModel(
       name: map['name'] ?? '',
       sequence: map['sequence']?.toInt() ?? 0,
       lat: map['lat']?.toDouble() ?? 0.0,
@@ -64,5 +64,5 @@ class IntroduceBusinessModel {
 
   String toJson() => json.encode(toMap());
 
-  factory IntroduceBusinessModel.fromJson(String source) => IntroduceBusinessModel.fromMap(json.decode(source));
+  factory IntroduceProductModel.fromJson(String source) => IntroduceProductModel.fromMap(json.decode(source));
 }

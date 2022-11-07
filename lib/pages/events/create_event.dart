@@ -358,7 +358,7 @@ class _CreateEventState extends State<CreateEvent> {
                                   ),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
-                                    color: MyConstant.colorStore,
+                                    color: MyConstant.themeApp,
                                   ),
                                 ),
                               ],

@@ -123,7 +123,7 @@ class _MapProgramTravelState extends State<MapProgramTravel> {
             onMapCreated: (GoogleMapController controller) async {
               _controller.complete(controller);
             },
-            // myLocationEnabled: true,
+            myLocationEnabled: true,
             myLocationButtonEnabled: false,
             mapType: MapType.terrain,
             scrollGesturesEnabled: true,

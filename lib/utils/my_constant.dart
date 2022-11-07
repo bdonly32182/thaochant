@@ -43,10 +43,12 @@ class MyConstant {
   static String orderTourCollection = "orderTourCollection";
   static String eventCollection = "eventCollection";
   static String questionCollection = "questionCollection";
-  static String historyClickRestaurantCollection = "historyClickRestaurantCollection";
+  static String historyClickRestaurantCollection =
+      "historyClickRestaurantCollection";
   static String historyClickOtopCollection = "historyClickOtopCollection";
   static String shippingProductCollection = "shippingProductCollection";
   static String programTravelCollection = "programTravelCollection";
+  static String introduceProductCollection = "introduceProductCollection";
 
   // type business
   static String typeRestaurant = "restaurant";
@@ -73,7 +75,7 @@ class MyConstant {
   static String currentLocation = 'images/location.png';
   static String promptPayImage = 'images/promptpay.jpeg';
   static String notifyImage = 'images/notify.png';
-  static String otopPicture= 'images/aluar.jpeg';
+  static String otopPicture = 'images/aluar.jpeg';
   static String locationPicture = 'images/location_image.jpeg';
   static String thaiFood = 'images/thai-food.jpeg';
   static String resortPicture = 'images/baanlek.jpeg';

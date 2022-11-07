@@ -2,6 +2,7 @@ import 'package:chanthaburi_app/pages/events/events.dart';
 import 'package:chanthaburi_app/pages/guide/guide_list.dart';
 import 'package:chanthaburi_app/pages/home/admin/component/menu_card.dart';
 import 'package:chanthaburi_app/pages/introduce_chan/admin/program_list.dart';
+import 'package:chanthaburi_app/pages/introduce_product/introduce_products.dart';
 import 'package:chanthaburi_app/pages/location/locations.dart';
 import 'package:chanthaburi_app/pages/package_toure/package_tours.dart';
 import 'package:chanthaburi_app/pages/popular/business_popular.dart';
@@ -56,12 +57,17 @@ class _HomeAdminState extends State<HomeAdmin> {
     {
       "title": 'กิจกรรม',
       "pathImage": MyConstant.notifyImage,
-      "goWidget": EventList(),
+      "goWidget": const EventList(),
     },
     {
       "title": 'แบบสอบถาม',
       "pathImage": MyConstant.questionImage,
       "goWidget": HomeQuestion(),
+    },
+    {
+      "title": 'สินค้าแนะนำ',
+      "pathImage": MyConstant.questionImage,
+      "goWidget": const IntroduceProducts(),
     },
     {
       "title": 'กิจการยอดนิยม',
