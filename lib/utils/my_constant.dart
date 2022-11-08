@@ -87,6 +87,7 @@ class MyConstant {
   static String shopMarker = 'images/shop_marker.png';
   static String sheaMarker = 'images/shea.png';
   static String introduceTravel = 'images/travel.jpeg';
+  static String fillForm = 'images/file_form.png';
 
   // color
   static Color backgroudApp =

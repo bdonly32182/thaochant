@@ -125,15 +125,15 @@ class _CreateEventState extends State<CreateEvent> {
   }
 
   onSubmit() async {
-    if (widget.eventId == null && imageCover == null) {
-      showDialog(
-        context: context,
-        builder: (BuildContext showContext) => const ResponseDialog(
-          response: {"status": "400", "message": "กรุณาแนบรูปหน้าปกกิจกรรม"},
-        ),
-      );
-      return;
-    }
+    // if (widget.eventId == null && imageCover == null) {
+    //   showDialog(
+    //     context: context,
+    //     builder: (BuildContext showContext) => const ResponseDialog(
+    //       response: {"status": "400", "message": "กรุณาแนบรูปหน้าปกกิจกรรม"},
+    //     ),
+    //   );
+    //   return;
+    // }
     if (_formKey.currentState!.validate()) {
       eventModel.eventName = eventNameController.text;
       eventModel.sequence = int.parse(sequenceController.text);

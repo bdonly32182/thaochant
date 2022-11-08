@@ -22,6 +22,16 @@ class EventCollection {
     return _events;
   }
 
+  static Future<QuerySnapshot<EventModel>> events2() async{
+    QuerySnapshot<EventModel> _events = await eventCollection
+        .withConverter<EventModel>(
+            fromFirestore: (snapshot, _) =>
+                EventModel.fromMap(snapshot.data()!),
+            toFirestore: (map, _) => map.toMap())
+        .get();
+    return _events;
+  }
+
   static Future<Map<String, dynamic>> upsertEvent(
       EventModel eventModel, File? eventRef, String? docId) async {
     try {

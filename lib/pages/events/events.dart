@@ -94,13 +94,13 @@ class _EventListState extends State<EventList> {
                               child: Text(
                                 eventData.eventName,
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontSize: 18,
                                 ),
                               ),
                             ),
                             decoration: const BoxDecoration(
-                              color: Colors.transparent,
+                              color: Colors.white54,
                             ),
                           ),
                         ],

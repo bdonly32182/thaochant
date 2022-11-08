@@ -18,6 +18,16 @@ class IntroduceProductCollection {
             .snapshots();
     return introduces;
   }
+  static Future<QuerySnapshot<IntroduceProductModel>> introduceProducts2() async{
+    QuerySnapshot<IntroduceProductModel> introduces =
+        await introduceProductCollection
+            .withConverter<IntroduceProductModel>(
+                fromFirestore: (snapshot, _) =>
+                    IntroduceProductModel.fromMap(snapshot.data()!),
+                toFirestore: (map, _) => map.toMap())
+            .get();
+    return introduces;
+  }
 
   static Future<Map<String, dynamic>> upsertIntroduceProduct(
       IntroduceProductModel introduceProductModel, String? docId) async {

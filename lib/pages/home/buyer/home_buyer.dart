@@ -2,6 +2,8 @@ import 'package:chanthaburi_app/models/question/answer.dart';
 import 'package:chanthaburi_app/models/question/question.dart';
 import 'package:chanthaburi_app/pages/introduce_chan/map_shim_shop_shea.dart';
 import 'package:chanthaburi_app/pages/introduce_chan/tab_introduce.dart';
+import 'package:chanthaburi_app/pages/lets_travel/map_after_filter.dart';
+import 'package:chanthaburi_app/pages/lets_travel/question_filter.dart';
 import 'package:chanthaburi_app/pages/location/locations.dart';
 import 'package:chanthaburi_app/pages/otop/home_otop.dart';
 import 'package:chanthaburi_app/pages/package_toure/buyer_home_tour.dart';
@@ -29,6 +31,7 @@ class HomeBuyer extends StatefulWidget {
 class _HomeBuyerState extends State<HomeBuyer> {
   int dateTimeNow = DateTime.now().millisecondsSinceEpoch;
   bool fillQuestion = false;
+  bool isTravelFilter = false;
   List<Map<String, dynamic>> menuCards = [
     {
       "title": 'ร้านอาหาร',
@@ -60,6 +63,11 @@ class _HomeBuyerState extends State<HomeBuyer> {
       "pathImage": MyConstant.introduceTravel,
       "goWidget": const MapShimShopShea(),
     },
+    {
+      "title": 'เที่ยวกันเถอะ',
+      "pathImage": MyConstant.introduceTravel,
+      "goWidget": const QuestionFilter(),
+    },
   ];
 
   onCheckTimeQuestion() async {
@@ -71,10 +79,21 @@ class _HomeBuyerState extends State<HomeBuyer> {
     }
   }
 
+  onCheckExistTravelFilter() async {
+    List<String>? travelFilter =
+        await ShareRefferrence.getTravelFilterCurrent();
+    if (travelFilter != null) {
+      setState(() {
+        isTravelFilter = true;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    onCheckTimeQuestion();
+    // onCheckTimeQuestion();
+    onCheckExistTravelFilter();
   }
 
   onSkipForm() async {
@@ -215,7 +234,7 @@ class _HomeBuyerState extends State<HomeBuyer> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: ShowImageNetwork(
-                    pathImage: snapshot.data!.docs[index]["eventURL"],
+                    pathImage: snapshot.data!.docs[index]["url"],
                     colorImageBlank: MyConstant.themeApp,
                   ),
                 ),

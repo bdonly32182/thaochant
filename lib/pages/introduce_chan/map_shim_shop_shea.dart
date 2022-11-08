@@ -50,7 +50,7 @@ class _MapShimShopSheaState extends State<MapShimShopShea> {
           position: LatLng(business.data().latitude, business.data().longitude),
           icon: business.data().visitType == "ชิม"
               ? shimMaker
-              : business.data().visitType == "ชิม"
+              : business.data().visitType == "ช็อป"
                   ? shopMarker
                   : sheaMarker,
           infoWindow: InfoWindow(
