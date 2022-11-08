@@ -66,7 +66,7 @@ class _HomeAdminState extends State<HomeAdmin> {
     },
     {
       "title": 'สินค้าแนะนำ',
-      "pathImage": MyConstant.questionImage,
+      "pathImage": MyConstant.presentProductImage,
       "goWidget": const IntroduceProducts(),
     },
     {

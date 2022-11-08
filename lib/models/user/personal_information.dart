@@ -5,7 +5,7 @@ class PersonalInformationModel {
   String age;
   String avgSalary;
   String payForTravel;
-  String memberForTravel;
+  int memberForTravel;
   PersonalInformationModel({
     required this.gender,
     required this.age,
@@ -30,7 +30,7 @@ class PersonalInformationModel {
       age: map['age'] ?? '',
       avgSalary: map['avgSalary'] ?? '',
       payForTravel: map['payForTravel'] ?? '',
-      memberForTravel: map['memberForTravel'] ?? '',
+      memberForTravel: map['memberForTravel']?.toInt() ?? 0,
     );
   }
 

@@ -20,8 +20,12 @@ class EventQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        double height = MediaQuery.of(context).size.height;
-    List<QueryDocumentSnapshot<EventModel>> filterEvents = events.docs.where((element) => element.data().usageTime >= usageTime,).toList();
+    double height = MediaQuery.of(context).size.height;
+    List<QueryDocumentSnapshot<EventModel>> filterEvents = events.docs
+        .where(
+          (element) => element.data().usageTime >= usageTime,
+        )
+        .toList();
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
@@ -60,8 +64,8 @@ class EventQuestion extends StatelessWidget {
                 physics: const BouncingScrollPhysics(),
                 itemCount: filterEvents.length,
                 itemBuilder: (context, index) {
-                  EventModel event =
-                      filterEvents[index].data();
+                  EventModel event = filterEvents[index].data();
+                  String id = filterEvents[index].id;
                   bool isSelected = selects
                       .where((select) =>
                           select.url == event.url &&
@@ -82,9 +86,9 @@ class EventQuestion extends StatelessWidget {
                       onChanged: (bool? checked) {
                         if (checked != null) {
                           if (checked) {
-                            onSelected(event);
+                            onSelected(event, id);
                           } else {
-                            onRemove(event);
+                            onRemove(event, id);
                           }
                         }
                       },

@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:chanthaburi_app/pages/register_partner.dart';
+import 'package:chanthaburi_app/pages/services/introapp_service.dart';
 import 'package:chanthaburi_app/routes.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:chanthaburi_app/utils/sharePreferrence/share_referrence.dart';
@@ -26,7 +27,7 @@ class _HomeAppState extends State<HomeApp> {
     '/createAccount': CreateAccount(),
     '/adminService': AdminService(),
     '/sellerService': SellerService(),
-    '/buyerService': BuyerService(),
+    '/buyerService': const IntroAppService(),
     '/guideService': GuideService(),
     '/registerPartner': RegisterPartner(),
   };

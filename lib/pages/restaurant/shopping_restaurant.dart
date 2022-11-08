@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:badges/badges.dart';
 import 'package:chanthaburi_app/models/business/business.dart';
 import 'package:chanthaburi_app/models/business/time_turn_on_of.dart';
@@ -25,7 +23,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 
 class ShoppingRestaurant extends StatefulWidget {
-  ShoppingRestaurant({Key? key}) : super(key: key);
+  const ShoppingRestaurant({Key? key}) : super(key: key);
 
   @override
   _ShoppingRestaurantState createState() => _ShoppingRestaurantState();
@@ -95,9 +93,10 @@ class _ShoppingRestaurantState extends State<ShoppingRestaurant> {
     SQLiteHelper().close();
     super.dispose();
   }
-
+  
   @override
   Widget build(BuildContext context) {
+    print(randomFoods);
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(

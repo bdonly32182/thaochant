@@ -1,5 +1,7 @@
 import 'package:chanthaburi_app/models/business/introduce_business.dart';
 import 'package:chanthaburi_app/models/events/event_model.dart';
+import 'package:chanthaburi_app/models/history/history.dart';
+import 'package:chanthaburi_app/models/lets_travel/history_introduce_travel.dart';
 import 'package:chanthaburi_app/models/lets_travel/location_travel.dart';
 import 'package:chanthaburi_app/pages/lets_travel/event_question.dart';
 import 'package:chanthaburi_app/pages/lets_travel/introduce_product_question.dart';
@@ -7,6 +9,7 @@ import 'package:chanthaburi_app/pages/lets_travel/map_after_filter.dart';
 import 'package:chanthaburi_app/pages/lets_travel/sequence_question.dart';
 import 'package:chanthaburi_app/pages/services/buyer_service.dart';
 import 'package:chanthaburi_app/resources/firestore/event_collection.dart';
+import 'package:chanthaburi_app/resources/firestore/history_introduce_travel_collection.dart';
 import 'package:chanthaburi_app/resources/firestore/introduce_product_collection.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_alert.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_permission.dart';
@@ -35,6 +38,8 @@ class _QuestionFilterState extends State<QuestionFilter> {
   List<EventModel> selectEvent = [];
   QuerySnapshot<IntroduceProductModel>? introProds;
   QuerySnapshot<EventModel>? events;
+  List<String> introProdId = [];
+  List<String> eventId = [];
   double? lat, lng;
   void checkPermission() async {
     try {
@@ -99,28 +104,32 @@ class _QuestionFilterState extends State<QuestionFilter> {
     });
   }
 
-  onSelectIntroProd(IntroduceProductModel introProd) {
+  onSelectIntroProd(IntroduceProductModel introProd, String id) {
     setState(() {
       selectIntro.add(introProd);
+      introProdId.add(id);
     });
   }
 
-  onRemoveIntroProd(IntroduceProductModel introProd) {
+  onRemoveIntroProd(IntroduceProductModel introProd, String id) {
     setState(() {
+      introProdId.remove(id);
       selectIntro.removeWhere((element) =>
           element.businessId == introProd.businessId &&
           element.name == introProd.name);
     });
   }
 
-  onSelectEvent(EventModel eventModel) {
+  onSelectEvent(EventModel eventModel, String id) {
     setState(() {
+      eventId.add(id);
       selectEvent.add(eventModel);
     });
   }
 
-  onRemoveEvent(EventModel eventModel) {
+  onRemoveEvent(EventModel eventModel, String id) {
     setState(() {
+      eventId.remove(id);
       selectEvent.removeWhere((element) =>
           element.url == eventModel.url &&
           element.eventName == eventModel.eventName);
@@ -152,6 +161,12 @@ class _QuestionFilterState extends State<QuestionFilter> {
         elevation: 0,
         automaticallyImplyLeading: false,
         backgroundColor: MyConstant.backgroudApp,
+        title: Text(
+          "แนะนำสถานที่ท่องเที่ยว",
+          style: TextStyle(
+            color: MyConstant.themeApp,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -253,7 +268,14 @@ class _QuestionFilterState extends State<QuestionFilter> {
                   return;
                 }
                 if (pageNumber == 2 && selectEvent.isNotEmpty) {
+                  HistoryIntroduceTravelModel history =
+                      HistoryIntroduceTravelModel(
+                    usageTime: usageTime,
+                    introProdId: introProdId,
+                    eventId: eventId,
+                  );
                   await setDataToReference(selectIntro, selectEvent);
+                  await HistoryIntroduceTravelCollection.saveHistory(history);
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(

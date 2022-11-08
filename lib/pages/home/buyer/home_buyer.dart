@@ -1,13 +1,9 @@
 import 'package:chanthaburi_app/models/question/answer.dart';
-import 'package:chanthaburi_app/models/question/question.dart';
 import 'package:chanthaburi_app/pages/introduce_chan/map_shim_shop_shea.dart';
-import 'package:chanthaburi_app/pages/introduce_chan/tab_introduce.dart';
-import 'package:chanthaburi_app/pages/lets_travel/map_after_filter.dart';
 import 'package:chanthaburi_app/pages/lets_travel/question_filter.dart';
 import 'package:chanthaburi_app/pages/location/locations.dart';
 import 'package:chanthaburi_app/pages/otop/home_otop.dart';
 import 'package:chanthaburi_app/pages/package_toure/buyer_home_tour.dart';
-import 'package:chanthaburi_app/pages/question/submit_form.dart';
 import 'package:chanthaburi_app/pages/resort/home_resort.dart';
 import 'package:chanthaburi_app/pages/restaurant/home_restaurant.dart';
 import 'package:chanthaburi_app/resources/firestore/event_collection.dart';
@@ -22,7 +18,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class HomeBuyer extends StatefulWidget {
-  HomeBuyer({Key? key}) : super(key: key);
+  const HomeBuyer({Key? key}) : super(key: key);
 
   @override
   State<HomeBuyer> createState() => _HomeBuyerState();
@@ -31,7 +27,7 @@ class HomeBuyer extends StatefulWidget {
 class _HomeBuyerState extends State<HomeBuyer> {
   int dateTimeNow = DateTime.now().millisecondsSinceEpoch;
   bool fillQuestion = false;
-  bool isTravelFilter = false;
+
   List<Map<String, dynamic>> menuCards = [
     {
       "title": 'ร้านอาหาร',
@@ -63,11 +59,6 @@ class _HomeBuyerState extends State<HomeBuyer> {
       "pathImage": MyConstant.introduceTravel,
       "goWidget": const MapShimShopShea(),
     },
-    {
-      "title": 'เที่ยวกันเถอะ',
-      "pathImage": MyConstant.introduceTravel,
-      "goWidget": const QuestionFilter(),
-    },
   ];
 
   onCheckTimeQuestion() async {
@@ -79,22 +70,11 @@ class _HomeBuyerState extends State<HomeBuyer> {
     }
   }
 
-  onCheckExistTravelFilter() async {
-    List<String>? travelFilter =
-        await ShareRefferrence.getTravelFilterCurrent();
-    if (travelFilter != null) {
-      setState(() {
-        isTravelFilter = true;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // onCheckTimeQuestion();
-    onCheckExistTravelFilter();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // onCheckTimeQuestion();
+  // }
 
   onSkipForm() async {
     int dateTime =
@@ -142,32 +122,51 @@ class _HomeBuyerState extends State<HomeBuyer> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
-      body: fillQuestion
-          ? FutureBuilder(
-              future: QuestionCollection.questionsAsync(),
-              builder: (context,
-                  AsyncSnapshot<QuerySnapshot<QuestionModel>> snapshot) {
-                if (snapshot.hasError) {
-                  return const InternalError();
-                }
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const PouringHourGlass();
-                }
-                List<QueryDocumentSnapshot<QuestionModel>> questions =
-                    snapshot.data!.docs;
-                questions.sort(
-                  (a, b) => a.data().createAt.compareTo(b.data().createAt),
-                );
-                return SubmitForm(
-                  onSkip: onSkipForm,
-                  onSubmit: onSubmitForm,
-                  questions: questions,
-                );
-              })
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  InkWell(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (builder) => const QuestionFilter(),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          width: width * 0.6,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ไม่รู้จะไปเที่ยวไหน?',
+                                style: TextStyle(
+                                  color: MyConstant.themeApp,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                'ให้เราช่วยแนะนำไหม',
+                                style: TextStyle(
+                                  color: MyConstant.themeApp,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.map_outlined,
+                          color: MyConstant.themeApp,
+                        )
+                      ],
+                    ),
+                  ),
                   Container(
                     margin: const EdgeInsets.all(8),
                     height: height * 0.55,
@@ -205,6 +204,30 @@ class _HomeBuyerState extends State<HomeBuyer> {
                 ],
               ),
             ),
+      // fillQuestion
+      //     ? FutureBuilder(
+      //         future: QuestionCollection.questionsAsync(),
+      //         builder: (context,
+      //             AsyncSnapshot<QuerySnapshot<QuestionModel>> snapshot) {
+      //           if (snapshot.hasError) {
+      //             return const InternalError();
+      //           }
+      //           if (snapshot.connectionState == ConnectionState.waiting) {
+      //             return const PouringHourGlass();
+      //           }
+      //           List<QueryDocumentSnapshot<QuestionModel>> questions =
+      //               snapshot.data!.docs;
+      //           questions.sort(
+      //             (a, b) => a.data().createAt.compareTo(b.data().createAt),
+      //           );
+      //           return SubmitForm(
+      //             onSkip: onSkipForm,
+      //             onSubmit: onSubmitForm,
+      //             questions: questions,
+      //           );
+      //         })
+          
+          
     );
   }
 

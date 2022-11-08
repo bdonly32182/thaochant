@@ -138,8 +138,8 @@ class ProductOtopCollection {
     return _products.size;
   }
 
-  static Future<List<QueryDocumentSnapshot<ProductOtopModel>>>
-      randomProducts(int orderStart, int endOrderDate) async {
+  static Future<List<QueryDocumentSnapshot<ProductOtopModel>>> randomProducts(
+      int orderStart, int endOrderDate) async {
     List<QueryDocumentSnapshot<ProductOtopModel>> randomProducts = [];
     List<int> checkList = [];
     QuerySnapshot<ProductOtopModel> _products = await productOtopCollection
@@ -149,22 +149,27 @@ class ProductOtopCollection {
                 ProductOtopModel.fromMap(_firestore.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
-    List<QueryDocumentSnapshot<ProductOtopModel>>  recommandProduct = [];
+    List<QueryDocumentSnapshot<ProductOtopModel>> recommandProduct = [];
     if (_products.docs.isNotEmpty) {
-      QuerySnapshot<OrderModel> orderProducts = await OrderProductCollection.orderProducts(orderStart, endOrderDate);
+      QuerySnapshot<OrderModel> orderProducts =
+          await OrderProductCollection.orderProducts(orderStart, endOrderDate);
       for (int i = 0; i < _products.docs.length; i++) {
         for (int index = 0; index < orderProducts.docs.length; index++) {
           OrderModel orderProduct = orderProducts.docs[index].data();
-          List<ProductCartModel> productInOrders = orderProduct.product.where((element) => element.productId == _products.docs[i].id).toList();
-          List<QueryDocumentSnapshot<ProductOtopModel>> filterRecommendProduct = recommandProduct.where((element) => element.id == _products.docs[i].id).toList();
+          List<ProductCartModel> productInOrders = orderProduct.product
+              .where((element) => element.productId == _products.docs[i].id)
+              .toList();
+          List<QueryDocumentSnapshot<ProductOtopModel>> filterRecommendProduct =
+              recommandProduct
+                  .where((element) => element.id == _products.docs[i].id)
+                  .toList();
           if (productInOrders.length < 5 && filterRecommendProduct.isEmpty) {
             recommandProduct.add(_products.docs[i]);
           }
         }
       }
-      
     }
-    
+
     if (recommandProduct.isNotEmpty) {
       final random = Random();
       int indexRandom = random.nextInt(recommandProduct.length);

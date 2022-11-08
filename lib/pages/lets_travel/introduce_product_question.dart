@@ -66,6 +66,7 @@ class _IntroduceProductQuestionState extends State<IntroduceProductQuestion> {
                 itemBuilder: (context, index) {
                   IntroduceProductModel product =
                       widget.intros.docs[index].data();
+                  String id = widget.intros.docs[index].id;
                   bool isSelected = widget.selects
                       .where((select) =>
                           select.businessId == product.businessId &&
@@ -86,9 +87,9 @@ class _IntroduceProductQuestionState extends State<IntroduceProductQuestion> {
                       onChanged: (bool? checked) {
                         if (checked != null) {
                           if (checked) {
-                            widget.onSelected(product);
+                            widget.onSelected(product, id);
                           } else {
-                            widget.onRemove(product);
+                            widget.onRemove(product, id);
                           }
                         }
                       },

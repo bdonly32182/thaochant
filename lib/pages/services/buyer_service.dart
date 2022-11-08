@@ -6,7 +6,7 @@ import 'package:chanthaburi_app/utils/my_constant.dart';
 import 'package:flutter/material.dart';
 
 class BuyerService extends StatefulWidget {
-  BuyerService({Key? key}) : super(key: key);
+  const BuyerService({Key? key}) : super(key: key);
 
   @override
   _BuyerServiceState createState() => _BuyerServiceState();
@@ -15,7 +15,7 @@ class BuyerService extends StatefulWidget {
 class _BuyerServiceState extends State<BuyerService> {
   int _selected = 0;
   List<Widget> widgetBottomList = [
-    HomeBuyer(),
+    const HomeBuyer(),
     NotificationRecipient(
         recipientId: AuthMethods.currentUser(), theme: MyConstant.themeApp),
     Profile(

@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayVideoNetwork extends StatefulWidget {
-  String pathVideo;
-  PlayVideoNetwork({Key? key, required this.pathVideo}) : super(key: key);
+  final String pathVideo;
+  const PlayVideoNetwork({Key? key, required this.pathVideo}) : super(key: key);
 
   @override
   State<PlayVideoNetwork> createState() => _PlayVideoNetworkState();
@@ -57,7 +56,7 @@ class _PlayVideoNetworkState extends State<PlayVideoNetwork> {
             child: VideoProgressIndicator(
               _controller!,
               allowScrubbing: true,
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
             ),
           ),
           Center(child: videoStatusAnimation),
@@ -71,11 +70,11 @@ class _PlayVideoNetworkState extends State<PlayVideoNetwork> {
           }
           if (_controller!.value.isPlaying) {
             videoStatusAnimation =
-                FadeAnimation(child: const Icon(Icons.pause, size: 100.0));
+                const FadeAnimation(child: Icon(Icons.pause, size: 100.0));
             _controller!.pause();
           } else {
             videoStatusAnimation =
-                FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
+                const FadeAnimation(child: Icon(Icons.play_arrow, size: 100.0));
             _controller!.play();
           }
         },
@@ -85,9 +84,11 @@ class _PlayVideoNetworkState extends State<PlayVideoNetwork> {
 class FadeAnimation extends StatefulWidget {
   final Widget child;
   final Duration duration;
-  FadeAnimation(
-      {required this.child,
-      this.duration = const Duration(milliseconds: 1000)});
+  const FadeAnimation(
+      {Key? key,
+      required this.child,
+      this.duration = const Duration(milliseconds: 1000)})
+      : super(key: key);
 
   @override
   _FadeAnimationState createState() => _FadeAnimationState();

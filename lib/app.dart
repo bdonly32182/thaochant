@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
       routes: Routes.routesMap,
       theme: ThemeData(primaryColor: MyConstant.themeApp),
       debugShowCheckedModeBanner: false,
-      home: HomeApp()
+      home: const HomeApp()
     );
   }
 }
