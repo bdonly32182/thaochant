@@ -62,37 +62,39 @@ class _QuestionFilterState extends State<QuestionFilter> {
 
   Future<void> setDataToReference(List<IntroduceProductModel> selectedIntros,
       List<EventModel> selectedEvents) async {
-    List<String> locations = [];
+    if (lat != null && lng != null) {
+      List<String> locations = [];
 
-    for (int i = 0; i < selectedIntros.length; i++) {
-      IntroduceProductModel intro = selectedIntros[i];
-      double distance =
-          CalculateDistance.calculateDistance(intro.lat, intro.lng, lat!, lng!);
-      LocationTravelModel location = LocationTravelModel(
-        lat: intro.lat,
-        title: intro.name,
-        lng: intro.lng,
-        snippet: 'ระยะทาง: $distance กิโลเมตร',
-        type: "intro",
-        distance: distance,
-      );
-      locations.add(location.toJson());
+      for (int i = 0; i < selectedIntros.length; i++) {
+        IntroduceProductModel intro = selectedIntros[i];
+        double distance = CalculateDistance.calculateDistance(
+            intro.lat, intro.lng, lat!, lng!);
+        LocationTravelModel location = LocationTravelModel(
+          lat: intro.lat,
+          title: intro.name,
+          lng: intro.lng,
+          snippet: 'ระยะทาง: $distance กิโลเมตร',
+          type: "intro",
+          distance: distance,
+        );
+        locations.add(location.toJson());
+      }
+      for (int i = 0; i < selectedEvents.length; i++) {
+        EventModel event = selectedEvents[i];
+        double distance = CalculateDistance.calculateDistance(
+            event.lat, event.lng, lat!, lng!);
+        LocationTravelModel location = LocationTravelModel(
+          lat: event.lat,
+          title: event.eventName,
+          lng: event.lng,
+          snippet: 'ระยะทาง: $distance กิโลเมตร',
+          type: 'event',
+          distance: distance,
+        );
+        locations.add(location.toJson());
+      }
+      await ShareRefferrence.setTravelFilterCurrent(locations);
     }
-    for (int i = 0; i < selectedEvents.length; i++) {
-      EventModel event = selectedEvents[i];
-      double distance =
-          CalculateDistance.calculateDistance(event.lat, event.lng, lat!, lng!);
-      LocationTravelModel location = LocationTravelModel(
-        lat: event.lat,
-        title: event.eventName,
-        lng: event.lng,
-        snippet: 'ระยะทาง: $distance กิโลเมตร',
-        type: 'event',
-        distance: distance,
-      );
-      locations.add(location.toJson());
-    }
-    await ShareRefferrence.setTravelFilterCurrent(locations);
   }
 
   onChangeUsageTime(num useTime) {
@@ -158,6 +160,7 @@ class _QuestionFilterState extends State<QuestionFilter> {
     controller.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;

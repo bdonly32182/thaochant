@@ -6,10 +6,18 @@ import 'package:permission_handler/permission_handler.dart';
 class PickerImage {
   static final ImagePicker _picker = ImagePicker();
   static Future<File?> getImage() async {
-    PermissionStatus photoStatus = await Permission.photos.status;
-    if (!photoStatus.isGranted) {
-      await Permission.photos.request();
+    if (Platform.isAndroid) {
+      PermissionStatus photoAndroid = await Permission.storage.status;
+      if (!photoAndroid.isGranted) {
+        await Permission.storage.request();
+      }
+    } else {
+      PermissionStatus photoStatus = await Permission.photos.status;
+      if (!photoStatus.isGranted) {
+        await Permission.photos.request();
+      }
     }
+
     try {
       XFile? image = await _picker.pickImage(
           source: ImageSource.gallery, maxWidth: 800, maxHeight: 500);

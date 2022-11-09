@@ -24,6 +24,12 @@ alertService(BuildContext context, String title, String message) async {
       ),
       actions: [
         TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('CANCEL'),
+        ),
+        TextButton(
           onPressed: () async {
             Navigator.pop(context);
             openAppSettings();
