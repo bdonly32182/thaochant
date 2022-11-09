@@ -23,7 +23,7 @@ class EventQuestion extends StatelessWidget {
     double height = MediaQuery.of(context).size.height;
     List<QueryDocumentSnapshot<EventModel>> filterEvents = events.docs
         .where(
-          (element) => element.data().usageTime >= usageTime,
+          (element) => element.data().usageTime <= usageTime,
         )
         .toList();
     return SafeArea(

@@ -153,19 +153,25 @@ class ProductOtopCollection {
     if (_products.docs.isNotEmpty) {
       QuerySnapshot<OrderModel> orderProducts =
           await OrderProductCollection.orderProducts(orderStart, endOrderDate);
-      for (int i = 0; i < _products.docs.length; i++) {
-        for (int index = 0; index < orderProducts.docs.length; index++) {
-          OrderModel orderProduct = orderProducts.docs[index].data();
-          List<ProductCartModel> productInOrders = orderProduct.product
-              .where((element) => element.productId == _products.docs[i].id)
-              .toList();
-          List<QueryDocumentSnapshot<ProductOtopModel>> filterRecommendProduct =
-              recommandProduct
-                  .where((element) => element.id == _products.docs[i].id)
-                  .toList();
-          if (productInOrders.length < 5 && filterRecommendProduct.isEmpty) {
-            recommandProduct.add(_products.docs[i]);
+      if (orderProducts.docs.isNotEmpty) {
+        for (int i = 0; i < _products.docs.length; i++) {
+          for (int index = 0; index < orderProducts.docs.length; index++) {
+            OrderModel orderProduct = orderProducts.docs[index].data();
+            List<ProductCartModel> productInOrders = orderProduct.product
+                .where((element) => element.productId == _products.docs[i].id)
+                .toList();
+            List<QueryDocumentSnapshot<ProductOtopModel>>
+                filterRecommendProduct = recommandProduct
+                    .where((element) => element.id == _products.docs[i].id)
+                    .toList();
+            if (productInOrders.length < 5 && filterRecommendProduct.isEmpty) {
+              recommandProduct.add(_products.docs[i]);
+            }
           }
+        }
+      } else {
+        for (int p = 0; p < _products.docs.length; p++) {
+          recommandProduct.add(_products.docs[p]);
         }
       }
     }

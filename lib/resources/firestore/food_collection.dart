@@ -145,21 +145,31 @@ class FoodCollection {
         orderStart,
         endOrderDate,
       );
-      for (int i = 0; i < _foods.docs.length; i++) {
-        for (int orderIndex = 0;
-            orderIndex < orderOfFoods.docs.length;
-            orderIndex++) {
-          OrderModel orderFoodModel = orderOfFoods.docs[orderIndex].data();
-          List<ProductCartModel> foodInOrders = orderFoodModel.product
-              .where(
-                  (foodInOrder) => foodInOrder.productId == _foods.docs[i].id)
-              .toList();
-          List<QueryDocumentSnapshot<FoodModel>> filterRecommend = recommandFood
-              .where((element) => element.id == _foods.docs[i].id)
-              .toList();
-          if (foodInOrders.length < 5 && filterRecommend.isEmpty) {
-            recommandFood.add(_foods.docs[i]);
+      // if order not empty
+      if (orderOfFoods.docs.isNotEmpty) {
+        for (int i = 0; i < _foods.docs.length; i++) {
+          for (int orderIndex = 0;
+              orderIndex < orderOfFoods.docs.length;
+              orderIndex++) {
+            OrderModel orderFoodModel = orderOfFoods.docs[orderIndex].data();
+            List<ProductCartModel> foodInOrders = orderFoodModel.product
+                .where(
+                    (foodInOrder) => foodInOrder.productId == _foods.docs[i].id)
+                .toList();
+            List<QueryDocumentSnapshot<FoodModel>> filterRecommend =
+                recommandFood
+                    .where((element) => element.id == _foods.docs[i].id)
+                    .toList();
+            if (foodInOrders.length < 5 && filterRecommend.isEmpty) {
+              // ถ้าเมนูไหนมีในออเดอร์น้อยกว่า 5 จะเพิ่มเข้าไป recommandFood
+              recommandFood.add(_foods.docs[i]);
+            }
           }
+        }
+      } else {
+        // if order empty
+        for (int f = 0; f < _foods.docs.length; f++) {
+          recommandFood.add(_foods.docs[f]);
         }
       }
     }

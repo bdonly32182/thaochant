@@ -25,6 +25,7 @@ class IntroApp extends StatefulWidget {
 
 class _IntroAppState extends State<IntroApp> {
   final PageController controller = PageController(initialPage: 0);
+  AboutThaoChanModel? aboutThaoChanModel;
   String gender = "";
   String betweenAge = "";
   String salary = "";
@@ -62,6 +63,24 @@ class _IntroAppState extends State<IntroApp> {
     });
   }
 
+  fetchData() async {
+    QuerySnapshot<AboutThaoChanModel> data =
+        await AboutThaochanCollection.fetchData();
+    setState(() {
+      aboutThaoChanModel = data.docs.first.data();
+    });
+  }
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -87,24 +106,17 @@ class _IntroAppState extends State<IntroApp> {
         ],
       ),
       backgroundColor: MyConstant.backgroudApp,
-      body: FutureBuilder(
-          future: AboutThaochanCollection.fetchData(),
-          builder: (context,
-              AsyncSnapshot<QuerySnapshot<AboutThaoChanModel>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const PouringHourGlass();
-            }
-            return Container(
+      body: aboutThaoChanModel == null
+          ? const PouringHourGlass()
+          : Container(
               padding: EdgeInsets.only(bottom: height * 0.1),
               child: PageView(
-                onPageChanged: (int value) => setState(() {
-                  isLastPage = value == 5;
-                }),
+                onPageChanged: (value) =>
+                    setState(() => isLastPage = value == 5),
                 physics: const NeverScrollableScrollPhysics(),
                 controller: controller,
                 children: [
-                  PlayVideoNetwork(
-                      pathVideo: snapshot.data!.docs.first.data().imageURL),
+                  PlayVideoNetwork(pathVideo: aboutThaoChanModel!.imageURL),
                   PersonalInformation(
                     selected: gender,
                     onChange: onChangeGender,
@@ -133,8 +145,7 @@ class _IntroAppState extends State<IntroApp> {
                   fit: BoxFit.contain,
                 ),
               ),
-            );
-          }),
+            ),
       bottomSheet: Container(
         height: height * 0.1,
         decoration: BoxDecoration(color: MyConstant.backgroudApp),
