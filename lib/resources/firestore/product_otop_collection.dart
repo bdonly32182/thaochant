@@ -195,4 +195,17 @@ class ProductOtopCollection {
 
     return randomProducts;
   }
+  static Future<List<String>> searchProduct(String text) async {
+    QuerySnapshot<ProductOtopModel> _resultProds = await productOtopCollection
+        .withConverter<ProductOtopModel>(
+            fromFirestore: (snapshot, _) => ProductOtopModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+
+    List<String> searchProds = _resultProds.docs
+        .where((prod) => prod.data().productName.toLowerCase().contains(text))
+        .map((e) => e.data().otopId)
+        .toList();
+    return searchProds;
+  }
 }

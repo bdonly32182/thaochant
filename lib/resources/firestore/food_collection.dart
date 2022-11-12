@@ -191,4 +191,18 @@ class FoodCollection {
 
     return randomFoods;
   }
+
+  static Future<List<String>> searchFood(String text) async {
+    QuerySnapshot<FoodModel> _resultFoods = await foodCollection
+        .withConverter<FoodModel>(
+            fromFirestore: (snapshot, _) => FoodModel.fromMap(snapshot.data()!),
+            toFirestore: (model, _) => model.toMap())
+        .get();
+
+    List<String> searchFoods = _resultFoods.docs
+        .where((food) => food.data().foodName.toLowerCase().contains(text))
+        .map((e) => e.data().restaurantId)
+        .toList();
+    return searchFoods;
+  }
 }

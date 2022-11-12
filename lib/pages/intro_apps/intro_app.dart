@@ -70,11 +70,13 @@ class _IntroAppState extends State<IntroApp> {
       aboutThaoChanModel = data.docs.first.data();
     });
   }
+
   @override
   void initState() {
     fetchData();
     super.initState();
   }
+
   @override
   void dispose() {
     controller.dispose();
@@ -84,7 +86,7 @@ class _IntroAppState extends State<IntroApp> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -116,7 +118,29 @@ class _IntroAppState extends State<IntroApp> {
                 physics: const NeverScrollableScrollPhysics(),
                 controller: controller,
                 children: [
-                  PlayVideoNetwork(pathVideo: aboutThaoChanModel!.imageURL),
+                  SizedBox.expand(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      // alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        width: width,
+                        height: height,
+                        // width: _controller.value.size?.width ?? 0,
+                        // height: _controller.value.size?.height ?? 0,
+                        child: PlayVideoNetwork(
+                          pathVideo: aboutThaoChanModel!.imageURL,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // ,
+                  // SizedBox(
+                  //   height: height,
+                  //   width: width,
+                  //   child: PlayVideoNetwork(
+                  //         pathVideo: aboutThaoChanModel!.imageURL),
+                  // ),
+
                   PersonalInformation(
                     selected: gender,
                     onChange: onChangeGender,

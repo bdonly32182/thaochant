@@ -12,11 +12,11 @@ class CardLocation extends StatelessWidget {
   final String address;
   final String locationId;
   final bool isAdmin;
-  String description;
-  String videoRef;
-  double lat;
-  double lng;
-  CardLocation(
+  final String description;
+  final String videoRef;
+  final double lat;
+  final double lng;
+  const CardLocation(
       {Key? key,
       required this.listImage,
       required this.locationName,
@@ -80,6 +80,7 @@ class CardLocation extends StatelessWidget {
                     ? ShowImageNetwork(
                         pathImage: listImage[0],
                         colorImageBlank: MyConstant.colorLocation,
+                        boxFit: BoxFit.fill,
                       )
                     : SizedBox(
                         width: width * 0.16,
@@ -99,82 +100,83 @@ class CardLocation extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Container(
-                            width: width * 1,
-                            height: height > 730 ? height * .12 : height * .24,
-                            decoration: const BoxDecoration(
-                              color: Colors.black45,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 5, left: 10),
-                                  child: Text(
-                                    locationName,
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w800),
-                                    maxLines: 1,
-                                    softWrap: false,
-                                    overflow: TextOverflow.fade,
-                                  ),
+                          width: width * 1,
+                          height: height > 730 ? height * .12 : height * .24,
+                          decoration: const BoxDecoration(
+                            color: Colors.black45,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 5, left: 10),
+                                child: Text(
+                                  locationName,
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w800),
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    address,
-                                    style: const TextStyle(color: Colors.white),
-                                    maxLines: 1,
-                                    softWrap: false,
-                                    overflow: TextOverflow.fade,
-                                  ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  address,
+                                  style: const TextStyle(color: Colors.white),
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: Row(
-                                    children: [
-                                      RatingBar.builder(
-                                        itemSize: 20.0,
-                                        direction: Axis.horizontal,
-                                        allowHalfRating: true,
-                                        initialRating: point / ratingCount,
-                                        itemCount:
-                                            point != 0.0 && ratingCount != 0.0
-                                                ? (point / ratingCount).floor()
-                                                : 0,
-                                        ignoreGestures: true,
-                                        itemPadding: const EdgeInsets.symmetric(
-                                            horizontal: 1.0),
-                                        itemBuilder: (context, _) => const Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                        ),
-                                        onRatingUpdate: (ratingUpdate) {
-                                          print(ratingUpdate);
-                                        },
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Row(
+                                  children: [
+                                    RatingBar.builder(
+                                      itemSize: 20.0,
+                                      direction: Axis.horizontal,
+                                      allowHalfRating: true,
+                                      initialRating: point / ratingCount,
+                                      itemCount:
+                                          point != 0.0 && ratingCount != 0.0
+                                              ? (point / ratingCount).floor()
+                                              : 0,
+                                      ignoreGestures: true,
+                                      itemPadding: const EdgeInsets.symmetric(
+                                          horizontal: 1.0),
+                                      itemBuilder: (context, _) => const Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
                                       ),
-                                      Text(
-                                        '($ratingCount)',
-                                        style: TextStyle(
-                                          color: Colors.amber,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: const [
+                                      onRatingUpdate: (ratingUpdate) {
+                                        print(ratingUpdate);
+                                      },
+                                    ),
                                     Text(
-                                      'รายละเอียดเพิ่มเติม >>',
-                                      style: TextStyle(color: Colors.white),
+                                      '($ratingCount)',
+                                      style: const TextStyle(
+                                        color: Colors.amber,
+                                      ),
                                     )
                                   ],
-                                )
-                              ],
-                            )),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: const [
+                                  Text(
+                                    'รายละเอียดเพิ่มเติม >>',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),

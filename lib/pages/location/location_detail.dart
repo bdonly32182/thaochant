@@ -14,18 +14,18 @@ import 'package:chanthaburi_app/resources/auth_method.dart';
 import 'package:chanthaburi_app/utils/dialog/dialog_login.dart';
 
 class DetailLocation extends StatefulWidget {
-  String locationId;
-  String locationName;
-  String description;
-  String address;
-  List<String> imageList;
-  String videoRef;
-  num ratingCount;
-  num point;
-  bool isAdmin;
-  double lat;
-  double lng;
-  DetailLocation(
+  final String locationId;
+  final String locationName;
+  final String description;
+  final String address;
+  final List<String> imageList;
+  final String videoRef;
+  final num ratingCount;
+  final num point;
+  final bool isAdmin;
+  final double lat;
+  final double lng;
+  const DetailLocation(
       {Key? key,
       required this.locationId,
       required this.locationName,

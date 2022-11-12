@@ -18,11 +18,11 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class EditBusiness extends StatefulWidget {
-  String typeBusiness;
-  BusinessModel businessModel;
-  String businessId;
+  final String typeBusiness;
+  final BusinessModel businessModel;
+  final String businessId;
 
-  EditBusiness({
+  const EditBusiness({
     Key? key,
     required this.typeBusiness,
     required this.businessModel,
@@ -43,7 +43,6 @@ class _EditBusinessState extends State<EditBusiness> {
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
-  // String typePayment = "พร้อมเพย์";
   List<DropdownMenuItem<String>> itemsTypePayment = [
     'พร้อมเพย์',
     'ธนาคารไทยพานิชย์',
@@ -375,7 +374,9 @@ class _EditBusinessState extends State<EditBusiness> {
             items: visitTypeItems,
             onChanged: (String? value) {
               if (value != null) {
-                _businessModel!.visitType = value;
+                setState(() {
+                  _businessModel!.visitType = value;
+                });
               }
             },
           ),
@@ -408,7 +409,9 @@ class _EditBusinessState extends State<EditBusiness> {
             items: itemsTypePayment,
             onChanged: (String? value) {
               if (value != null) {
-                _businessModel!.typePayment = value;
+                setState(() {
+                  _businessModel!.typePayment = value;
+                });
               }
             },
           ),

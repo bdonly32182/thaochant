@@ -45,7 +45,7 @@ class _PlayVideoNetworkState extends State<PlayVideoNetwork> {
 
   @override
   Widget build(BuildContext context) => AspectRatio(
-        aspectRatio: 16 / 9,
+        aspectRatio: _controller!.value.aspectRatio,
         child: _controller!.value.isInitialized ? videoPlayer() : Container(),
       );
   Widget videoPlayer() => Stack(

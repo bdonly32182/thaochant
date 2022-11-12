@@ -39,7 +39,7 @@ class EventQuestion extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'ท่านสนใจซื้อสินค้าอะไรจากชุมชนหลังวัดโรมัน บ้านท่าเรือจ้าง และริมน้ำจันทบูร นี้',
+                  'ท่านสนใจเที่ยวชมหรือทำกิจกรรมอะไรในชุมชนหลังวัดโรมัน บ้านท่าเรือจ้าง และริมน้ำจันทบูร นี',
                   style: TextStyle(
                     color: MyConstant.themeApp,
                     fontWeight: FontWeight.bold,

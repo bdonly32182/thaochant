@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:chanthaburi_app/models/program_travel/location_program.dart';
 import 'package:chanthaburi_app/models/program_travel/program_travel.dart';
 import 'package:chanthaburi_app/utils/my_constant.dart';
+import 'package:chanthaburi_app/widgets/loading/pouring_hour_glass.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -22,6 +23,7 @@ class _MapProgramTravelState extends State<MapProgramTravel> {
   final Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markers = {};
   String selectDay = "";
+  double? initLat, initLng;
   List<DropdownMenuItem<String>> daysItem =
       [""].map<DropdownMenuItem<String>>((String value) {
     return DropdownMenuItem<String>(
@@ -63,6 +65,8 @@ class _MapProgramTravelState extends State<MapProgramTravel> {
       markers = respMarker;
       selectDay = dayFirst;
       daysItem = dropdownItems;
+      initLng = program.location[0].lng;
+      initLat = program.location[0].lat;
     });
   }
 
@@ -116,53 +120,55 @@ class _MapProgramTravelState extends State<MapProgramTravel> {
     return SizedBox(
       width: width * 1,
       height: height * 1,
-      child: Stack(
-        alignment: AlignmentDirectional.topCenter,
-        children: [
-          GoogleMap(
-            onMapCreated: (GoogleMapController controller) async {
-              _controller.complete(controller);
-            },
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            mapType: MapType.terrain,
-            scrollGesturesEnabled: true,
-            zoomControlsEnabled: true,
-            zoomGesturesEnabled: true,
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(13.756331, 100.501762),
-              zoom: 14,
-            ),
-            markers: markers,
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 20),
-            width: width * 0.28,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 5),
+      child: initLat == null && initLng == null
+          ? const PouringHourGlass()
+          : Stack(
+              alignment: AlignmentDirectional.topCenter,
+              children: [
+                GoogleMap(
+                  onMapCreated: (GoogleMapController controller) async {
+                    _controller.complete(controller);
+                  },
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  mapType: MapType.terrain,
+                  scrollGesturesEnabled: true,
+                  zoomControlsEnabled: true,
+                  zoomGesturesEnabled: true,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(initLat ?? 12.621140, initLng ?? 102.137413),
+                    zoom: 14,
+                  ),
+                  markers: markers,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  width: width * 0.28,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                        style: TextStyle(color: MyConstant.themeApp),
+                        value: selectDay,
+                        items: daysItem,
+                        onChanged: onChangeDay,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton(
-                  style: TextStyle(color: MyConstant.themeApp),
-                  value: selectDay,
-                  items: daysItem,
-                  onChanged: onChangeDay,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

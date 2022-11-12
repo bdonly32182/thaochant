@@ -24,78 +24,74 @@ class _ProgramTravelDetailState extends State<ProgramTravelDetail> {
     return Scaffold(
       backgroundColor: MyConstant.backgroudApp,
       body: SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            SizedBox(
-              width: width * 1,
-              height: height * 0.28,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(8),
-                ),
-                child: ShowImageNetwork(
-                  pathImage: widget.programTravel.imageCover,
-                  colorImageBlank: MyConstant.themeApp,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                width: width * 1,
+                height: height * 0.14,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(8),
+                  ),
+                  child: ShowImageNetwork(
+                    pathImage: widget.programTravel.imageCover,
+                    colorImageBlank: MyConstant.themeApp,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: height,
-              child: Card(
-                margin: const EdgeInsets.all(10),
-                child: Swiper(
-                  itemCount: widget.programTravel.dayIdList.length,
-                  itemBuilder: (context, index) {
-                    List<LocationProgramModel> locationsOfDays =
-                        widget.programTravel.location
-                            .where(
-                              (element) =>
-                                  element.dayId ==
-                                  widget.programTravel.dayIdList[index],
-                            )
-                            .toList();
-                    return Container(
-                      margin: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        top: 4,
-                      ),
-                      child: Column(
+              SizedBox(
+                height: height * 0.7,
+                child: Card(
+                  margin: const EdgeInsets.all(10),
+                  child: Swiper(
+                    itemCount: widget.programTravel.dayIdList.length,
+                    itemBuilder: (context, index) {
+                      List<LocationProgramModel> locationsOfDays =
+                          widget.programTravel.location
+                              .where(
+                                (element) =>
+                                    element.dayId ==
+                                    widget.programTravel.dayIdList[index],
+                              )
+                              .toList();
+                      return ListView(
                         children: [
-                          Text('วันที่ ${index + 1}'),
                           buildListLocation(
                             locationsOfDays,
                             width,
                             height,
                           ),
+                          SizedBox(
+                            width: width * 1,
+                            child: Card(
+                              margin: const EdgeInsets.all(6),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.programTravel.introducePrice,
+                                      softWrap: true,
+                                    ),
+                                    Text(
+                                      widget.programTravel.rateDescription,
+                                      softWrap: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-            Card(
-              margin: const EdgeInsets.all(6),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.programTravel.introducePrice,
-                      softWrap: true,
-                    ),
-                    Text(
-                      widget.programTravel.rateDescription,
-                      softWrap: true,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -103,6 +99,14 @@ class _ProgramTravelDetailState extends State<ProgramTravelDetail> {
 
   ListView buildListLocation(
       List<LocationProgramModel> locationsOfDays, double width, double height) {
+    locationsOfDays.sort(
+      (LocationProgramModel a, LocationProgramModel b) =>
+          double.parse(a.time.replaceAll(':', ".")).compareTo(
+        double.parse(
+          b.time.replaceAll(':', "."),
+        ),
+      ),
+    );
     return ListView.builder(
       shrinkWrap: true,
       physics: const ScrollPhysics(),
@@ -112,13 +116,14 @@ class _ProgramTravelDetailState extends State<ProgramTravelDetail> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("เวลา ${locationsOfDays[lindex].time}"),
+            Text(
+                "เวลา ${locationsOfDays[lindex].time}  ${locationsOfDays[lindex].locationName}"),
             Text(
               locationsOfDays[lindex].description,
               softWrap: true,
             ),
             SizedBox(
-              height: height * 0.2,
+              height: height * 0.16,
               child: buildListImage(
                 images,
                 width,

@@ -54,11 +54,13 @@ class RestaurantCollection {
                 BusinessModel.fromMap(snapshot.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
+    List<String> searchFood = await FoodCollection.searchFood(search);
     List<QueryDocumentSnapshot<BusinessModel>> searchRestaurants =
         _resultRestaurant
             .docs
             .where((business) =>
-                business.data().businessName.toLowerCase().contains(search))
+                business.data().businessName.toLowerCase().contains(search) ||
+                searchFood.contains(business.id))
             .toList();
     // .orderBy("businessName")
     // .startAt([search]).endAt([search + '\uf8ff']).get();

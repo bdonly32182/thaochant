@@ -32,7 +32,7 @@ class CreateLocationProgram extends StatefulWidget {
 
 class _CreateLocationProgramState extends State<CreateLocationProgram> {
   TextEditingController descriptionController = TextEditingController();
-TextEditingController locationNameController = TextEditingController();
+  TextEditingController locationNameController = TextEditingController();
   LocationProgramModel locationProgram = LocationProgramModel(
     time: '',
     description: '',
@@ -40,7 +40,8 @@ TextEditingController locationNameController = TextEditingController();
     lat: 12.611249,
     lng: 102.103781,
     dayId: '',
-    imagesFiles: [], locationName: '',
+    imagesFiles: [],
+    locationName: '',
   );
   final _formKey = GlobalKey<FormState>();
   @override
@@ -51,7 +52,6 @@ TextEditingController locationNameController = TextEditingController();
       setState(() {
         locationProgram = widget.locationProgram!;
         descriptionController.text = widget.locationProgram!.description;
-  
       });
     } else {
       locationProgram.dayId = widget.dayId;
@@ -180,8 +180,7 @@ TextEditingController locationNameController = TextEditingController();
                           );
                           if (time != null) {
                             setState(() {
-                              locationProgram.time =
-                                  '${time.hour}:${time.minute}';
+                              locationProgram.time = time.toString();
                             });
                           }
                         },

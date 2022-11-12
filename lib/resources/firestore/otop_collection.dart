@@ -52,9 +52,12 @@ class OtopCollection {
                 BusinessModel.fromMap(snapshot.data()!),
             toFirestore: (model, _) => model.toMap())
         .get();
+    List<String> searchOtops =
+        await ProductOtopCollection.searchProduct(search);
     List<QueryDocumentSnapshot<BusinessModel>> searchOtop = _resultOtop.docs
         .where((business) =>
-            business.data().businessName.toLowerCase().contains(search))
+            business.data().businessName.toLowerCase().contains(search) ||
+            searchOtops.contains(business.id))
         .toList();
     return searchOtop;
   }
